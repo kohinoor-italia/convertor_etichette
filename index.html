@@ -587,8 +587,8 @@ function syncTotal(){
   $('tot').value = S.sheets || 1;
  } else {
   if(S.totAuto){
-   const activeCount = S.cp.filter(v => v === 1).length;
-   S.total = activeCount || t.n;
+   S.total = Math.max(1, t.n - (S.start - 1));
+
   }
   $('tot').value = S.total || '';
  }
