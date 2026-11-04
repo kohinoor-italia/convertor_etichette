@@ -36,7 +36,7 @@ select option{background:#141728;color:var(--t)}
 .side{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding-right:4px}
 .stage{display:flex;flex-direction:column;min-height:0;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:24px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 
-/* Brand & Header modernizzato */
+/* Brand & Header modernizzato - Icona a tutta altezza */
 .brand-card{
  background:linear-gradient(145deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
  border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;
@@ -49,19 +49,19 @@ select option{background:#141728;color:var(--t)}
  background:radial-gradient(circle, rgba(255,93,143,.15), transparent 70%);
  pointer-events:none;
 }
-.brand{display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:stretch;gap:14px}
 .logo{
- width:44px;height:44px;border-radius:14px;background:var(--grad);
- display:grid;place-items:center;font-size:22px;color:#120d18;
+ width:52px;border-radius:14px;background:var(--grad);
+ display:grid;place-items:center;font-size:26px;color:#120d18;
  box-shadow:0 8px 24px rgba(255,93,143,.4);flex:none;
- position:relative;
+ position:relative;align-self:stretch;
 }
 .logo::before{
  content:"";position:absolute;inset:-1px;border-radius:15px;
  background:linear-gradient(180deg,rgba(255,255,255,.4),transparent);
  pointer-events:none;
 }
-.brand-texts{display:flex;flex-direction:column;gap:3px}
+.brand-texts{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;flex:1}
 .brand h1{
  margin:0;font-size:18px;font-weight:900;letter-spacing:-.4px;
  background:var(--grad-title);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -71,7 +71,7 @@ select option{background:#141728;color:var(--t)}
  display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--m);font-weight:500;
 }
 .brand-subtitle b{color:var(--t);font-weight:700}
-.brand-tags{display:flex;gap:5px;margin-top:6px}
+.brand-tags{display:flex;gap:5px;margin-top:2px}
 .brand-tags span{
  background:rgba(255,179,92,.1);color:var(--a);border:1px solid rgba(255,179,92,.2);
  padding:2px 7px;border-radius:6px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
@@ -819,7 +819,7 @@ function buildList(){
   render()});
  document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===TG().code))}
 
-$('chips').innerHTML=[['*','Tutti'],['A','A'],['C','C'],['R','Rotonde']].map(([k,n])=>`<button class="chip${k==='*'?' on':''}" type="button" data-k="${k}">${n}</button>`).join('');
+$('chips').innerHTML=[['*','Tutti'],['A','A400...'],['C','C500...'],['R','R300...']].map(([k,n])=>`<button class="chip${k==='*'?' on':''}" type="button" data-k="${k}">${n}</button>`).join('');
 $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fam=b.dataset.k;$('chips').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));buildList()});
 $('q').oninput=e=>{txt=e.target.value;buildList()};
 ['ox','oy'].forEach(i=>$(i).oninput=()=>{if(S)drawRes()});
