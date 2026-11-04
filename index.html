@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fotocopia etichette</title>
+<title>Convertore etichette</title>
 <style>
 :root{
  --bg:#080a12;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.075);
@@ -27,12 +27,15 @@ select option{background:#1d1830;color:#eef0f8}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
 
+/* icone svg */
+.i{width:1.1em;height:1.1em;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
+
 .app{height:100vh;display:grid;grid-template-columns:340px 1fr;gap:14px;padding:14px;max-width:1900px;margin:auto}
 .side{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding-right:4px}
 .stage{display:flex;flex-direction:column;min-height:0;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 
 .brand{display:flex;align-items:center;gap:12px;padding:2px 4px}
-.logo{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;font-size:21px;box-shadow:0 8px 24px rgba(255,93,143,.35)}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;font-size:22px;color:#1b1020;box-shadow:0 8px 24px rgba(255,93,143,.35)}
 .brand h1{margin:0;font-size:18px}
 .brand p{margin:0;color:var(--m);font-size:12px}
 
@@ -42,7 +45,7 @@ select option{background:#1d1830;color:#eef0f8}
 .ch h2{margin:0;font-size:12.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--m);font-weight:700}
 .ch .sp{flex:1}
 
-.btn{padding:9px 14px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);color:var(--t);transition:.15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 14px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);color:var(--t);transition:.15s;white-space:nowrap}
 .btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28)}
 .btn:active{transform:scale(.97)}
 .btn.sm{padding:5px 10px;font-size:13px;border-radius:9px}
@@ -53,7 +56,8 @@ select option{background:#1d1830;color:#eef0f8}
 
 .drop{border:1.5px dashed var(--line2);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:.18s;background:rgba(255,255,255,.02)}
 .drop:hover,.drop.over{border-color:var(--a);background:rgba(255,179,92,.07)}
-.drop .ic{font-size:26px;line-height:1}
+.drop .ic{font-size:30px;line-height:1;color:var(--a)}
+.drop .ic .i{stroke-width:1.7}
 .drop b{display:block;margin-top:4px}
 .drop span{color:var(--m);font-size:12.5px}
 .file{display:flex;align-items:center;gap:11px}
@@ -67,13 +71,11 @@ select option{background:#1d1830;color:#eef0f8}
 .fmt .lb{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:2px}
 .fmt .arr{font-size:22px;color:var(--m);padding-top:14px}
 .fdesc{color:var(--m);font-size:12px;line-height:1.5;margin-top:8px}
-.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(74,222,154,.15);color:var(--ok);margin-left:6px;vertical-align:2px}
-.tag.man{background:rgba(255,107,129,.15);color:var(--bad)}
 details.pick{margin-top:10px}
-details.pick summary{cursor:pointer;color:var(--a);font-weight:600;font-size:13px;list-style:none;user-select:none}
+details.pick summary{cursor:pointer;color:var(--a);font-weight:600;font-size:13px;list-style:none;user-select:none;display:flex;align-items:center;gap:6px}
 details.pick summary::-webkit-details-marker{display:none}
-details.pick summary::before{content:"▸ ";transition:.15s;display:inline-block}
-details.pick[open] summary::before{transform:rotate(90deg)}
+details.pick summary .chev{transition:.15s}
+details.pick[open] summary .chev{transform:rotate(90deg)}
 .inp{width:100%;padding:8px 12px;border-radius:11px;border:1px solid var(--line2);background:rgba(0,0,0,.28);color:var(--t);outline:none;transition:.15s}
 .inp:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(255,179,92,.15)}
 .chips{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}
@@ -88,19 +90,23 @@ details.pick[open] summary::before{transform:rotate(90deg)}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fld label{display:block;font-size:11.5px;color:var(--m);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px}
 .fld label b{color:var(--a)}
-.fld input{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--line2);background:rgba(0,0,0,.28);outline:none;text-align:center;font-weight:700;font-size:16px}
+.fld input{width:100%;height:42px;padding:0 10px;border-radius:10px;border:1px solid var(--line2);background:rgba(0,0,0,.28);outline:none;text-align:center;font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
 .fld input:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(255,179,92,.15)}
-.fld input[type=range]{padding:0;border:0;background:none;height:26px;accent-color:var(--a2);box-shadow:none}
+.fld input[type=range]{padding:0;border:0;background:none;height:26px;accent-color:var(--a2);box-shadow:none;position:relative;z-index:1}
 .fld.full{grid-column:1/-1}
-.fld.tot input{font-size:22px;padding:9px 10px}
 .ck{display:flex;gap:9px;align-items:center;color:var(--m);font-size:13.5px;cursor:pointer;user-select:none}
 .ck input{accent-color:var(--a2);width:16px;height:16px}
 .card{transition:opacity .2s}
 .hint{color:var(--m2);font-size:12px;margin:8px 0 0}
 
+.mgh{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.mgh label{margin:0}
+.rng{position:relative}
+.rng::before{content:"";position:absolute;left:50%;top:50%;width:2px;height:14px;background:var(--line2);transform:translate(-50%,-50%);pointer-events:none;border-radius:2px}
+.rngl{display:flex;justify-content:space-between;color:var(--m2);font-size:11.5px}
+.rngl span{display:inline-flex;align-items:center;gap:3px}
+
 .sum{margin-top:auto;position:sticky;bottom:0;padding-top:8px;background:linear-gradient(to bottom,transparent,var(--bg) 14px);z-index:5}
-.sum .card{background:rgba(20,22,40,.92);box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-.sum details.pick[open] .fields{max-height:30vh;overflow:auto}
 .sumc{background:rgba(20,22,40,.92);border:1px solid var(--line2);border-radius:var(--r);padding:12px;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
 .big{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
 .big b{font-size:30px;font-weight:900;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -108,7 +114,7 @@ details.pick[open] summary::before{transform:rotate(90deg)}
 .sumc .sub{color:var(--m);font-size:12.5px;margin-bottom:10px}
 .sumc .row2 .btn{flex:1;padding:11px}
 
-/* anteprima: due fogli affiancati, completamente inquadrati */
+/* anteprima: due fogli affiancati */
 .pv{display:flex;flex-direction:column;flex:1;min-height:0}
 .notes{padding:0 16px;flex:none}
 .note{margin-top:10px;padding:7px 12px;border-radius:11px;font-size:12.5px;background:rgba(255,107,129,.12);border:1px solid rgba(255,107,129,.45)}
@@ -138,11 +144,22 @@ details.pick[open] summary::before{transform:rotate(90deg)}
 .empty{flex:1;display:grid;place-items:center;padding:30px}
 .empty .box{max-width:520px;width:100%;text-align:center;border:2px dashed var(--line2);border-radius:26px;padding:56px 30px;transition:.18s;cursor:pointer;background:rgba(255,255,255,.02)}
 .empty .box:hover,.empty .box.over{border-color:var(--a);background:rgba(255,179,92,.06);transform:translateY(-2px)}
-.empty .em{font-size:60px;line-height:1;filter:drop-shadow(0 10px 20px rgba(255,93,143,.35))}
+.empty .em{font-size:64px;line-height:1;color:var(--a);filter:drop-shadow(0 10px 20px rgba(255,93,143,.35))}
+.empty .em .i{stroke-width:1.4}
 .empty h2{margin:14px 0 6px;font-size:22px}
 .empty p{margin:0 0 20px;color:var(--m)}
 .steps{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
 .steps span{font-size:12.5px;color:var(--m);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:5px 11px;border-radius:99px}
+
+/* anteprima singola etichetta durante il trascinamento del margine */
+.mgp{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:80;
+ background:rgba(14,16,30,.93);border:1px solid var(--line2);border-radius:18px;padding:12px 14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+ box-shadow:0 30px 80px rgba(0,0,0,.6);text-align:center;max-width:92vw}
+.mgp.show{opacity:1;transform:translate(-50%,-50%)}
+.mgp canvas{display:block;margin:8px auto;max-width:100%;height:auto}
+.mgp .t{font-size:11.5px;text-transform:uppercase;letter-spacing:1px;color:var(--m);font-weight:700}
+.mgp .t b{color:var(--a)}
+.mgp .s{font-size:12px;color:var(--m)}
 
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;background:#1d1830;border:1px solid var(--bad);padding:11px 18px;border-radius:13px;transition:.25s;z-index:99;pointer-events:none;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%)}
@@ -157,18 +174,37 @@ details.pick[open] summary::before{transform:rotate(90deg)}
  .sum{position:static}
 }
 </style></head><body>
+
+<!-- sprite icone -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.3"/></symbol>
+ <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 14h6M9 18h4"/></symbol>
+ <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+ <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+ <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="9" rx="2"/><path d="M7 14h10v7H7z"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+ <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+ <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6l6 6-6 6"/></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4.5M12 17.5v.01"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M8 12.5l3 3 5-6"/></symbol>
+ <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+ <symbol id="i-shrink" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></symbol>
+ <symbol id="i-grow" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+</defs></svg>
+
 <div class="app">
 
 <aside class="side">
- <div class="brand"><div class="logo">🏷️</div><div><h1>Fotocopia etichette</h1><p>Carica il PDF, scegli, stampa</p></div></div>
+ <div class="brand"><div class="logo"><svg class="i"><use href="#i-tag"/></svg></div><div><h1>Convertore etichette</h1><p>Carica il PDF, scegli, stampa</p></div></div>
 
  <section class="card">
   <div class="ch"><span class="num">1</span><h2>File PDF</h2></div>
-  <div class="drop" id="drop"><div class="ic">📄</div><b>Carica il PDF con le etichette</b><span>clicca qui o trascina il file</span></div>
+  <div class="drop" id="drop"><div class="ic"><svg class="i"><use href="#i-file"/></svg></div><b>Carica il PDF con le etichette</b><span>clicca qui o trascina il file</span></div>
   <div class="file" id="fileCard" hidden>
    <div class="pi">PDF</div>
    <div class="nm"><b id="fname"></b><span id="fmeta"></span></div>
-   <button class="btn sm" id="clr" title="Rimuovi PDF">✕</button>
+   <button class="btn sm" id="clr" title="Rimuovi PDF"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
   <input type="file" id="file" accept="application/pdf,.pdf" hidden>
  </section>
@@ -177,12 +213,19 @@ details.pick[open] summary::before{transform:rotate(90deg)}
   <div class="ch" style="margin-bottom:8px"><span class="num">2</span><h2>Inizio e quantità</h2></div>
   <div class="fields">
    <div class="fld"><label>Dall'etichetta n.</label><input type="number" id="sstart" min="1" value="1"></div>
-   <div class="fld tot"><label>Totale etichette</label><input type="number" id="tot" min="1" max="9999" value="1"></div>
-   <div class="fld full"><label>Margine <b id="mgv">0</b> mm</label><input type="range" id="mg" min="0" max="20" step="0.5" value="0"></div>
+   <div class="fld"><label>Totale etichette</label><input type="number" id="tot" min="1" max="9999" value="1"></div>
+   <div class="fld full">
+    <div class="mgh">
+     <label>Margine <b id="mgv">0</b> mm</label>
+     <button class="btn sm" id="mg0" type="button" title="Azzera margine"><svg class="i"><use href="#i-reset"/></svg></button>
+    </div>
+    <div class="rng"><input type="range" id="mg" min="-20" max="20" step="0.5" value="0"></div>
+    <div class="rngl"><span><svg class="i"><use href="#i-shrink"/></svg> riduci</span><span>ingrandisci <svg class="i"><use href="#i-grow"/></svg></span></div>
+   </div>
   </div>
   <p class="hint" id="shint" hidden></p>
   <details class="pick">
-   <summary>Avanzate</summary>
+   <summary><svg class="i chev"><use href="#i-right"/></svg>Avanzate</summary>
    <div class="fields" style="margin-top:10px">
     <div class="fld full"><label class="ck" style="height:38px"><input type="checkbox" id="oc"> Contorno</label></div>
     <div class="fld"><label>Spostamento X (mm)</label><input type="number" id="ox" value="0" step="0.1"></div>
@@ -195,12 +238,12 @@ details.pick[open] summary::before{transform:rotate(90deg)}
   <div class="ch"><span class="num">3</span><h2>Conversione</h2><span class="sp"></span><span id="fcnt" style="color:var(--m2);font-size:12px"></span></div>
   <div class="fmt">
    <div><div class="lb">Dal PDF</div><div class="code" id="fcode"></div></div>
-   <div class="arr">→</div>
+   <div class="arr"><svg class="i"><use href="#i-arrow"/></svg></div>
    <div><div class="lb">Sul foglio</div><div class="code" id="tcode"></div></div>
   </div>
   <div class="fdesc" id="fdesc"></div>
   <details class="pick" id="pick">
-   <summary>Converti in un altro formato</summary>
+   <summary><svg class="i chev"><use href="#i-right"/></svg>Converti in un altro formato</summary>
    <div style="margin-top:10px">
     <input type="search" class="inp" id="q" placeholder="Cerca: A455, C519, 99x93…">
     <div class="chips" id="chips"></div>
@@ -215,8 +258,8 @@ details.pick[open] summary::before{transform:rotate(90deg)}
    <div class="big"><b id="sTot">0</b><span>etichette</span></div>
    <div class="sub" id="sSub">Carica un PDF per iniziare</div>
    <div class="row2">
-    <button class="btn pri" id="dl" disabled>⬇ Scarica PDF</button>
-    <button class="btn" id="pr" disabled>🖨 Stampa</button>
+    <button class="btn pri" id="dl" disabled><svg class="i"><use href="#i-down"/></svg>Scarica PDF</button>
+    <button class="btn" id="pr" disabled><svg class="i"><use href="#i-print"/></svg>Stampa</button>
    </div>
   </div>
  </div>
@@ -225,10 +268,10 @@ details.pick[open] summary::before{transform:rotate(90deg)}
 <main class="stage">
  <div class="empty" id="empty">
   <div class="box" id="drop2">
-   <div class="em">🏷️</div>
+   <div class="em"><svg class="i"><use href="#i-tag"/></svg></div>
    <h2>Trascina qui il PDF con le etichette</h2>
    <p>oppure clicca per scegliere il file</p>
-   <button class="btn pri" type="button">Scegli PDF</button>
+   <button class="btn pri" type="button"><svg class="i"><use href="#i-up"/></svg>Scegli PDF</button>
    <div class="steps"><span>1 · Carica</span><span>2 · Inizio + totale</span><span>3 · Conversione</span><span>4 · Stampa</span></div>
   </div>
  </div>
@@ -241,13 +284,21 @@ details.pick[open] summary::before{transform:rotate(90deg)}
    </div>
    <div class="pane">
     <div class="pl"><span>Dopo · <b id="l2"></b></span>
-     <span class="nav"><button class="btn sm" id="pv" type="button">◀</button><span id="pn"></span><button class="btn sm" id="nx" type="button">▶</button></span></div>
+     <span class="nav"><button class="btn sm" id="pv" type="button"><svg class="i"><use href="#i-left"/></svg></button><span id="pn"></span><button class="btn sm" id="nx" type="button"><svg class="i"><use href="#i-right"/></svg></button></span></div>
     <div class="pbox" id="b2"><div class="sheet" id="sh2"></div></div>
    </div>
   </div>
  </div>
 </main>
 </div>
+
+<!-- anteprima etichetta singola (margine) -->
+<div class="mgp" id="mgPrev" aria-hidden="true">
+ <div class="t">Anteprima etichetta · <b id="mgpT"></b></div>
+ <canvas id="mgc"></canvas>
+ <div class="s" id="mgpS"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -260,17 +311,23 @@ const D=F.map(a=>{const[code,W,H,fmt,SW,SH,c,r,ml,mt,gh,gv,rad,ci]=a;return{code
 const $=id=>document.getElementById(id);
 let cur=D.find(d=>d.code==='A455')||D[0],tgt=null,fam='*',txt='',S=null;
 const TG=()=>tgt||cur;
+const WARN='<svg class="i"><use href="#i-alert"/></svg> ';
+const OKI='<svg class="i"><use href="#i-check"/></svg> ';
+
+/* margine: lo slider va da -20 a +20 (0 al centro).
+   Verso destra = ingrandisce (margine negativo), verso sinistra = riduce (margine positivo). */
+const mval=()=>-(parseFloat($('mg').value)||0);
 
 /* adatta l'etichetta sorgente a quella di destinazione.
    Se la destinazione è tonda e la sorgente no, il rettangolo deve stare
    interamente nel cerchio: la sua diagonale non può superare il diametro. */
 function fit(d,t){
- const m=Math.max(0,parseFloat($('mg').value)||0);
+ const m=mval();
  let sc=Math.min((t.W-2*m)/d.W,(t.H-2*m)/d.H);
  if(t.ci&&!d.ci)sc=Math.min(sc,(Math.min(t.W,t.H)-2*m)/Math.hypot(d.W,d.H));
  sc=Math.max(0.01,sc);
  const w=d.W*sc,h=d.H*sc;
- return{x:(t.W-w)/2,y:(t.H-h)/2,w,h}}
+ return{x:(t.W-w)/2,y:(t.H-h)/2,w,h,sc}}
 const nf=v=>+(+v).toFixed(2);
 const off=()=>[parseFloat($('ox').value)||0,parseFloat($('oy').value)||0];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -281,7 +338,12 @@ function cells(d,ox=0,oy=0){const o=[];for(let j=0;j<d.r;j++)for(let i=0;i<d.c;i
 function save(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function printBlob(b){const u=URL.createObjectURL(b),fr=document.createElement('iframe');fr.style.cssText='position:fixed;width:0;height:0;border:0';fr.src=u;fr.onload=()=>{try{fr.contentWindow.focus();fr.contentWindow.print()}catch(e){window.open(u)}};document.body.appendChild(fr);setTimeout(()=>fr.remove(),60000)}
 
-/* nome del file scaricato: stesso nome del PDF iniziale, cu formatul nou */
+/* forma dell'etichetta sul canvas (rettangolo con angoli arrotondati) */
+function shape(x,px,py,w,h,r){
+ x.beginPath();r=Math.min(r,w/2,h/2);
+ if(r>0&&x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h)}
+
+/* nome del file scaricato: stesso nome del PDF iniziale, con il nuovo formato */
 function outName(){
  if(!tgt)return S.base+'.pdf';
  const nc=tgt.code,esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -307,7 +369,8 @@ function refine(code,W,H){
 
 /* ---------- selezione / sequenza ----------
    S.cp[i]:  1 = etichetta attiva
-             0 = posizione vuota già nel PDF (viene saltata)
+             0 = non usata (posizione vuota già nel PDF, oppure esclusa
+                 automaticamente perché il formato nuovo ha meno etichette) → viene saltata
             -1 = esclusa dall'utente: resta VUOTA al suo posto, le altre non si spostano
    Le etichette prima di "inizia dall'etichetta n." non vengono usate. */
 function baseList(){
@@ -320,11 +383,19 @@ function seqList(){
  if(!b.some(x=>x!==null))return a;
  for(let k=0;k<T;k++)a.push(b[k%b.length]);
  return a}
-function syncTotal(){
+/* all'inizio / al cambio formato: se il formato nuovo ha meno etichette,
+   le ultime etichette attive del PDF vengono escluse automaticamente */
+function applyAuto(){
+ S.cp=S.emp.map(e=>e?0:1);
  if(tgt){
-  const mx=Math.max(1,TG().n-(S.start-1)); /* o singură pagină */
-  if(S.totAuto||S.total>mx)S.total=mx;
- }else if(S.totAuto)S.total=baseList().length;
+  const cap=Math.max(1,tgt.n-(S.start-1));
+  let k=0;
+  S.cp.forEach((v,i)=>{if(v!==1||i<S.start-1)return;if(++k>cap)S.cp[i]=0})}}
+/* il totale automatico = etichette del formato nuovo; se l'utente scrive un numero, resta quello */
+function syncTotal(){
+ if(S.totAuto){
+  if(tgt)S.total=Math.max(1,TG().n-(S.start-1));
+  else S.total=baseList().length}
  $('tot').value=S.total||''}
 
 /* ---------- PDF ---------- */
@@ -341,8 +412,7 @@ function isEmpty(i){
 function setupCells(){
  S.cells=cells(cur);
  S.emp=S.cells.map((_,i)=>isEmpty(i));
- S.cp=S.emp.map(e=>e?0:1);
- resetStart();syncTotal()}
+ resetStart();applyAuto();syncTotal()}
 function resetStart(){
  if(S){S.start=1;S.rp=0}
  $('sstart').value=1;$('sstart').max=TG().n}
@@ -373,12 +443,15 @@ function notes(){
  const mism=Math.abs(S.W-sw)>6||Math.abs(S.H-sh)>6;
  const selHtml=`<select id="srcSel" class="inp" style="width:auto;display:inline-block;margin-left:8px;padding:4px 8px">${D.map(x=>`<option value="${x.code}"${x.code===d.code?' selected':''}>${x.code}</option>`).join('')}</select>`;
  if(!S.code)a.push(['','Codice del formato non trovato nel nome del file. Scegli il formato del PDF:'+selHtml]);
- else if(mism)a.push(['','⚠ Il foglio nel PDF ('+nf(S.W/MM)+'×'+nf(S.H/MM)+' mm) non corrisponde al formato '+d.code+' ('+nf(d.SW)+'×'+nf(d.SH)+' mm). Scegli un altro formato:'+selHtml]);
- if(!S.code&&mism)a.push(['','⚠ Il foglio nel PDF ('+nf(S.W/MM)+'×'+nf(S.H/MM)+' mm) non corrisponde al formato '+d.code+' ('+nf(d.SW)+'×'+nf(d.SH)+' mm).']);
+ else if(mism)a.push(['',WARN+'Il foglio nel PDF ('+nf(S.W/MM)+'×'+nf(S.H/MM)+' mm) non corrisponde al formato '+d.code+' ('+nf(d.SW)+'×'+nf(d.SH)+' mm). Scegli un altro formato:'+selHtml]);
+ if(!S.code&&mism)a.push(['',WARN+'Il foglio nel PDF ('+nf(S.W/MM)+'×'+nf(S.H/MM)+' mm) non corrisponde al formato '+d.code+' ('+nf(d.SW)+'×'+nf(d.SH)+' mm).']);
  if(S.pages>1)a.push(['','Il PDF ha '+S.pages+' pagine; viene usata solo la prima.']);
  if(S.rot)a.push(['','La pagina del PDF è ruotata ('+S.rot+'°); il risultato potrebbe risultare spostato.']);
+ if(tgt){
+  const ex=S.cp.filter((v,i)=>v===0&&!S.emp[i]).length;
+  if(ex>0)a.push(['ok',OKI+ex+(ex===1?' etichetta esclusa automaticamente':' etichette escluse automaticamente')+': '+t.code+' ne ha '+t.n+' per foglio.'])}
  const ov=[];if(t.mr<-0.01)ov.push('a destra '+nf(-t.mr)+' mm');if(t.mb<-0.01)ov.push('in basso '+nf(-t.mb)+' mm');
- if(ov.length)a.push(['','⚠ Come nel PDF originale, la griglia esce dal foglio: '+ov.join(', ')+'.']);
+ if(ov.length)a.push(['',WARN+'Come nel PDF originale, la griglia esce dal foglio: '+ov.join(', ')+'.']);
  return a.map(([c,x])=>`<div class="note ${c}">${x}</div>`).join('')}
 
 /* ---------- anteprima ---------- */
@@ -405,24 +478,26 @@ function drawRes(){
  const d=cur,t=TG(),[ox,oy]=off(),seq=seqList(),n=t.n,st=S.start-1,oc=$('oc').checked;
  const pages=Math.max(1,Math.ceil((st+seq.length)/n));
  S.rp=clamp(S.rp,0,pages-1);
- const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,k2=MM*P,fb=fit(d,t);
+ const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,k2=MM*P,fb=fit(d,t),clipOn=mval()<0;
  const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
  const k0=Math.max(0,pg*n-st),k1=Math.min(seq.length,(pg+1)*n-st);
  for(let k=k0;k<k1;k++){
   if(seq[k]===null)continue; /* posizione lasciata vuota */
   const pos=st+k,p=T[pos%n],s=S.cells[seq[k]];
+  if(clipOn){x.save();shape(x,p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,t.rad*k2);x.clip()}
   x.drawImage(S.cv,s[0]*sxm*P,s[1]*sym*P,d.W*sxm*P,d.H*sym*P,(p[0]+fb.x)*k2,(p[1]+fb.y)*k2,fb.w*k2,fb.h*k2);
+  if(clipOn)x.restore();
   if(oc){x.lineWidth=1;x.strokeStyle='#000';
    const r=Math.min(t.rad*k2,t.W*k2/2,t.H*k2/2);
    if(r>0&&x.roundRect){x.beginPath();x.roundRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,r);x.stroke()}
    else x.strokeRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2)}}
- /* bordi guida (solo nell'anteprima, non vengono stampati) */
+ /* bordi guida (solo nell'anteprima, non vengono stampati): neri per le etichette usate */
  {const r=Math.min(t.rad*k2,t.W*k2/2,t.H*k2/2);
   x.save();x.lineWidth=2;
   T.forEach((p,j)=>{
    const pos=pg*n+j,used=pos>=st&&pos<st+seq.length&&seq[pos-st]!==null;
-   x.strokeStyle=used?'#e8860f':'#8a8fa8';x.setLineDash(used?[]:[8,6]);
+   x.strokeStyle=used?'#000':'#8a8fa8';x.setLineDash(used?[]:[8,6]);
    if(r>0&&x.roundRect){x.beginPath();x.roundRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,r);x.stroke()}
    else x.strokeRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2)});
   x.restore()}
@@ -439,6 +514,43 @@ function updSummary(){
  $('dl').disabled=$('pr').disabled=real===0}
 function refreshRes(){drawRes();updSummary()}
 
+/* ---------- anteprima singola etichetta (durante il trascinamento del margine) ---------- */
+let mgDown=false,mgT=0;
+function drawMg(){
+ const d=cur,t=TG(),seq=seqList();
+ let idx=seq.find(v=>v!==null);
+ if(idx===undefined){idx=S.cp.findIndex(v=>v===1);if(idx<0)idx=S.cp.findIndex((v,i)=>!S.emp[i]);if(idx<0)idx=0}
+ const fb=fit(d,t),m=mval(),sxm=S.W/d.SW,sym=S.H/d.SH,s=S.cells[idx];
+ const pad=Math.max(4,Math.min(t.W,t.H)*0.18);
+ const k=Math.min(10,340/(t.W+2*pad),250/(t.H+2*pad));
+ const cw=Math.round((t.W+2*pad)*k),ch=Math.round((t.H+2*pad)*k),dpr=window.devicePixelRatio||1;
+ const c=$('mgc');c.width=Math.round(cw*dpr);c.height=Math.round(ch*dpr);c.style.width=cw+'px';c.style.height=ch+'px';
+ const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,cw,ch);
+ const ox0=pad*k,oy0=pad*k,lw=t.W*k,lh=t.H*k,rr=t.rad*k;
+ const dx=ox0+fb.x*k,dy=oy0+fb.y*k,dw=fb.w*k,dh=fb.h*k;
+ const sr=[s[0]*sxm*P,s[1]*sym*P,d.W*sxm*P,d.H*sym*P];
+ x.imageSmoothingQuality='high';
+ if(m<0){x.save();x.globalAlpha=.3;x.drawImage(S.cv,sr[0],sr[1],sr[2],sr[3],dx,dy,dw,dh);x.restore()} /* parte tagliata, in grigio */
+ x.save();shape(x,ox0,oy0,lw,lh,rr);x.clip();
+ x.fillStyle='#fff';x.fillRect(ox0,oy0,lw,lh);
+ x.drawImage(S.cv,sr[0],sr[1],sr[2],sr[3],dx,dy,dw,dh);
+ x.restore();
+ /* bordo nero con alone bianco, per vederlo anche sullo sfondo scuro */
+ shape(x,ox0,oy0,lw,lh,rr);x.lineWidth=5;x.strokeStyle='rgba(255,255,255,.85)';x.stroke();
+ shape(x,ox0,oy0,lw,lh,rr);x.lineWidth=1.5;x.strokeStyle='#000';x.stroke();
+ $('mgpT').textContent=t.code+' · etichetta '+(idx+1);
+ $('mgpS').textContent='Margine '+nf(m)+' mm · contenuto '+Math.round(fb.sc*100)+'%'+(m<0?' · in grigio: parte tagliata':'')}
+function hideMg(){$('mgPrev').classList.remove('show')}
+function showMg(){
+ if(!S)return;
+ drawMg();
+ const p=$('mgPrev'),st=document.querySelector('.stage').getBoundingClientRect();
+ if(window.innerWidth>1000){p.style.left=(st.left+st.width/2)+'px';p.style.top=(st.top+st.height/2)+'px'}
+ else{p.style.left='50%';p.style.top='50%'}
+ p.classList.add('show');
+ clearTimeout(mgT);
+ if(!mgDown)mgT=setTimeout(hideMg,900)}
+
 /* ---------- generazione PDF ---------- */
 function outline(pg,t,d,osh){
  const w=d.W*MM,h=d.H*MM,r=Math.min(d.rad*MM,w/2,h/2),q=v=>v.toFixed(3);
@@ -446,11 +558,22 @@ function outline(pg,t,d,osh){
  if(r<=0)p=`M 0 0 H ${q(w)} V ${q(h)} H 0 Z`;
  else p=`M ${q(r)} 0 H ${q(w-r)} A ${q(r)} ${q(r)} 0 0 1 ${q(w)} ${q(r)} V ${q(h-r)} A ${q(r)} ${q(r)} 0 0 1 ${q(w-r)} ${q(h)} H ${q(r)} A ${q(r)} ${q(r)} 0 0 1 0 ${q(h-r)} V ${q(r)} A ${q(r)} ${q(r)} 0 0 1 ${q(r)} 0 Z`;
  pg.drawSvgPath(p,{x:t[0]*MM,y:osh-t[1]*MM,borderColor:PDFLib.rgb(0,0,0),borderWidth:0.5})}
+/* ritaglio alla forma dell'etichetta (serve quando il contenuto è ingrandito oltre il bordo) */
+function clipOps(x,y,w,h,r){
+ const L=PDFLib,o=[L.pushGraphicsState()];
+ if(r<=0)o.push(L.moveTo(x,y),L.lineTo(x+w,y),L.lineTo(x+w,y+h),L.lineTo(x,y+h),L.closePath());
+ else{const k=r*0.5523;
+  o.push(L.moveTo(x+r,y),L.lineTo(x+w-r,y),L.appendBezierCurve(x+w-r+k,y,x+w,y+r-k,x+w,y+r),
+   L.lineTo(x+w,y+h-r),L.appendBezierCurve(x+w,y+h-r+k,x+w-r+k,y+h,x+w-r,y+h),
+   L.lineTo(x+r,y+h),L.appendBezierCurve(x+r-k,y+h,x,y+h-r+k,x,y+h-r),
+   L.lineTo(x,y+r),L.appendBezierCurve(x,y+r-k,x+r-k,y,x+r,y),L.closePath())}
+ o.push(L.clip(),L.endPath());return o}
 async function buildResult(){
  if(!window.PDFLib)throw new Error('La libreria pdf-lib non è stata caricata. Controlla la connessione a internet.');
  const seq=seqList();
  if(!seq.some(v=>v!==null))throw new Error('Seleziona almeno un\'etichetta.');
- const{PDFDocument}=PDFLib,d=cur,t=TG(),[ox,oy]=off(),fb=fit(d,t);
+ const L=PDFLib,{PDFDocument}=L,d=cur,t=TG(),[ox,oy]=off(),fb=fit(d,t);
+ const canClip=mval()<0&&['pushGraphicsState','popGraphicsState','moveTo','lineTo','appendBezierCurve','closePath','clip','endPath'].every(k=>typeof L[k]==='function');
  const src=await PDFDocument.load(S.bytes,{ignoreEncryption:true});
  const sp=src.getPage(0),sz=sp.getSize(),pw=sz.width,ph=sz.height;
  const sxm=pw/d.SW,sym=ph/d.SH;
@@ -464,7 +587,11 @@ async function buildResult(){
   if(i===null)continue; /* posizione lasciata vuota */
   const pos=st+k,pg=pgs[Math.floor(pos/n)],p=T[pos%n],s=S.cells[i];
   if(!emb[i])emb[i]=await out.embedPage(sp,{left:s[0]*sxm,right:(s[0]+d.W)*sxm,bottom:ph-(s[1]+d.H)*sym,top:ph-s[1]*sym});
+  if(canClip){
+   const w=t.W*MM,h=t.H*MM;
+   pg.pushOperators(...clipOps(p[0]*MM,osh-(p[1]+t.H)*MM,w,h,Math.min(t.rad*MM,w/2,h/2)))}
   pg.drawPage(emb[i],{x:(p[0]+fb.x)*MM,y:osh-(p[1]+fb.y+fb.h)*MM,width:fb.w*MM,height:fb.h*MM});
+  if(canClip)pg.pushOperators(L.popGraphicsState());
   if($('oc').checked)outline(pg,p,t,osh)}
  return new Blob([await out.save()],{type:'application/pdf'})}
 
@@ -496,7 +623,7 @@ function buildList(){
  $('list').querySelectorAll('.it').forEach(b=>b.onclick=()=>{
   const x=D.find(d=>d.code===b.dataset.c);
   tgt=x===cur?null:x;
-  if(S){resetStart();S.totAuto=true;S.rp=0;syncTotal()}
+  if(S){resetStart();S.totAuto=true;S.rp=0;applyAuto();syncTotal()}
   render()});
  document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===TG().code))}
 
@@ -505,8 +632,19 @@ $('chips').innerHTML=[['*','Tutti'],['A','A'],['C','C'],['R','Rotonde']].map(([k
 $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fam=b.dataset.k;$('chips').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));buildList()});
 $('q').oninput=e=>{txt=e.target.value;buildList()};
 ['ox','oy'].forEach(i=>$(i).oninput=()=>{if(S)drawRes()});
-$('mg').oninput=()=>{$('mgv').textContent=nf($('mg').value);if(S)drawRes()};
 $('oc').onchange=()=>{if(S)drawRes()};
+
+/* margine con anteprima singola etichetta */
+$('mg').oninput=()=>{$('mgv').textContent=nf(mval());if(S){drawRes();showMg()}};
+$('mg').addEventListener('pointerdown',()=>{mgDown=true;clearTimeout(mgT);showMg()});
+['pointerup','pointercancel'].forEach(ev=>window.addEventListener(ev,()=>{if(mgDown){mgDown=false;clearTimeout(mgT);mgT=setTimeout(hideMg,250)}}));
+$('mg0').onclick=()=>{$('mg').value=0;$('mg').oninput()};
+
+/* i campi numerici si selezionano tutti al click: scrivendo si sostituisce il valore */
+['sstart','tot','ox','oy'].forEach(id=>{
+ const el=$(id);
+ el.addEventListener('focus',()=>setTimeout(()=>el.select(),0));
+ el.addEventListener('mouseup',e=>{if(document.activeElement===el&&el.selectionStart===0&&el.selectionEnd===el.value.length)e.preventDefault()})});
 
 /* selezione manuale del formato del PDF (solo se non rilevato o non coincide) */
 $('notes').addEventListener('change',e=>{
@@ -524,7 +662,20 @@ $('file').onchange=e=>{const fl=e.target.files[0];if(fl)loadPDF(fl);e.target.val
 ['dragover','dragenter'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('over');$('drop2').classList.add('over')}));
 ['dragleave','drop'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over');$('drop2').classList.remove('over')}));
 window.addEventListener('drop',e=>{const fl=e.dataTransfer&&e.dataTransfer.files[0];if(fl)loadPDF(fl)});
-$('clr').onclick=()=>{S=null;render()};
+$('clr').onclick=()=>{
+ S=null;tgt=null;fam='*';txt='';
+ cur=D.find(d=>d.code==='A455')||D[0];
+ $('q').value='';
+ $('chips').querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0));
+ $('mg').value=0;$('mgv').textContent='0';
+ $('ox').value=0;$('oy').value=0;
+ $('oc').checked=false;
+ $('sstart').value=1;$('sstart').max='';
+ $('tot').value=1;
+ $('pick').open=false;
+ hideMg();
+ buildList();render()};
+
 window.addEventListener('resize',fitSheets);
 if(window.ResizeObserver)new ResizeObserver(fitSheets).observe(document.querySelector('.stage'));
 
@@ -534,14 +685,13 @@ $('sh1').onclick=e=>{
  const c=e.target.closest('.cell');if(!c)return;
  const i=+c.dataset.i;
  S.cp[i]=S.cp[i]===1?(S.emp[i]?0:-1):1;
- syncTotal();updCells();refreshRes()};
+ syncTotal();updCells();refreshRes();$('notes').innerHTML=notes()};
 
-/* totale etichette */
+/* totale etichette: qualsiasi numero, anche con la conversione (anche più fogli) */
 $('tot').oninput=()=>{
  if(!S)return;
  S.totAuto=false;
- const mx=tgt?Math.max(1,TG().n-(S.start-1)):9999;
- S.total=clamp(parseInt($('tot').value)||0,0,mx);
+ S.total=clamp(parseInt($('tot').value)||0,0,9999);
  S.rp=0;refreshRes()};
 
 /* etichetta di partenza */
