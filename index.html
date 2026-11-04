@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fotocopia etichette</title>
+<style>
+:root{
+ --bg:#080a12;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.075);
+ --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
+ --t:#eef0f8;--m:#8d93ad;--m2:#636a86;
+ --a:#ffb35c;--a2:#ff5d8f;--ok:#4ade9a;--bad:#ff6b81;
+ --grad:linear-gradient(135deg,var(--a),var(--a2));
+ --r:16px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;color:var(--t);font:14px/1.45 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ background:
+  radial-gradient(1000px 700px at -5% -10%,rgba(124,92,255,.28),transparent 60%),
+  radial-gradient(900px 650px at 105% 0%,rgba(255,93,143,.20),transparent 60%),
+  radial-gradient(800px 600px at 50% 120%,rgba(255,179,92,.12),transparent 60%),
+  var(--bg);
+ background-attachment:fixed;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+select option{background:#1d1830;color:#eef0f8}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
+
+.app{height:100vh;display:grid;grid-template-columns:340px 1fr;gap:14px;padding:14px;max-width:1900px;margin:auto}
+.side{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding-right:4px}
+.stage{display:flex;flex-direction:column;min-height:0;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+
+.brand{display:flex;align-items:center;gap:12px;padding:2px 4px}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;font-size:21px;box-shadow:0 8px 24px rgba(255,93,143,.35)}
+.brand h1{margin:0;font-size:18px}
+.brand p{margin:0;color:var(--m);font-size:12px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.num{width:22px;height:22px;border-radius:50%;background:var(--grad);color:#1b1020;font-weight:800;font-size:12px;display:grid;place-items:center;flex:none}
+.ch h2{margin:0;font-size:12.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--m);font-weight:700}
+.ch .sp{flex:1}
+
+.btn{padding:9px 14px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);color:var(--t);transition:.15s;white-space:nowrap}
+.btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28)}
+.btn:active{transform:scale(.97)}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:9px}
+.btn.pri{background:var(--grad);border-color:transparent;color:#1b1020;font-weight:800;box-shadow:0 8px 24px rgba(255,93,143,.28)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.35;pointer-events:none}
+.row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.drop{border:1.5px dashed var(--line2);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:.18s;background:rgba(255,255,255,.02)}
+.drop:hover,.drop.over{border-color:var(--a);background:rgba(255,179,92,.07)}
+.drop .ic{font-size:26px;line-height:1}
+.drop b{display:block;margin-top:4px}
+.drop span{color:var(--m);font-size:12.5px}
+.file{display:flex;align-items:center;gap:11px}
+.file .pi{width:34px;height:42px;border-radius:7px;background:linear-gradient(160deg,#fff,#d9dcea);color:#c0264b;font-weight:900;font-size:10px;display:grid;place-items:end center;padding-bottom:5px;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.file .nm{min-width:0;flex:1}
+.file .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file .nm span{color:var(--m);font-size:12px}
+
+.fmt{display:flex;align-items:center;gap:12px}
+.code{font-size:21px;font-weight:900;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.5px}
+.fmt .lb{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--m2);margin-bottom:2px}
+.fmt .arr{font-size:22px;color:var(--m);padding-top:14px}
+.fdesc{color:var(--m);font-size:12px;line-height:1.5;margin-top:8px}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(74,222,154,.15);color:var(--ok);margin-left:6px;vertical-align:2px}
+.tag.man{background:rgba(255,107,129,.15);color:var(--bad)}
+details.pick{margin-top:10px}
+details.pick summary{cursor:pointer;color:var(--a);font-weight:600;font-size:13px;list-style:none;user-select:none}
+details.pick summary::-webkit-details-marker{display:none}
+details.pick summary::before{content:"▸ ";transition:.15s;display:inline-block}
+details.pick[open] summary::before{transform:rotate(90deg)}
+.inp{width:100%;padding:8px 12px;border-radius:11px;border:1px solid var(--line2);background:rgba(0,0,0,.28);color:var(--t);outline:none;transition:.15s}
+.inp:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(255,179,92,.15)}
+.chips{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}
+.chip{padding:4px 12px;border-radius:99px;border:1px solid var(--line2);background:transparent;color:var(--m);font-size:12.5px}
+.chip.on{background:var(--grad);color:#1b1020;font-weight:700;border-color:transparent}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;max-height:200px;overflow:auto;padding-right:3px}
+.it{padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.035);text-align:left;transition:.12s}
+.it:hover{border-color:var(--line2)}
+.it b{display:block;font-size:13px}.it small{color:var(--m);font-size:11px}
+.it.on{border-color:var(--a);background:rgba(255,179,92,.12);box-shadow:0 0 0 1px var(--a) inset}
+
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fld label{display:block;font-size:11.5px;color:var(--m);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px}
+.fld label b{color:var(--a)}
+.fld input{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--line2);background:rgba(0,0,0,.28);outline:none;text-align:center;font-weight:700;font-size:16px}
+.fld input:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(255,179,92,.15)}
+.fld input[type=range]{padding:0;border:0;background:none;height:26px;accent-color:var(--a2);box-shadow:none}
+.fld.full{grid-column:1/-1}
+.fld.tot input{font-size:22px;padding:9px 10px}
+.ck{display:flex;gap:9px;align-items:center;color:var(--m);font-size:13.5px;cursor:pointer;user-select:none}
+.ck input{accent-color:var(--a2);width:16px;height:16px}
+.card{transition:opacity .2s}
+.hint{color:var(--m2);font-size:12px;margin:8px 0 0}
+
+.sum{margin-top:auto;position:sticky;bottom:0;padding-top:8px;background:linear-gradient(to bottom,transparent,var(--bg) 14px);z-index:5}
+.sum .card{background:rgba(20,22,40,.92);box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+.sum details.pick[open] .fields{max-height:30vh;overflow:auto}
+.sumc{background:rgba(20,22,40,.92);border:1px solid var(--line2);border-radius:var(--r);padding:12px;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+.big{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.big b{font-size:30px;font-weight:900;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.big span{color:var(--m)}
+.sumc .sub{color:var(--m);font-size:12.5px;margin-bottom:10px}
+.sumc .row2 .btn{flex:1;padding:11px}
+
+/* anteprima: due fogli affiancati, completamente inquadrati */
+.pv{display:flex;flex-direction:column;flex:1;min-height:0}
+.notes{padding:0 16px;flex:none}
+.note{margin-top:10px;padding:7px 12px;border-radius:11px;font-size:12.5px;background:rgba(255,107,129,.12);border:1px solid rgba(255,107,129,.45)}
+.note.ok{background:rgba(74,222,154,.1);border-color:rgba(74,222,154,.4)}
+.panes{flex:1;min-height:0;display:flex;gap:14px;padding:12px 16px 16px}
+.pane{flex:1;min-width:0;display:flex;flex-direction:column}
+.pl{display:flex;align-items:center;justify-content:space-between;gap:8px;height:32px;flex:none;color:var(--m);font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.pl b{color:var(--t)}
+.pl .nav{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0}
+.pbox{flex:1;min-height:0;display:grid;place-items:center;border-radius:14px;overflow:hidden;
+ background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;background-color:rgba(0,0,0,.25)}
+.sheet{position:relative}
+.sheet>canvas{display:block;width:100%;height:100%;background:#fff;border-radius:3px;box-shadow:0 20px 60px rgba(0,0,0,.65)}
+
+.cell{position:absolute;border:1.5px solid rgba(255,179,92,0);cursor:pointer;transition:background .12s,border-color .12s;border-radius:2px}
+.cell::after{content:"";position:absolute;inset:0;pointer-events:none}
+.cell.on{border-color:#e8860f;background:rgba(255,179,92,.22)}
+.cell.on:hover{background:rgba(255,179,92,.34)}
+.cell.off{background:#fff;border-color:rgba(255,107,129,.7);border-style:dashed}
+.cell.off:hover{background:rgba(255,255,255,.55)}
+.cell.off::after{background:linear-gradient(to top right,transparent calc(50% - 1px),rgba(255,107,129,.8) calc(50% - 1px),rgba(255,107,129,.8) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(to bottom right,transparent calc(50% - 1px),rgba(255,107,129,.8) calc(50% - 1px),rgba(255,107,129,.8) calc(50% + 1px),transparent calc(50% + 1px))}
+.cell.em.off{background:repeating-linear-gradient(45deg,rgba(10,12,24,.55) 0 6px,rgba(10,12,24,.4) 6px 12px)}
+.cell.em.off:hover{background:rgba(255,255,255,.55)}
+.no{position:absolute;top:3px;left:3px;font:800 11px/1 system-ui,sans-serif;background:#12101c;color:var(--a);padding:3px 6px;border-radius:99px;pointer-events:none;z-index:2}
+.cell.on .no{background:var(--grad);color:#1b1020}
+
+.empty{flex:1;display:grid;place-items:center;padding:30px}
+.empty .box{max-width:520px;width:100%;text-align:center;border:2px dashed var(--line2);border-radius:26px;padding:56px 30px;transition:.18s;cursor:pointer;background:rgba(255,255,255,.02)}
+.empty .box:hover,.empty .box.over{border-color:var(--a);background:rgba(255,179,92,.06);transform:translateY(-2px)}
+.empty .em{font-size:60px;line-height:1;filter:drop-shadow(0 10px 20px rgba(255,93,143,.35))}
+.empty h2{margin:14px 0 6px;font-size:22px}
+.empty p{margin:0 0 20px;color:var(--m)}
+.steps{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+.steps span{font-size:12.5px;color:var(--m);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:5px 11px;border-radius:99px}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;background:#1d1830;border:1px solid var(--bad);padding:11px 18px;border-radius:13px;transition:.25s;z-index:99;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media(max-width:1000px){
+ body{overflow:auto}
+ .app{height:auto;grid-template-columns:1fr}
+ .side{overflow:visible}
+ .stage{min-height:70vh}
+ .panes{flex-direction:column}
+ .pane{height:75vh;flex:none}
+ .sum{position:static}
+}
+</style></head><body>
+<div class="app">
+
+<aside class="side">
+ <div class="brand"><div class="logo">🏷️</div><div><h1>Fotocopia etichette</h1><p>Carica il PDF, scegli, stampa</p></div></div>
+
+ <section class="card">
+  <div class="ch"><span class="num">1</span><h2>File PDF</h2></div>
+  <div class="drop" id="drop"><div class="ic">📄</div><b>Carica il PDF con le etichette</b><span>clicca qui o trascina il file</span></div>
+  <div class="file" id="fileCard" hidden>
+   <div class="pi">PDF</div>
+   <div class="nm"><b id="fname"></b><span id="fmeta"></span></div>
+   <button class="btn sm" id="clr" title="Rimuovi PDF">✕</button>
+  </div>
+  <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+ </section>
+
+ <section class="card" id="startCard">
+  <div class="ch" style="margin-bottom:8px"><span class="num">2</span><h2>Inizio e quantità</h2></div>
+  <div class="fields">
+   <div class="fld"><label>Dall'etichetta n.</label><input type="number" id="sstart" min="1" value="1"></div>
+   <div class="fld tot"><label>Totale etichette</label><input type="number" id="tot" min="1" max="9999" value="1"></div>
+   <div class="fld full"><label>Margine <b id="mgv">0</b> mm</label><input type="range" id="mg" min="0" max="20" step="0.5" value="0"></div>
+  </div>
+  <p class="hint" id="shint" hidden></p>
+  <details class="pick">
+   <summary>Avanzate</summary>
+   <div class="fields" style="margin-top:10px">
+    <div class="fld full"><label class="ck" style="height:38px"><input type="checkbox" id="oc"> Contorno</label></div>
+    <div class="fld"><label>Spostamento X (mm)</label><input type="number" id="ox" value="0" step="0.1"></div>
+    <div class="fld"><label>Spostamento Y (mm)</label><input type="number" id="oy" value="0" step="0.1"></div>
+   </div>
+  </details>
+ </section>
+
+ <section class="card" id="convCard">
+  <div class="ch"><span class="num">3</span><h2>Conversione</h2><span class="sp"></span><span id="fcnt" style="color:var(--m2);font-size:12px"></span></div>
+  <div class="fmt">
+   <div><div class="lb">Dal PDF</div><div class="code" id="fcode"></div></div>
+   <div class="arr">→</div>
+   <div><div class="lb">Sul foglio</div><div class="code" id="tcode"></div></div>
+  </div>
+  <div class="fdesc" id="fdesc"></div>
+  <details class="pick" id="pick">
+   <summary>Converti in un altro formato</summary>
+   <div style="margin-top:10px">
+    <input type="search" class="inp" id="q" placeholder="Cerca: A455, C519, 99x93…">
+    <div class="chips" id="chips"></div>
+    <div class="list" id="list"></div>
+   </div>
+  </details>
+ </section>
+
+
+ <div class="sum">
+  <div class="sumc">
+   <div class="big"><b id="sTot">0</b><span>etichette</span></div>
+   <div class="sub" id="sSub">Carica un PDF per iniziare</div>
+   <div class="row2">
+    <button class="btn pri" id="dl" disabled>⬇ Scarica PDF</button>
+    <button class="btn" id="pr" disabled>🖨 Stampa</button>
+   </div>
+  </div>
+ </div>
+</aside>
+
+<main class="stage">
+ <div class="empty" id="empty">
+  <div class="box" id="drop2">
+   <div class="em">🏷️</div>
+   <h2>Trascina qui il PDF con le etichette</h2>
+   <p>oppure clicca per scegliere il file</p>
+   <button class="btn pri" type="button">Scegli PDF</button>
+   <div class="steps"><span>1 · Carica</span><span>2 · Inizio + totale</span><span>3 · Conversione</span><span>4 · Stampa</span></div>
+  </div>
+ </div>
+ <div id="stbar" class="pv" hidden>
+  <div class="notes" id="notes"></div>
+  <div class="panes">
+   <div class="pane">
+    <div class="pl"><span>Prima · <b id="l1"></b></span><span style="text-transform:none;letter-spacing:0;font-weight:500">clicca un'etichetta per lasciarla vuota</span></div>
+    <div class="pbox" id="b1"><div class="sheet" id="sh1"></div></div>
+   </div>
+   <div class="pane">
+    <div class="pl"><span>Dopo · <b id="l2"></b></span>
+     <span class="nav"><button class="btn sm" id="pv" type="button">◀</button><span id="pn"></span><button class="btn sm" id="nx" type="button">▶</button></span></div>
+    <div class="pbox" id="b2"><div class="sheet" id="sh2"></div></div>
+   </div>
+  </div>
+ </div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+const F=[["A400",38.1,21.2,"A4",210,297,5,13,4.7,10.7,2.5,0,2,0],["A400 Z",38.1,21.2,"A4",210,297,5,13,9.7,10.7,0,0,0,0],["A401",37,14,"A4",210,297,5,20,6.5,8.5,3,0,2,0],["A402",37.5,23.5,"A4",210,297,5,12,7.2,7.5,2,0,2,0],["A403",34,34,"A4",210,297,5,7,13,19,3.5,3.5,2,0],["A405",46,11,"A4",210,297,4,21,6,16,4.7,1.7,2,0],["A406",47.5,25.5,"A4",210,297,4,11,5.5,8.2,3,0,2,0],["A407",47.5,35,"A4",210,297,4,8,5.5,8.5,3,0,2,0],["A408",47.5,46.5,"A4",210,297,4,6,5.5,9,3,0,2,0],["A409",47.7,70,"A4",210,297,4,4,5.1,8.5,3,0,2,0],["A410",63.5,38.1,"A4",210,297,3,7,7.2,15.1,2.5,0,2,0],["A415",63.5,46.6,"A4",210,297,3,6,7.2,8.7,2.5,0,2,0],["A420",63.5,72,"A4",210,297,3,4,7.2,4.5,2.5,0,2,0],["A425",64,34,"A4",210,297,3,8,6.5,12.5,2.5,0,2,0],["A430",70,52,"A4",210,297,2,5,23.3,18.5,23.5,0,2,0],["A431",76.2,46.4,"A4",210,297,2,6,27.3,9.3,3,0,2,0],["A435",99.1,34,"A4",210,297,2,8,4.7,12.5,2.5,0,2,0],["A440",99.1,38.1,"A4",210,297,2,7,4.7,15.1,2.5,0,2,0],["A445",99.1,57,"A4",210,297,2,5,4.7,6,2.5,0,2,0],["A450",99.1,67.7,"A4",210,297,2,4,4.7,13.1,2.5,0,2,0],["A455",99.1,93.1,"A4",210,297,2,3,4.7,8.9,2.5,0,2,0],["A456",100,17,"A4",210,297,2,15,4,7,2,2,2,0],["A460",114,114,"A4",210,297,1,2,63,17,0,35,57,1],["A463",117.5,117.5,"A4",210,297,1,2,46.3,15.5,0,31,58.75,1],["A464",117.5,117.5,"A4",210,297,1,2,46.3,15.5,0,31,58.75,1],["A465",99.1,139,"A4",210,297,2,2,4.7,9.5,2.5,0,2,0],["A466",15,140,"A4",210,297,13,2,7.5,7,0,3,2,0],["A467",190,38,"A4",210,297,1,7,10,15.5,0,0,2,0],["A470",199.6,143.5,"A4",210,297,1,2,5.2,5,0,0,2,0],["A475",199.6,289.1,"A4",210,297,1,1,5.2,4,0,0,2,0],["C500",70,36,"A4",210,297,3,8,0,4.5,0,0,0,0],["C501",105,36,"A4",210,297,2,8,0,4.5,0,0,0,0],["C502",105,72,"A4",210,297,2,4,0,4.5,0,0,0,0],["C503",210,297,"A4",210,297,1,1,0,0,0,0,0,0],["C504",105,48,"A4",210,297,2,6,0,4.5,0,0,0,0],["C505",105,140,"A4",210,297,2,2,0,8.5,0,0,0,0],["C506",70,25,"A4",210,297,3,12,0,0,0,0,0,0],["C507",105,59,"A4",210,297,2,5,0,0,0,0,0,0],["C508",105,42,"A4",210,297,2,7,0,0,0,0,0,0],["C509",210,148,"A4",210,297,1,2,0,0,0,0,0,0],["C509 A3",210,148,"A3",297,420,1,1,0,0,0,0,0,0],["C510",70,37,"A4",210,297,3,8,0,0,0,0,0,0],["C511",105,37,"A4",210,297,2,8,0,0,0,0,0,0],["C512",105,74,"A4",210,297,2,4,0,0,0,0,0,0],["C513",52.5,29.7,"A4",210,297,4,10,0,0,0,0,0,0],["C514",70,297,"A4",210,297,3,1,0,0,0,0,0,0],["C515",70,72,"A4",210,297,3,4,0,4.5,0,0,0,0],["C516",40,297,"A4",210,297,5,1,5,0,0,0,0,0],["C517",70,48,"A4",210,297,3,6,0,4.5,0,0,0,0],["C518",70,40,"A4",210,297,3,7,0,8.5,0,0,0,0],["C519",105,148,"A4",210,297,2,2,0,0,0,0,0,0],["C519 A5",105,148,"A5",148,210,2,1,0,0,0,0,0,0],["C520",210,99,"A4",210,297,1,3,0,0,0,0,0,0],["C520 A3",210,99,"A3",297,420,1,1,0,0,0,0,0,0],["C521",70,42,"A4",210,297,3,7,0,0,0,0,0,0],["C522",35,59,"A4",210,297,6,5,0,0,0,0,0,0],["C523",70,41,"A4",210,297,3,7,0,5,0,0,0,0],["C524",56,28,"A4",210,297,3,9,11,10.5,10,3,2,0],["C525",210,37,"A4",210,297,1,8,0,0,0,0,0,0],["C526",35,23.5,"A4",210,297,6,12,0,7.5,0,0,0,0],["C527",210,25,"A4",210,297,1,12,0,0,0,0,0,0],["C528",145,17,"A4",210,297,1,16,32.5,12.5,0,0,2,0],["C529",210,48,"A4",210,297,1,6,0,4.5,0,0,0,0],["C530",48,25,"A4",210,297,4,12,9,0,0,0,0,0],["C531",48,30,"A4",210,297,4,10,9,0,0,0,0,0],["C532",16.3,35.4,"A4",210,297,12,8,7.2,6.9,0,0,0,0],["C535",190,61,"A4",210,297,1,4,10,26.5,0,0,2,0],["C536",103.5,36,"A4",210,297,2,8,0,4.5,3,0,2,0],["C537",67,10,"A4",210,297,3,28,4.5,8.5,0,0,0,0],["C539",210,128,"A4",210,297,1,2,0,20.5,0,0,0,0],["C540",105,99,"A4",210,297,2,3,0,0,0,0,0,0],["C542",70,148,"A4",210,297,3,2,0,0,0,0,0,0],["C543",52.5,37,"A4",210,297,4,8,0,0,0,0,0,0],["C544",52.5,72,"A4",210,297,4,4,0,4.5,0,0,0,0],["C546",105,40,"A4",210,297,2,7,0,8.5,0,0,0,0],["C547",105,25,"A4",210,297,2,12,0,0,0,0,0,0],["C548",45,29.7,"A4",210,297,4,10,15,0,0,0,0,0],["C549",70,35,"A4",210,297,3,8,0,8.5,0,0,0,0],["C550",210,280,"A4",210,297,1,1,0,8.5,0,0,0,0],["C551",45,23,"A4",210,297,4,11,10,12,3.3,2,2,0],["C552",66,33.9,"A4",210,297,3,8,6,13.1,0,0,0,0],["C553",48.5,25.4,"A4",210,297,4,10,8,21.5,0,0,0,0],["C554",70,38.1,"A4",210,297,3,7,0,15.1,0,0,0,0],["C555",52.5,21.2,"A4",210,297,4,14,0,0,0,0,0,0],["C556",52.5,25,"A4",210,297,4,12,0,0,0,0,0,0],["C557",70,29.7,"A4",210,297,3,10,0,0,0,0,0,0],["C558",105,35,"A4",210,297,2,8,0,8.5,0,0,0,0],["C560",210,72,"A4",210,297,1,4,0,4.5,0,0,0,0],["C562",48.5,16.5,"A4",210,297,4,17,8,8.2,0,0,0,0],["C564",210,74,"A4",210,297,1,4,0,0,0,0,0,0],["C565",105,29.7,"A4",210,297,2,10,0,0,0,0,0,0],["C566",210,140,"A4",210,297,1,2,0,8.5,0,0,0,0],["C567",210,29.7,"A4",210,297,1,10,0,0,0,0,0,0],["C568",42,25,"A4",210,297,5,12,0,0,0,0,0,0],["C570",70,16.9,"A4",210,297,3,17,0,4.8,0,0,0,0],["C571",52.5,16.9,"A4",210,297,4,17,0,4.8,0,0,0,0],["C572",105,16.9,"A4",210,297,2,17,0,4.8,0,0,0,0],["C573",210,16.9,"A4",210,297,1,17,0,4.8,0,0,0,0],["C574",210,59,"A4",210,297,1,5,0,0,0,0,0,0],["C575",101,36,"A4",210,297,2,8,4,4.5,0,0,0,0],["C576",101,48,"A4",210,297,2,6,4,4.5,0,0,0,0],["C577",101,57,"A4",210,297,2,5,4,6,0,0,0,0],["C578",101,72,"A4",210,297,2,4,4,4.5,0,0,0,0],["C579",101,95,"A4",210,297,2,3,4,6,0,0,0,0],["C580",105,57,"A4",210,297,2,5,0,6,0,0,0,0],["C581",19,10,"A4",210,297,10,28,10,8.5,0,0,0,0],["C582",87.5,53,"A4",210,297,2,5,17.5,16,0,0,0,0],["C583",105,297,"A4",210,297,2,1,0,0,0,0,0,0],["R300",20,20,"A4",210,297,8,11,14.5,23.5,3,3,10,1],["R305",40,40,"A4",210,297,4,6,20.5,21,3,3,20,1],["R310",60,60,"A4",210,297,3,4,12,24,3,3,30,1],["R315",85,85,"A4",210,297,2,3,17.5,16,5,5,42.5,1],["C559",52.5,29.7,"A4",210,297,4,10,0,0,0,0,0,0],["R320",22,16,"A4",210,297,8,15,9.5,9.5,2.1,2.7,0,0],["R325",36,26,"A4",210,297,5,10,10,10,2.5,1.8,0,0],["R330",36,19,"A4",210,297,5,13,10,10,2.5,2.5,0,0],["R335",36,21,"A4",210,297,5,12,11,8,2.5,3,0,0],["R340",45,21,"A4",210,297,4,12,10,10,3.3,2.7,0,0]];
+const MM=72/25.4;
+const P=2; /* px per pt per l'anteprima */
+const D=F.map(a=>{const[code,W,H,fmt,SW,SH,c,r,ml,mt,gh,gv,rad,ci]=a;return{code,W,H,fmt,SW,SH,c,r,ml,mt,gh,gv,rad,ci,n:c*r,mr:SW-(ml+c*W+(c-1)*gh),mb:SH-(mt+r*H+(r-1)*gv)}});
+const $=id=>document.getElementById(id);
+let cur=D.find(d=>d.code==='A455')||D[0],tgt=null,fam='*',txt='',S=null;
+const TG=()=>tgt||cur;
+
+/* adatta l'etichetta sorgente a quella di destinazione.
+   Se la destinazione è tonda e la sorgente no, il rettangolo deve stare
+   interamente nel cerchio: la sua diagonale non può superare il diametro. */
+function fit(d,t){
+ const m=Math.max(0,parseFloat($('mg').value)||0);
+ let sc=Math.min((t.W-2*m)/d.W,(t.H-2*m)/d.H);
+ if(t.ci&&!d.ci)sc=Math.min(sc,(Math.min(t.W,t.H)-2*m)/Math.hypot(d.W,d.H));
+ sc=Math.max(0.01,sc);
+ const w=d.W*sc,h=d.H*sc;
+ return{x:(t.W-w)/2,y:(t.H-h)/2,w,h}}
+const nf=v=>+(+v).toFixed(2);
+const off=()=>[parseFloat($('ox').value)||0,parseFloat($('oy').value)||0];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),4200)}
+function cells(d,ox=0,oy=0){const o=[];for(let j=0;j<d.r;j++)for(let i=0;i<d.c;i++)o.push([d.ml+i*(d.W+d.gh)+ox,d.mt+j*(d.H+d.gv)+oy]);return o}
+function save(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function printBlob(b){const u=URL.createObjectURL(b),fr=document.createElement('iframe');fr.style.cssText='position:fixed;width:0;height:0;border:0';fr.src=u;fr.onload=()=>{try{fr.contentWindow.focus();fr.contentWindow.print()}catch(e){window.open(u)}};document.body.appendChild(fr);setTimeout(()=>fr.remove(),60000)}
+
+/* nome del file scaricato: stesso nome del PDF iniziale, cu formatul nou */
+function outName(){
+ if(!tgt)return S.base+'.pdf';
+ const nc=tgt.code,esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ for(const c of [S.code,cur.code]){
+  if(!c)continue;
+  const re=new RegExp('(^|[^A-Za-z0-9])'+esc(c).replace(/\s+/g,'[\\s_]+')+'(?![A-Za-z0-9])','i');
+  if(re.test(S.base))return S.base.replace(re,(m,p)=>p+nc)+'.pdf'}
+ return S.base+' ('+nc+').pdf'}
+
+/* ---------- rilevamento formato ---------- */
+function detect(name){
+ const nm=' '+name.replace(/\.[^.]*$/,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ')+' ';
+ const codes=D.map(d=>d.code).sort((a,b)=>b.length-a.length);
+ for(const c of codes)if(nm.includes(' '+c+' '))return c;
+ return null}
+function refine(code,W,H){
+ const ok=d=>Math.abs(d.SW*MM-W)<6&&Math.abs(d.SH*MM-H)<6;
+ const own=D.find(d=>d.code===code);
+ if(own&&ok(own))return code;
+ const base=code.split(' ')[0];
+ const m=D.find(d=>d.code.split(' ')[0]===base&&ok(d));
+ return m?m.code:code}
+
+/* ---------- selezione / sequenza ----------
+   S.cp[i]:  1 = etichetta attiva
+             0 = posizione vuota già nel PDF (viene saltata)
+            -1 = esclusa dall'utente: resta VUOTA al suo posto, le altre non si spostano
+   Le etichette prima di "inizia dall'etichetta n." non vengono usate. */
+function baseList(){
+ const b=[],st=S.start-1;
+ S.cp.forEach((n,i)=>{if(i<st)return;if(n===1)b.push(i);else if(n<0)b.push(null)});
+ return b}
+/* ripete la lista (con i vuoti al loro posto) fino ad arrivare al totale */
+function seqList(){
+ const b=baseList(),T=S.total,a=[];
+ if(!b.some(x=>x!==null))return a;
+ for(let k=0;k<T;k++)a.push(b[k%b.length]);
+ return a}
+function syncTotal(){
+ if(tgt){
+  const mx=Math.max(1,TG().n-(S.start-1)); /* o singură pagină */
+  if(S.totAuto||S.total>mx)S.total=mx;
+ }else if(S.totAuto)S.total=baseList().length;
+ $('tot').value=S.total||''}
+
+/* ---------- PDF ---------- */
+function isEmpty(i){
+ const d=cur,c=S.cells[i],sxm=S.W/d.SW,sym=S.H/d.SH,ins=1.2;
+ let x=Math.max(0,Math.floor((c[0]+ins)*sxm*P)),y=Math.max(0,Math.floor((c[1]+ins)*sym*P));
+ let w=Math.floor((d.W-2*ins)*sxm*P),h=Math.floor((d.H-2*ins)*sym*P);
+ if(x+w>S.cv.width)w=S.cv.width-x;
+ if(y+h>S.cv.height)h=S.cv.height-y;
+ if(w<=0||h<=0)return true;
+ const im=S.ctx.getImageData(x,y,w,h).data;let k=0;
+ for(let p=0;p<im.length;p+=16){if(im[p]<160){if(++k>6)return false}}
+ return true}
+function setupCells(){
+ S.cells=cells(cur);
+ S.emp=S.cells.map((_,i)=>isEmpty(i));
+ S.cp=S.emp.map(e=>e?0:1);
+ resetStart();syncTotal()}
+function resetStart(){
+ if(S){S.start=1;S.rp=0}
+ $('sstart').value=1;$('sstart').max=TG().n}
+async function loadPDF(file){
+ if(!window.pdfjsLib){toast('La libreria pdf.js non è stata caricata. Controlla la connessione a internet.');return}
+ try{
+  const bytes=new Uint8Array(await file.arrayBuffer());
+  const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+  const pg=await doc.getPage(1);
+  const v1=pg.getViewport({scale:1}),vp=pg.getViewport({scale:P});
+  const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+  const ctx=cv.getContext('2d',{willReadFrequently:true});
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+  await pg.render({canvasContext:ctx,viewport:vp}).promise;
+  const code=detect(file.name),pick=code?refine(code,v1.width,v1.height):null;
+  S={name:file.name,base:file.name.replace(/\.[^.]*$/,''),bytes,pages:doc.numPages,W:v1.width,H:v1.height,cv,ctx,code,det:pick,rot:pg.rotate||0,start:1,rp:0,total:0,totAuto:true};
+  if(pick){cur=D.find(x=>x.code===pick);if(tgt===cur)tgt=null;fam='*';txt='';$('q').value='';
+   $('chips').querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0))}
+  setupCells();
+  buildList();render();
+  const el=document.querySelector('.it.on');if(el&&el.scrollIntoView)el.scrollIntoView({block:'nearest'});
+ }catch(e){toast('Impossibile leggere il PDF: '+(e.message||e))}}
+
+/* ---------- avvisi ---------- */
+function notes(){
+ const d=cur,t=TG(),a=[];
+ const sw=d.SW*MM,sh=d.SH*MM;
+ const mism=Math.abs(S.W-sw)>6||Math.abs(S.H-sh)>6;
+ const selHtml=`<select id="srcSel" class="inp" style="width:auto;display:inline-block;margin-left:8px;padding:4px 8px">${D.map(x=>`<option value="${x.code}"${x.code===d.code?' selected':''}>${x.code}</option>`).join('')}</select>`;
+ if(!S.code)a.push(['','Codice del formato non trovato nel nome del file. Scegli il formato del PDF:'+selHtml]);
+ else if(mism)a.push(['','⚠ Il foglio nel PDF ('+nf(S.W/MM)+'×'+nf(S.H/MM)+' mm) non corrisponde al formato '+d.code+' ('+nf(d.SW)+'×'+nf(d.SH)+' mm). Scegli un altro formato:'+selHtml]);
+ if(!S.code&&mism)a.push(['','⚠ Il foglio nel PDF ('+nf(S.W/MM)+'×'+nf(S.H/MM)+' mm) non corrisponde al formato '+d.code+' ('+nf(d.SW)+'×'+nf(d.SH)+' mm).']);
+ if(S.pages>1)a.push(['','Il PDF ha '+S.pages+' pagine; viene usata solo la prima.']);
+ if(S.rot)a.push(['','La pagina del PDF è ruotata ('+S.rot+'°); il risultato potrebbe risultare spostato.']);
+ const ov=[];if(t.mr<-0.01)ov.push('a destra '+nf(-t.mr)+' mm');if(t.mb<-0.01)ov.push('in basso '+nf(-t.mb)+' mm');
+ if(ov.length)a.push(['','⚠ Come nel PDF originale, la griglia esce dal foglio: '+ov.join(', ')+'.']);
+ return a.map(([c,x])=>`<div class="note ${c}">${x}</div>`).join('')}
+
+/* ---------- anteprima ---------- */
+function fitSheets(){
+ if(!S)return;
+ [['b1','sh1',S.W/S.H],['b2','sh2',TG().SW/TG().SH]].forEach(([b,s,r])=>{
+  const B=$(b),w=B.clientWidth-16,h=B.clientHeight-16;
+  const W=Math.max(10,Math.min(w,h*r)),e=$(s);
+  e.style.width=W+'px';e.style.height=(W/r)+'px'})}
+function drawSrc(){
+ const d=cur,w=$('sh1');
+ w.innerHTML='';w.appendChild(S.cv);
+ S.cells.forEach((p,i)=>{const e=document.createElement('div');e.className='cell';e.dataset.i=i;
+  e.style.cssText=`left:${p[0]/d.SW*100}%;top:${p[1]/d.SH*100}%;width:${d.W/d.SW*100}%;height:${d.H/d.SH*100}%`;
+  e.innerHTML=`<span class="no">${i+1}</span>`;
+  w.appendChild(e)});
+ updCells()}
+function updCells(){
+ const st=S.start-1;
+ document.querySelectorAll('.cell').forEach(e=>{
+  const i=+e.dataset.i,n=S.cp[i],act=n>0&&i>=st;
+  e.classList.toggle('on',act);e.classList.toggle('off',!act);e.classList.toggle('em',!!S.emp[i])})}
+function drawRes(){
+ const d=cur,t=TG(),[ox,oy]=off(),seq=seqList(),n=t.n,st=S.start-1,oc=$('oc').checked;
+ const pages=Math.max(1,Math.ceil((st+seq.length)/n));
+ S.rp=clamp(S.rp,0,pages-1);
+ const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,k2=MM*P,fb=fit(d,t);
+ const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
+ const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+ const k0=Math.max(0,pg*n-st),k1=Math.min(seq.length,(pg+1)*n-st);
+ for(let k=k0;k<k1;k++){
+  if(seq[k]===null)continue; /* posizione lasciata vuota */
+  const pos=st+k,p=T[pos%n],s=S.cells[seq[k]];
+  x.drawImage(S.cv,s[0]*sxm*P,s[1]*sym*P,d.W*sxm*P,d.H*sym*P,(p[0]+fb.x)*k2,(p[1]+fb.y)*k2,fb.w*k2,fb.h*k2);
+  if(oc){x.lineWidth=1;x.strokeStyle='#000';
+   const r=Math.min(t.rad*k2,t.W*k2/2,t.H*k2/2);
+   if(r>0&&x.roundRect){x.beginPath();x.roundRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,r);x.stroke()}
+   else x.strokeRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2)}}
+ /* bordi guida (solo nell'anteprima, non vengono stampati) */
+ {const r=Math.min(t.rad*k2,t.W*k2/2,t.H*k2/2);
+  x.save();x.lineWidth=2;
+  T.forEach((p,j)=>{
+   const pos=pg*n+j,used=pos>=st&&pos<st+seq.length&&seq[pos-st]!==null;
+   x.strokeStyle=used?'#e8860f':'#8a8fa8';x.setLineDash(used?[]:[8,6]);
+   if(r>0&&x.roundRect){x.beginPath();x.roundRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,r);x.stroke()}
+   else x.strokeRect(p[0]*k2,p[1]*k2,t.W*k2,t.H*k2)});
+  x.restore()}
+ const w=$('sh2');w.innerHTML='';w.appendChild(c);
+ $('pn').textContent='foglio '+(pg+1)+' / '+pages;
+ $('pv').disabled=pg<=0;$('nx').disabled=pg>=pages-1}
+function updSummary(){
+ if(!S){$('sTot').textContent='0';$('sSub').textContent='Carica un PDF per iniziare';$('dl').disabled=$('pr').disabled=true;return}
+ const t=TG(),seq=seqList(),tot=seq.length,real=seq.filter(v=>v!==null).length,blank=tot-real,n=t.n;
+ const pages=Math.max(1,Math.ceil((S.start-1+tot)/n));
+ $('sTot').textContent=real;
+ $('sSub').textContent=real?(pages+(pages===1?' foglio':' fogli')+' · parte dall\'etichetta n. '+S.start+(blank?' · '+blank+(blank===1?' vuota':' vuote'):'')):'Nessuna etichetta selezionata';
+ $('shint').textContent='Posizione di partenza: '+S.start+' su '+n+' per foglio. Se il totale supera le etichette del PDF, queste si ripetono. Le etichette escluse restano vuote al loro posto.';
+ $('dl').disabled=$('pr').disabled=real===0}
+function refreshRes(){drawRes();updSummary()}
+
+/* ---------- generazione PDF ---------- */
+function outline(pg,t,d,osh){
+ const w=d.W*MM,h=d.H*MM,r=Math.min(d.rad*MM,w/2,h/2),q=v=>v.toFixed(3);
+ let p;
+ if(r<=0)p=`M 0 0 H ${q(w)} V ${q(h)} H 0 Z`;
+ else p=`M ${q(r)} 0 H ${q(w-r)} A ${q(r)} ${q(r)} 0 0 1 ${q(w)} ${q(r)} V ${q(h-r)} A ${q(r)} ${q(r)} 0 0 1 ${q(w-r)} ${q(h)} H ${q(r)} A ${q(r)} ${q(r)} 0 0 1 0 ${q(h-r)} V ${q(r)} A ${q(r)} ${q(r)} 0 0 1 ${q(r)} 0 Z`;
+ pg.drawSvgPath(p,{x:t[0]*MM,y:osh-t[1]*MM,borderColor:PDFLib.rgb(0,0,0),borderWidth:0.5})}
+async function buildResult(){
+ if(!window.PDFLib)throw new Error('La libreria pdf-lib non è stata caricata. Controlla la connessione a internet.');
+ const seq=seqList();
+ if(!seq.some(v=>v!==null))throw new Error('Seleziona almeno un\'etichetta.');
+ const{PDFDocument}=PDFLib,d=cur,t=TG(),[ox,oy]=off(),fb=fit(d,t);
+ const src=await PDFDocument.load(S.bytes,{ignoreEncryption:true});
+ const sp=src.getPage(0),sz=sp.getSize(),pw=sz.width,ph=sz.height;
+ const sxm=pw/d.SW,sym=ph/d.SH;
+ const out=await PDFDocument.create();
+ const T=cells(t,ox,oy),n=t.n,st=S.start-1;
+ const pages=Math.max(1,Math.ceil((st+seq.length)/n));
+ const osw=t.SW*MM,osh=t.SH*MM,emb={},pgs=[];
+ for(let p=0;p<pages;p++)pgs.push(out.addPage([osw,osh]));
+ for(let k=0;k<seq.length;k++){
+  const i=seq[k];
+  if(i===null)continue; /* posizione lasciata vuota */
+  const pos=st+k,pg=pgs[Math.floor(pos/n)],p=T[pos%n],s=S.cells[i];
+  if(!emb[i])emb[i]=await out.embedPage(sp,{left:s[0]*sxm,right:(s[0]+d.W)*sxm,bottom:ph-(s[1]+d.H)*sym,top:ph-s[1]*sym});
+  pg.drawPage(emb[i],{x:(p[0]+fb.x)*MM,y:osh-(p[1]+fb.y+fb.h)*MM,width:fb.w*MM,height:fb.h*MM});
+  if($('oc').checked)outline(pg,p,t,osh)}
+ return new Blob([await out.save()],{type:'application/pdf'})}
+
+/* ---------- UI ---------- */
+function render(){
+ const pm=!!S,d=cur;
+ $('empty').hidden=pm;
+ $('stbar').hidden=!pm;
+ $('drop').hidden=pm;$('fileCard').hidden=!pm;
+ ['startCard','convCard'].forEach(id=>{$(id).style.opacity=pm?1:.45;$(id).style.pointerEvents=pm?'':'none'});
+ const t=TG();
+ $('fcode').textContent=d.code;$('tcode').textContent=t.code;
+ $('fdesc').innerHTML='';
+ document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===t.code));
+ if(pm){
+  $('fname').textContent=S.name;
+  $('fmeta').textContent=nf(S.W/MM)+'×'+nf(S.H/MM)+' mm · '+S.pages+(S.pages===1?' pagina':' pagine');
+  $('notes').innerHTML=notes();
+  $('l1').textContent=d.code;
+  $('l2').textContent=tgt?t.code:d.code+' (risultato)';
+  $('tot').value=S.total||'';
+  drawSrc();drawRes();updSummary();
+  requestAnimationFrame(fitSheets)}
+ else updSummary()}
+function buildList(){
+ const q=txt.toLowerCase().replace(/\s+/g,'');
+ const L=D.filter(d=>(fam==='*'||d.code[0]===fam)&&(!q||(d.code+d.W+'x'+d.H).toLowerCase().replace(/\s+/g,'').includes(q)));
+ $('list').innerHTML=L.map(d=>`<button class="it" type="button" data-c="${d.code}"><b>${d.code}</b><small>${nf(d.W)}×${nf(d.H)} · ${d.n}</small></button>`).join('')||'<div style="color:var(--m)">Nessun formato</div>';
+ $('list').querySelectorAll('.it').forEach(b=>b.onclick=()=>{
+  const x=D.find(d=>d.code===b.dataset.c);
+  tgt=x===cur?null:x;
+  if(S){resetStart();S.totAuto=true;S.rp=0;syncTotal()}
+  render()});
+ document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===TG().code))}
+
+$('fcnt').textContent=D.length+' formati';
+$('chips').innerHTML=[['*','Tutti'],['A','A'],['C','C'],['R','Rotonde']].map(([k,n])=>`<button class="chip${k==='*'?' on':''}" type="button" data-k="${k}">${n}</button>`).join('');
+$('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fam=b.dataset.k;$('chips').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));buildList()});
+$('q').oninput=e=>{txt=e.target.value;buildList()};
+['ox','oy'].forEach(i=>$(i).oninput=()=>{if(S)drawRes()});
+$('mg').oninput=()=>{$('mgv').textContent=nf($('mg').value);if(S)drawRes()};
+$('oc').onchange=()=>{if(S)drawRes()};
+
+/* selezione manuale del formato del PDF (solo se non rilevato o non coincide) */
+$('notes').addEventListener('change',e=>{
+ if(e.target.id!=='srcSel'||!S)return;
+ const x=D.find(d=>d.code===e.target.value);
+ if(!x)return;
+ cur=x;if(tgt===cur)tgt=null;
+ S.totAuto=true;
+ setupCells();buildList();render()});
+
+/* caricamento file */
+const pickFile=()=>$('file').click();
+$('drop').onclick=pickFile;$('drop2').onclick=pickFile;
+$('file').onchange=e=>{const fl=e.target.files[0];if(fl)loadPDF(fl);e.target.value=''};
+['dragover','dragenter'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('over');$('drop2').classList.add('over')}));
+['dragleave','drop'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over');$('drop2').classList.remove('over')}));
+window.addEventListener('drop',e=>{const fl=e.dataTransfer&&e.dataTransfer.files[0];if(fl)loadPDF(fl)});
+$('clr').onclick=()=>{S=null;render()};
+window.addEventListener('resize',fitSheets);
+if(window.ResizeObserver)new ResizeObserver(fitSheets).observe(document.querySelector('.stage'));
+
+/* clic sulle etichette sorgente: lascia vuota / ripristina */
+$('sh1').onclick=e=>{
+ if(!S)return;
+ const c=e.target.closest('.cell');if(!c)return;
+ const i=+c.dataset.i;
+ S.cp[i]=S.cp[i]===1?(S.emp[i]?0:-1):1;
+ syncTotal();updCells();refreshRes()};
+
+/* totale etichette */
+$('tot').oninput=()=>{
+ if(!S)return;
+ S.totAuto=false;
+ const mx=tgt?Math.max(1,TG().n-(S.start-1)):9999;
+ S.total=clamp(parseInt($('tot').value)||0,0,mx);
+ S.rp=0;refreshRes()};
+
+/* etichetta di partenza */
+$('sstart').oninput=()=>{
+ if(!S)return;
+ const t=TG();
+ S.start=clamp(parseInt($('sstart').value)||1,1,t.n);
+ S.rp=0;
+ syncTotal();updCells();refreshRes()};
+
+/* navigazione fogli risultato */
+$('pv').onclick=()=>{if(S){S.rp--;drawRes()}};
+$('nx').onclick=()=>{if(S){S.rp++;drawRes()}};
+
+/* scarica / stampa */
+$('dl').onclick=async()=>{if(!S)return;try{save(await buildResult(),outName())}catch(e){toast(e.message||e)}};
+$('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(e){toast(e.message||e)}};
+
+buildList();render();
+</script></body></html>
