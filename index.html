@@ -906,13 +906,16 @@ async function buildResult(){
   const w=t.W*MM,h=t.H*MM;
   pg.pushOperators(...clipOps(p[0]*MM,osh-(p[1]+t.H)*MM,w,h,Math.min(t.rad*MM,w/2,h/2),t.ci));
   const q=place(i,p,fb);
+  pg.pushOperators(...clipOps(q.x*MM,osh-(q.y+q.h)*MM,q.w*MM,q.h*MM,0,false));
   const rp=rotPlace(q.x*MM,osh-(q.y+q.h)*MM,q.w*MM,q.h*MM);
+
   const fx=rp.width/(d.W*sxm),fy=rp.height/(d.H*sym),lx=s[0]*sxm*fx,ly=(ph-(s[1]+d.H)*sym)*fy;
   const th=-Math.PI/2*rot,co=Math.round(Math.cos(th)),si=Math.round(Math.sin(th));
   pg.drawPage(emb.all,{x:rp.x-(lx*co-ly*si),y:rp.y-(lx*si+ly*co),width:pw*fx,height:ph*fy,rotate:rp.rotate});
 
 
-  pg.pushOperators(L.popGraphicsState());
+  pg.pushOperators(L.popGraphicsState(),L.popGraphicsState());
+
   if($('oc').checked)outline(pg,p,t,osh)}
  return new Blob([await out.save()],{type:'application/pdf'})}
 
