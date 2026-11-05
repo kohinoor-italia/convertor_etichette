@@ -111,7 +111,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .drop:hover .ic{transform:translateY(-3px)}
 .drop b{display:block;margin-top:2px;font-size:13px;font-weight:700}
 .drop span{color:var(--m);font-size:11.5px}
-.file{display:flex;align-items:center;gap:11px}
+.file{display:flex;align-items:center;gap:11px;cursor:pointer;border-radius:12px;transition:background .15s}
+.file:hover{background:rgba(255,255,255,.05)}
+
 .file .pi{width:34px;height:42px;border-radius:8px;background:linear-gradient(160deg,#fff,#d4d8ea);color:#c0264b;font-weight:900;font-size:9.5px;display:grid;place-items:end center;padding-bottom:5px;flex:none;box-shadow:0 8px 18px rgba(0,0,0,.45);position:relative}
 .file .pi::before{content:"";position:absolute;top:0;right:0;width:10px;height:10px;background:linear-gradient(225deg,#0b0e1c 50%,#b8bdd4 50%);border-bottom-left-radius:4px;border-top-right-radius:8px}
 .file .nm{min-width:0;flex:1}
@@ -175,6 +177,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .fmt-badge .lb{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--m2);display:block;font-weight:700}
 .fmt-badge .code{font-size:17px;font-weight:900;letter-spacing:-.2px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .conv-info>div[style]{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--panel);border:1px solid var(--line)}
+.conv-info>.fmt-badge{cursor:pointer;transition:border-color .15s,background .15s}
+.conv-info>.fmt-badge:hover{border-color:var(--a);background:rgba(255,179,92,.08)}
+
+.fmt-badge .code{white-space:nowrap}
+.fmt-badge .lb{white-space:nowrap}
+
 .btn-change-fmt{display:inline-flex;align-items:center;gap:9px;padding:9px 15px;border-radius:12px;background:rgba(255,179,92,.09);border:1px solid rgba(255,179,92,.28);color:var(--a);font-weight:700;font-size:13px;cursor:pointer;transition:.18s var(--ease)}
 .btn-change-fmt:hover{background:rgba(255,179,92,.2);border-color:var(--a);transform:translateY(-1px);box-shadow:0 8px 22px rgba(255,179,92,.15)}
 
@@ -185,6 +193,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .pane{flex:1;min-width:0;display:flex;flex-direction:column}
 .pl{display:flex;align-items:center;justify-content:space-between;gap:8px;height:30px;margin-bottom:8px;flex:none;color:var(--m);font-size:11.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase}
 .pl b{color:var(--t);background:var(--panel2);border:1px solid var(--line);padding:2px 9px;border-radius:99px;margin-left:4px;letter-spacing:.3px}
+.pl b{cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s,color .15s}
+
+.pl b:hover{border-color:var(--a);background:rgba(255,179,92,.12);color:var(--a)}
 .pl .nav{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-weight:600;font-size:12px;color:var(--t);font-variant-numeric:tabular-nums}
 .pbox{flex:1;min-height:0;display:grid;place-items:center;border-radius:18px;overflow:hidden;border:1px solid var(--line);
  background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;background-color:rgba(0,0,0,.26);box-shadow:inset 0 4px 24px rgba(0,0,0,.35)}
@@ -960,19 +971,30 @@ function render(){
   requestAnimationFrame(fitSheets)}
  else updSummary()}
 
+let pickMode='tgt';
 function buildList(){
  const q=txt.toLowerCase().replace(/\s+/g,'');
  const L=D.filter(d=>(fam==='*'||d.code[0]===fam)&&(!q||(d.code+d.W+'x'+d.H).toLowerCase().replace(/\s+/g,'').includes(q)));
  $('list').innerHTML=L.map(d=>`<button class="it" type="button" data-c="${d.code}"><b>${d.code}</b><small>${nf(d.W)}×${nf(d.H)} · ${d.n}</small></button>`).join('')||'<div style="color:var(--m)">Nessun formato</div>';
  $('list').querySelectorAll('.it').forEach(b=>b.onclick=()=>{
   const x=D.find(d=>d.code===b.dataset.c);
-  tgt=x===cur?null:x;
-resetMg();
-  if(S){resetStart();S.totAuto=true;S.rp=0;syncTotal()}
-
+  if(pickMode==='src'){
+   if(S){
+    cur=x;
+    if(tgt===cur)tgt=null;
+    resetMg();
+    setupCells();
+   }
+  } else {
+   tgt=x===cur?null:x;
+   resetMg();
+   if(S){resetStart();S.totAuto=true;S.rp=0;syncTotal()}
+  }
   closeModal();
   render()});
- document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===TG().code))}
+ const hl=pickMode==='src'?cur.code:TG().code;
+ document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===hl))}
+
 
 $('chips').innerHTML=[['*','Tutti'],['A','A400...'],['C','C500...'],['R','R300...']].map(([k,n])=>`<button class="chip${k==='*'?' on':''}" type="button" data-k="${k}">${n}</button>`).join('');
 $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fam=b.dataset.k;$('chips').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));buildList()});
@@ -1004,7 +1026,23 @@ $('mg0').onclick=()=>{$('mg').value=0;$('mg').oninput()};
 
 const pickFile=()=>$('file').click();
 $('drop').onclick=pickFile;$('drop2').onclick=pickFile;
-$('file').onchange=e=>{const fl=e.target.files[0];if(fl)loadPDF(fl);e.target.value=''};
+let wantReset=false;
+$('file').onchange=e=>{
+ const fl=e.target.files[0];
+ if(fl){
+  if(wantReset&&S)$('clr').click();
+  loadPDF(fl);
+ }
+ wantReset=false;
+ e.target.value='';
+};
+$('fileCard').addEventListener('click',e=>{
+ if(e.target.closest('#clr'))return;
+ wantReset=true;
+ pickFile();
+});
+$('fileCard').title='Clicca per sostituire il PDF';
+
 ['dragover','dragenter'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('over');$('drop2').classList.add('over')}));
 ['dragleave','drop'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over');$('drop2').classList.remove('over')}));
 window.addEventListener('drop',e=>{const fl=e.dataTransfer&&e.dataTransfer.files[0];if(fl)loadPDF(fl)});
@@ -1077,10 +1115,34 @@ $('dl').onclick=async()=>{if(!S)return;try{save(await buildResult(),outName())}c
 $('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(e){toast(e.message||e)}};
 
 const modal = $('fmtModal');
-function openModal(){ modal.classList.add('open'); setTimeout(()=>{const q=$('q');q.focus();q.select()},60); }
+function openModal(mode){
+ pickMode=mode==='src'?'src':'tgt';
+ document.querySelector('#fmtModal h3').textContent=pickMode==='src'?'Formato originale del PDF':'Seleziona Nuovo Formato';
+ buildList();
+ modal.classList.add('open');
+ setTimeout(()=>{const q=$('q');q.focus();q.select()},60); }
+
 
 function closeModal(){ modal.classList.remove('open'); }
-$('btnOpenFmtModal').onclick = openModal;
+$('btnOpenFmtModal').onclick = () => openModal('tgt');
+$('l1').onclick=()=>{if(S)openModal('src')};
+$('l2').onclick=()=>{if(S)openModal('tgt')};
+$('l1').title='Cambia il formato originale del PDF';
+$('l2').title='Cambia il formato di destinazione';
+
+{
+ const tb=document.querySelectorAll('.conv-info .fmt-badge')[1];
+ tb.title='Cambia il formato di destinazione';
+ tb.onclick=()=>openModal('tgt');
+}
+
+{
+ const sb=document.querySelector('.conv-info .fmt-badge');
+ sb.title='Cambia il formato originale del PDF';
+ sb.onclick=()=>{if(S)openModal('src')};
+}
+
+
 $('btnCloseModal').onclick = closeModal;
 modal.onclick = (e) => { if(e.target === modal) closeModal(); };
 
@@ -1122,6 +1184,7 @@ document.addEventListener('keydown',e=>{
  if(!isDel&&!isSpace)return;
  const a=document.activeElement,tg=a&&a.tagName;
  if(tg==='TEXTAREA'||tg==='SELECT')return;
+ if(isSpace&&tg==='INPUT')return;
  if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
  if(modal.classList.contains('open'))return;
  if(isSpace){
