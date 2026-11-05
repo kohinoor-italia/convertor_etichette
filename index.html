@@ -81,7 +81,16 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 
 .brand-subtitle b{color:#120d18;font-weight:800;background:var(--grad);padding:2px 8px;border-radius:6px;font-size:10px;line-height:1.2;letter-spacing:.6px;text-transform:uppercase;flex:none}
 
+/* Subtitlu brand: majuscule spatiate, cuvant evidentiat, linie decorativa */
+.bt-row{display:flex;align-items:center;gap:8px;min-width:0}
+.bt-pro{color:#120d18;font-weight:800;background:var(--grad);padding:2px 7px;border-radius:6px;font-size:9.5px;line-height:1.2;letter-spacing:.6px;text-transform:uppercase;flex:none}
+.bs-txt{display:inline-flex;align-items:center;gap:6px;font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);white-space:nowrap}
+.bs-txt em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.bs-line{width:12px;height:2px;border-radius:2px;background:var(--grad);flex:none;box-shadow:0 0 8px rgba(255,93,143,.55)}
+
+
 .brand-tags{display:flex;gap:5px;margin-top:3px}
+
 .brand-tags span{background:rgba(255,179,92,.1);color:var(--a);border:1px solid rgba(255,179,92,.22);padding:2px 8px;border-radius:99px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px}
 
 /* Card */
@@ -432,8 +441,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 </div>
 
    <div class="brand-texts">
-    <h1>Smart Label Studio</h1>
-<div class="brand-subtitle"><span>Convertitore etichette PDF</span><b>Pro</b></div>
+    <div class="bt-row"><h1>Smart Label Studio</h1><b class="bt-pro">Pro</b></div>
+<div class="brand-subtitle"><span class="bs-txt"><span class="bs-line"></span>Convertitore <em>etichette</em></span></div>
+
+
+
 
     <div class="brand-tags">
      <span>Smart Convert</span>
