@@ -629,7 +629,9 @@ function isEmpty(i){
  for(let p=0;p<im.length;p+=16){if(im[p]<160){if(++k>6)return false}}
  return true}
 
-const SAFE={C531:5}; // zona neimprimabilă (mm) pe format; adaugă aici alte formate
+const SAFE_DEF=5; // zona neimprimabilă (mm), valabilă pentru toate formatele
+const SAFE={}; // excepții pe format, ex: {C531:6} sau {A460:0} ca să dezactivezi fixul
+
 const GAP=2; // spațiu liber (mm) între conținutul micșorat și marginea etichetei
 
 function inkBox(i){
@@ -650,8 +652,10 @@ function inkBox(i){
  }
  S.ink[i]=r;return r}
 function place(i,p,fb){
- const t=TG(),d=cur,base={x:p[0]+fb.x,y:p[1]+fb.y,w:fb.w,h:fb.h},m=SAFE[t.code];
+ const t=TG(),d=cur,base={x:p[0]+fb.x,y:p[1]+fb.y,w:fb.w,h:fb.h},m=SAFE[t.code]??SAFE_DEF;
  if(!m||i==null)return base;
+ if(p[0]>=m-.01&&p[1]>=m-.01&&p[0]+t.W<=t.SW-m+.01&&p[1]+t.H<=t.SH-m+.01)return base;
+
  const ik=inkBox(i);if(!ik)return base;
  const u0=ik[0]/d.W,v0=ik[1]/d.H,u1=ik[2]/d.W,v1=ik[3]/d.H;
  let a0,b0,a1,b1;
