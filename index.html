@@ -629,7 +629,7 @@ function isEmpty(i){
  for(let p=0;p<im.length;p+=16){if(im[p]<160){if(++k>6)return false}}
  return true}
 
-const SAFE_DEF=5; // zona neimprimabilă (mm), valabilă pentru toate formatele
+const SAFE_DEF=8; // zona neimprimabilă (mm), valabilă pentru toate formatele
 const SAFE={}; // excepții pe format, ex: {C531:6} sau {A460:0} ca să dezactivezi fixul
 
 const GAP=2; // spațiu liber (mm) între conținutul micșorat și marginea etichetei
