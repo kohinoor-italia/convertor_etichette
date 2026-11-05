@@ -1116,13 +1116,23 @@ function resetZ(){['b1','b2'].forEach(b=>{ZM[b].z=1;ZM[b].x=0;ZM[b].y=0;applyZ(b
  el.addEventListener('click',e=>{if(sup){e.stopPropagation();e.preventDefault()}},true)});
 
 document.addEventListener('keydown',e=>{
- if(e.key!=='Delete'&&e.key!=='Backspace')return;
+ const k=e.key;
+ const isDel=(k==='Delete'||k==='Backspace'||k==='Escape');
+ const isSpace=(k===' '||e.code==='Space');
+ if(!isDel&&!isSpace)return;
  const a=document.activeElement,tg=a&&a.tagName;
  if(tg==='TEXTAREA'||tg==='SELECT')return;
  if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
- if(!S||modal.classList.contains('open'))return;
+ if(modal.classList.contains('open'))return;
+ if(isSpace){
+  e.preventDefault();
+  if(tg==='BUTTON'||tg==='SUMMARY')a.blur();
+  pickFile();
+  return}
+ if(!S)return;
  e.preventDefault();
  $('clr').click()});
+
 
 
 buildList();render();
