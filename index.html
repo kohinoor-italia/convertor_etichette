@@ -1796,6 +1796,28 @@ $('sstart').oninput=()=>{
 $('pv').onclick=()=>{if(S){S.rp--;drawRes()}};
 $('nx').onclick=()=>{if(S){S.rp++;drawRes()}};
 
+/* Scroll pe "foglio X / Y": spre tine = pagina urmatoare, dinspre tine = anterioara */
+{
+ const nav=document.querySelector('.pl .nav');
+ let wAcc=0,wT=0;
+ nav.addEventListener('wheel',e=>{
+  if(!S)return;
+  e.preventDefault();
+  if(!e.deltaY)return;
+  wAcc+=e.deltaY;
+  clearTimeout(wT);wT=setTimeout(()=>{wAcc=0},250);
+  if(Math.abs(wAcc)<40)return;
+  const dir=wAcc>0?1:-1;
+  wAcc=0;
+  const t=TG(),pages=Math.max(1,Math.ceil(seqList().length/t.n));
+  const np=clamp(S.rp+dir,0,pages-1);
+  if(np===S.rp)return;
+  S.rp=np;
+  drawRes();
+ },{passive:false});
+}
+
+
 $('dl').onclick=async()=>{if(!S)return;try{save(await buildResult(),outName())}catch(e){toast(e.message||e)}};
 $('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(e){toast(e.message||e)}};
 
