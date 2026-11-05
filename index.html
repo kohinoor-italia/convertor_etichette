@@ -34,7 +34,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opa
  -webkit-mask-image:radial-gradient(circle at 50% 40%,#000 20%,transparent 75%);mask-image:radial-gradient(circle at 50% 40%,#000 20%,transparent 75%)}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
-button:focus-visible,summary:focus-visible,.it:focus-visible,.chip:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+button:focus-visible,summary:focus-visible,.it:focus-visible,.chip:focus-visible,.brand-card:focus-visible{outline:2px solid var(--a);outline-offset:2px}
 select option{background:#141728;color:var(--t)}
 ::selection{background:rgba(255,93,143,.4)}
 ::-webkit-scrollbar{width:8px;height:8px}
@@ -60,7 +60,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .brand-card{background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.015));
  border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;
  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
- box-shadow:0 14px 40px rgba(0,0,0,.32),var(--hi);position:relative;overflow:hidden}
+ box-shadow:0 14px 40px rgba(0,0,0,.32),var(--hi);position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s var(--ease)}
+.brand-card:hover{border-color:var(--line2)}
+.brand-card:active{transform:scale(.99)}
 .brand-card::after{content:"";position:absolute;top:-40px;right:-40px;width:160px;height:160px;
  background:radial-gradient(circle,rgba(255,93,143,.22),transparent 70%);pointer-events:none}
 .brand{display:flex;align-items:stretch;gap:14px;position:relative;z-index:1}
@@ -101,6 +103,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .btn.pri::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-120%);transition:transform .6s var(--ease)}
 .btn.pri:hover::after{transform:translateX(120%)}
 .btn.pri:hover{filter:brightness(1.06);box-shadow:0 14px 36px rgba(255,93,143,.45),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn.danger{background:linear-gradient(135deg,#ff7a7a,#e0264f);border-color:transparent;color:#fff;font-weight:800;box-shadow:0 10px 30px rgba(224,38,79,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn.danger:hover{filter:brightness(1.08);background:linear-gradient(135deg,#ff8a8a,#f02a56)}
 .btn:disabled{opacity:.35;pointer-events:none;transform:none!important;box-shadow:none!important;filter:grayscale(.4)}
 .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
@@ -194,8 +198,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .fmt-badge .code{white-space:nowrap}
 .fmt-badge .lb{white-space:nowrap}
 
-.btn-change-fmt{display:inline-flex;align-items:center;gap:9px;padding:9px 15px;border-radius:12px;background:rgba(255,179,92,.09);border:1px solid rgba(255,179,92,.28);color:var(--a);font-weight:700;font-size:13px;cursor:pointer;transition:.18s var(--ease)}
-.btn-change-fmt:hover{background:rgba(255,179,92,.2);border-color:var(--a);transform:translateY(-1px);box-shadow:0 8px 22px rgba(255,179,92,.15)}
+/* Ceas + data + ultima actualizare (înălțime ≤ a containerelor de format ≈ 54px) */
+.clock{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;line-height:1.1;margin-left:auto;user-select:none;max-height:46px;overflow:hidden;gap:1px}
+.clk-time{font-size:18px;line-height:1.1;font-weight:800;letter-spacing:.5px;color:var(--t);font-variant-numeric:tabular-nums;white-space:nowrap}
+.clk-date{font-size:10px;line-height:1.15;font-weight:600;color:var(--m);text-transform:capitalize;letter-spacing:.2px;white-space:nowrap}
+.clk-upd{font-size:9.5px;line-height:1.15;font-weight:600;color:var(--m2);letter-spacing:.2px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.clk-upd b{color:var(--a);font-weight:700}
 
 /* Preview */
 .pv{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -210,21 +218,23 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .pl .nav{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-weight:600;font-size:12px;color:var(--t);font-variant-numeric:tabular-nums}
 .pbox{flex:1;min-height:0;display:grid;place-items:center;border-radius:18px;overflow:hidden;border:1px solid var(--line);
  background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;background-color:rgba(0,0,0,.26);box-shadow:inset 0 4px 24px rgba(0,0,0,.35)}
-.sheet{position:relative}
-.sheet>canvas,.sheet>img{display:block;width:100%;height:100%;background:#fff;border-radius:6px!important;box-shadow:0 20px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08)}
+.sheet{position:relative;--bk:1}
+.sheet>canvas,.sheet>img{display:block;width:100%;height:100%;background:#fff;border-radius:6px!important;box-shadow:0 20px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08);image-rendering:auto}
 
-.cell{position:absolute;border:1.5px solid rgba(255,179,92,.5);border-radius:4px;pointer-events:none}
-.cell.circle{border-radius:50%}
-.no{position:absolute;top:4px;left:4px;font:800 10px/1 system-ui,sans-serif;background:var(--grad);color:#1a0f18;padding:3px 6px;border-radius:99px;pointer-events:none;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+/* Bordi anteprima (sinistra + destra): un singolo tracciato SVG sottile,
+   così le sovrapposizioni non risultano più spesse */
+.bsvg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
 
-.res-cell{position:absolute;border:1.5px dashed rgba(255,107,129,.8);background:rgba(255,255,255,.07);cursor:pointer;border-radius:4px;transition:background .15s,border-color .15s,box-shadow .15s}
+.cell{position:absolute;pointer-events:none}
+/* Buline numerotate: se micșorează automat pe etichetele mici (--bk setat din JS) */
+.no{position:absolute;top:max(1.5px,calc(4px*var(--bk,1)));left:max(1.5px,calc(4px*var(--bk,1)));font:800 max(5.5px,calc(10px*var(--bk,1)))/1 system-ui,sans-serif;background:var(--grad);color:#1a0f18;padding:calc(3px*var(--bk,1)) calc(6px*var(--bk,1));border-radius:99px;pointer-events:none;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+
+.res-cell{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:4px;transition:background .15s}
 .res-cell.circle{border-radius:50%}
-.res-cell.active{border-style:solid;border-color:#000;background:transparent}
+.res-cell:hover{background:rgba(0,0,0,.08)}
 
-.res-cell:hover{background:rgba(0,0,0,.08);box-shadow:none}
-
-.res-no{position:absolute;top:4px;left:4px;font:800 10px/1 system-ui,sans-serif;background:#14121f;color:var(--a);padding:3px 6px;border-radius:99px;pointer-events:none;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.45)}
-.res-cell.excluded{background:repeating-linear-gradient(45deg,rgba(10,12,24,.6) 0 6px,rgba(10,12,24,.42) 6px 12px);border-color:rgba(255,107,129,.95)}
+.res-no{position:absolute;top:max(1.5px,calc(4px*var(--bk,1)));left:max(1.5px,calc(4px*var(--bk,1)));font:800 max(5.5px,calc(10px*var(--bk,1)))/1 system-ui,sans-serif;background:#14121f;color:var(--a);padding:calc(3px*var(--bk,1)) calc(6px*var(--bk,1));border-radius:99px;pointer-events:none;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.res-cell.excluded{background:repeating-linear-gradient(45deg,rgba(10,12,24,.6) 0 6px,rgba(10,12,24,.42) 6px 12px)}
 .res-cell.excluded:hover{background:rgba(255,255,255,.3)}
 
 /* Empty + Libreria */
@@ -244,8 +254,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .srch .i{position:absolute;left:14px;color:var(--m);pointer-events:none}
 .srch .inp{padding-left:40px;height:44px;font-size:14.5px}
 .srch .inp:disabled{opacity:.5}
-.lib-opts{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.lib-opts .ck{margin:0;font-size:11.5px;color:var(--m)}
+.lib-bar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .lib-status{color:var(--m);font-size:12px;font-variant-numeric:tabular-nums}
 .lib-tree{flex:1;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.22);padding:8px;box-shadow:inset 0 4px 24px rgba(0,0,0,.3)}
 .lib-none{color:var(--m);text-align:center;padding:40px 10px;font-size:13px}
@@ -260,20 +269,19 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .fd>summary em{margin-left:auto;font-style:normal;font-size:10.5px;color:var(--m);background:var(--panel2);border:1px solid var(--line);padding:1px 8px;border-radius:99px;font-weight:700;flex:none}
 .fc{margin-left:14px;padding-left:10px;border-left:1px solid var(--line)}
 .lf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 10px;margin:2px 0;border-radius:10px;border:1px solid transparent;background:transparent;font-size:13px;transition:.15s var(--ease)}
-.lf:hover{background:rgba(255,179,92,.08);border-color:rgba(255,179,92,.35);transform:translateX(2px)}
+.lf:hover,.lf.sel{background:rgba(255,179,92,.08);border-color:rgba(255,179,92,.35);transform:translateX(2px)}
 .lf .pi2{width:26px;height:20px;border-radius:5px;background:linear-gradient(160deg,#fff,#d4d8ea);color:#c0264b;font-weight:900;font-size:8px;display:grid;place-items:center;flex:none}
 .lf .ln{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lf .bd{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--grad);color:#1a0f18;flex:none;white-space:nowrap}
-.lf.nofmt{border:1px dashed rgba(144,151,184,.4);background:rgba(255,255,255,.02);font-style:italic;color:var(--m)}
-.lf.nofmt .pi2{background:rgba(255,255,255,.14);color:var(--m)}
+/* "senza formato": il rigo è identico agli altri, cambia solo la bolla */
 .lf.nofmt .bd{background:transparent;color:var(--m);border:1px dashed var(--m2);font-weight:700;font-style:normal}
 
 /* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(3,4,10,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay{position:fixed;inset:0;background:rgba(3,4,10,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:center;justify-content:center;padding:2.5vh 2.5vw}
 .modal-overlay.open{opacity:1;pointer-events:auto}
-.modal-card{width:100%;max-width:740px;background:linear-gradient(180deg,#191d34,#12152a);border:1px solid var(--line2);border-bottom:0;border-radius:28px 28px 0 0;padding:14px 24px 24px;box-shadow:0 -30px 80px rgba(0,0,0,.85),var(--hi);transform:translateY(100%);transition:transform .3s var(--ease);max-height:84vh;display:flex;flex-direction:column}
-.modal-card::before{content:"";width:42px;height:4px;border-radius:4px;background:var(--line2);margin:0 auto 14px}
-.modal-overlay.open .modal-card{transform:translateY(0)}
+.modal-card{width:100%;max-width:1600px;height:100%;max-height:95vh;min-height:0;position:relative;overflow:hidden;background:linear-gradient(180deg,#1b1f38,#10132a);border:1px solid var(--line2);border-radius:28px;padding:20px 24px 24px;box-shadow:0 40px 120px rgba(0,0,0,.85),var(--hi);transform:translateY(24px) scale(.98);transition:transform .3s var(--ease);display:flex;flex-direction:column}
+.modal-overlay.open .modal-card{transform:none}
+
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .modal-header h3{margin:0;font-size:18px;font-weight:900;letter-spacing:-.3px}
 .inp{width:100%;padding:11px 15px;border-radius:13px;border:1px solid var(--line2);background:rgba(0,0,0,.38);color:var(--t);outline:none;transition:.15s;font-size:14px}
@@ -282,12 +290,67 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .chip{padding:6px 14px;border-radius:99px;border:1px solid var(--line2);background:transparent;color:var(--m);font-size:12px;cursor:pointer;font-weight:600;transition:.15s}
 .chip:hover{border-color:rgba(255,255,255,.3);color:var(--t)}
 .chip.on{background:var(--grad);color:#1a0f18;font-weight:800;border-color:transparent;box-shadow:0 4px 14px rgba(255,93,143,.3)}
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;max-height:340px;overflow:auto;padding:2px 4px 2px 0;margin-top:4px}
+.list{--ft:0px;--fb:0px;flex:1;min-height:0;align-content:start;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;overflow:auto;padding:6px 8px 8px 4px;margin-top:0;
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 var(--ft),#000 calc(100% - var(--fb)),transparent 100%);
+ mask-image:linear-gradient(to bottom,transparent 0,#000 var(--ft),#000 calc(100% - var(--fb)),transparent 100%)}
+.thumb{display:grid;place-items:center;height:104px;margin-bottom:9px;border-radius:10px;background:rgba(0,0,0,.35);border:1px solid var(--line);transition:border-color .15s}
+
+/* Modal formati: layout + panou previzualizare */
+.fm-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(340px,34%) 1fr;gap:22px}
+.fm-right{display:flex;flex-direction:column;min-height:0;min-width:0}
+.fm-pv{display:flex;flex-direction:column;gap:14px;min-height:0;padding:18px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:var(--hi),inset 0 4px 24px rgba(0,0,0,.25)}
+.fm-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none}
+.fm-code{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.fm-sheet{font-size:11px;font-weight:700;color:var(--m);background:var(--panel2);border:1px solid var(--line);padding:4px 11px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fm-art{flex:1;min-height:0;display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);overflow:hidden;place-items:center;padding:10px;border-radius:16px;border:1px solid var(--line);background-color:rgba(0,0,0,.28);background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:20px 20px;box-shadow:inset 0 4px 24px rgba(0,0,0,.35)}
+.fm-art svg{width:100%;height:100%;animation:fmIn .18s var(--ease)}
+@keyframes fmIn{from{opacity:.25;transform:scale(.985)}to{opacity:1;transform:none}}
+.fm-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:none}
+.fm-st{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:8px 11px}
+.fm-st span{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--m2);font-weight:700;margin-bottom:2px}
+.fm-st b{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+@media(max-width:1000px){
+ .fm-body{grid-template-columns:1fr}
+ .fm-pv{display:none}
+ .modal-overlay{padding:0}
+ .modal-card{max-height:100vh;border-radius:0}
+}
+
+.thumb svg{display:block;border-radius:2px;box-shadow:0 4px 10px rgba(0,0,0,.45)}
+.it:hover .thumb,.it.on .thumb{border-color:rgba(255,179,92,.45)}
+
 .it{padding:11px 12px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.03);text-align:left;transition:.15s var(--ease);cursor:pointer}
 .it:hover{border-color:var(--line2);background:rgba(255,255,255,.07);transform:translateY(-2px)}
 .it b{display:block;font-size:13.5px;font-weight:800}
 .it small{color:var(--m);font-size:11px;font-variant-numeric:tabular-nums}
 .it.on{border-color:var(--a);background:rgba(255,179,92,.14);box-shadow:0 0 0 1px var(--a) inset,0 8px 20px rgba(255,179,92,.12)}
+
+/* Dialoghi centrati (ricerca PDF + svuota libreria) */
+.dlg-overlay{position:fixed;inset:0;background:rgba(3,4,10,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:110;opacity:0;pointer-events:none;transition:opacity .2s;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg-overlay.open{opacity:1;pointer-events:auto}
+.dlg-card{width:100%;max-width:560px;background:linear-gradient(180deg,#1b1f38,#12152a);border:1px solid var(--line2);border-radius:26px;padding:20px;box-shadow:0 40px 100px rgba(0,0,0,.8),var(--hi);transform:translateY(14px) scale(.97);transition:transform .28s var(--ease)}
+.dlg-overlay.open .dlg-card{transform:none}
+.pdfm-list{margin-top:12px;max-height:min(52vh,420px);overflow:auto;padding-right:2px}
+.pdfm-hint{margin-top:12px;display:flex;gap:14px;justify-content:center;color:var(--m2);font-size:11px;font-weight:600}
+.pdfm-hint kbd{font:inherit;font-weight:800;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--m)}
+
+.clr-card{max-width:480px;text-align:center;padding:26px 24px 22px}
+.clr-ic{width:72px;height:72px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:32px;color:var(--a);background:rgba(255,179,92,.12);border:1px solid rgba(255,179,92,.35);box-shadow:0 0 0 8px rgba(255,179,92,.06);transition:.3s var(--ease)}
+.dlg-card[data-s="2"] .clr-ic,.dlg-card[data-s="3"] .clr-ic{color:#ff8f6b;background:rgba(255,120,90,.14);border-color:rgba(255,120,90,.45);box-shadow:0 0 0 8px rgba(255,120,90,.07)}
+.dlg-card[data-s="4"] .clr-ic{color:var(--bad);background:rgba(255,107,129,.16);border-color:rgba(255,107,129,.55);box-shadow:0 0 0 10px rgba(255,107,129,.09);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.clr-n{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:var(--m);font-weight:800}
+.clr-dots{display:flex;gap:6px;justify-content:center;margin:10px 0 14px}
+.clr-dots i{width:26px;height:4px;border-radius:4px;background:var(--line2);transition:.3s}
+.clr-dots i.d{background:var(--a)}
+.clr-dots i.on{background:var(--grad);box-shadow:0 0 10px rgba(255,93,143,.6)}
+.clr-card h3{margin:0 0 8px;font-size:21px;font-weight:900;letter-spacing:-.4px}
+.clr-card p{margin:0 auto 16px;color:var(--m);font-size:13.5px;max-width:380px}
+.clr-safe{display:flex;gap:10px;align-items:flex-start;text-align:left;background:rgba(74,222,154,.08);border:1px solid rgba(74,222,154,.3);color:#b8f5d6;border-radius:14px;padding:11px 13px;font-size:12.5px;margin-bottom:18px}
+.clr-safe .i{color:var(--ok);font-size:18px;margin-top:1px}
+.clr-safe b{color:#fff}
+.clr-actions{display:flex;gap:10px}
+.clr-actions .btn{flex:1;padding:12px}
 
 /* Anteprima margine */
 .mgp{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.95);opacity:0;pointer-events:none;transition:opacity .18s,transform .2s var(--ease);z-index:80;background:rgba(14,17,32,.94);border:1px solid var(--line2);border-radius:22px;padding:15px 18px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 40px 100px rgba(0,0,0,.75),var(--hi);text-align:center;max-width:92vw}
@@ -297,7 +360,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .mgp .t b{color:var(--a)}
 .mgp .s{font-size:12.5px;color:var(--m);font-weight:500;font-variant-numeric:tabular-nums}
 
-.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;background:rgba(26,29,46,.96);border:1px solid var(--bad);border-left-width:4px;color:#fff;padding:13px 20px;border-radius:14px;transition:.3s var(--ease);z-index:99;pointer-events:none;max-width:90vw;box-shadow:0 16px 40px rgba(0,0,0,.55);font-weight:600}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;background:rgba(26,29,46,.96);border:1px solid var(--bad);border-left-width:4px;color:#fff;padding:13px 20px;border-radius:14px;transition:.3s var(--ease);z-index:120;pointer-events:none;max-width:90vw;box-shadow:0 16px 40px rgba(0,0,0,.55);font-weight:600}
 .toast.ok{border-color:var(--ok)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 
@@ -328,6 +391,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6l6 6-6 6"/></symbol>
  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4.5M12 17.5v.01"/></symbol>
  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M8 12.5l3 3 5-6"/></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></symbol>
  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
  <symbol id="i-shrink" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></symbol>
  <symbol id="i-grow" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
@@ -342,7 +406,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 <div class="app">
 
 <aside class="side">
- <div class="brand-card">
+ <div class="brand-card" id="brandCard" role="button" tabindex="0" title="Torna alla pagina principale">
   <div class="brand">
 <div class="logo">
  <svg viewBox="0 0 48 48" class="logo-svg" aria-hidden="true">
@@ -379,19 +443,16 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
   <input type="file" id="dir" webkitdirectory directory multiple hidden>
  </section>
 
- <!-- SECTION 2 INVERSATĂ: Dall'etichetta n. PRIMA, Fogli/Etichette A DOUA -->
  <section class="card" id="startCard">
   <div class="ch"><span class="num">2</span><h2>Parametri &amp; Quantità</h2></div>
   
   <div class="params-container">
    <div class="grid-2col">
-    <!-- Dall'etichetta n. (MUTAT ÎN STANGA) -->
     <div class="fld-box">
      <label>Dall'etichetta n.</label>
      <input type="number" id="sstart" class="fld-input" min="1" value="1">
     </div>
 
-    <!-- Totale Fogli / Etichette (MUTAT ÎN DREAPTA) -->
     <div class="fld-box">
      <div>
       <div class="unit-toggle">
@@ -403,7 +464,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
     </div>
    </div>
 
-   <!-- Margine Control Slider -->
    <div class="margin-box">
     <div class="margin-header">
      <label>Margine: <b id="mgv">0</b> mm</label>
@@ -418,7 +478,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
     </div>
    </div>
    
-   <!-- Impostazioni Avanzate -->
    <details class="pick-details">
     <summary class="pick-summary">
      <svg class="i chev"><use href="#i-right"/></svg> Impostazioni avanzate
@@ -464,10 +523,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
    </div>
   </div>
 
-  <button class="btn-change-fmt" id="btnOpenFmtModal" type="button">
-   <span id="targetFmtBtnText">DOPO · C531 (RISULTATO)</span>
-   <svg class="i"><use href="#i-edit"/></svg>
-  </button>
+  <div class="clock" id="clock" aria-live="off">
+   <div class="clk-time" id="clkT">--:--:--</div>
+   <div class="clk-date" id="clkD"></div>
+   <div class="clk-upd" id="clkU" hidden></div>
+  </div>
  </div>
 
  <div class="empty" id="empty">
@@ -480,11 +540,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
     <button class="btn" id="btnPdf" type="button"><svg class="i"><use href="#i-file"/></svg>Scegli PDF</button>
     <button class="btn pri" id="btnFolder" type="button"><svg class="i"><use href="#i-folder"/></svg>Carica / aggiorna cartella</button>
    </div>
-   <div class="lib-opts">
-    <label class="ck"><input type="checkbox" id="syncDel" checked> Elimina i file rimossi dalla cartella (sincronizza)</label>
+   <!-- Sincronizzazione sempre attiva (nascosta) -->
+   <input type="checkbox" id="syncDel" checked hidden>
+   <div class="lib-bar" id="libBar" hidden>
+    <div class="lib-status" id="libStatus"></div>
     <button class="btn sm" id="btnClearLib" type="button" hidden><svg class="i"><use href="#i-trash"/></svg><span id="clrTxt">Svuota</span></button>
    </div>
-   <div class="lib-status" id="libStatus" hidden></div>
    <div class="lib-tree" id="libTree" hidden></div>
 
    <div class="box" id="drop2">
@@ -532,10 +593,45 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
    <h3>Seleziona Nuovo Formato</h3>
    <button class="btn sm" id="btnCloseModal" type="button"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
-  <div>
-   <input type="search" class="inp" id="q" placeholder="Cerca formato: A455, C519, R305…">
-   <div class="chips" id="chips"></div>
-   <div class="list" id="list"></div>
+  <div class="fm-body">
+   <aside class="fm-pv" id="fmPrev"></aside>
+   <div class="fm-right">
+    <input type="search" class="inp" id="q" placeholder="Cerca formato: A455, C519, R305…">
+    <div class="chips" id="chips"></div>
+    <div class="list" id="list"></div>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<!-- Ricerca rapida PDF (Spazio o semplicemente scrivendo) -->
+<div class="dlg-overlay" id="pdfModal">
+ <div class="dlg-card">
+  <div class="srch" style="min-width:0">
+   <svg class="i"><use href="#i-search"/></svg>
+   <input type="search" class="inp" id="pq" placeholder="Scrivi il nome del PDF…" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="pdfm-list" id="pdfList"></div>
+  <div class="pdfm-hint"><span><kbd>↑</kbd> <kbd>↓</kbd> naviga</span><span><kbd>Invio</kbd> apri</span><span><kbd>Esc</kbd> chiudi</span></div>
+ </div>
+</div>
+
+<!-- Conferma svuota libreria (5 passaggi) -->
+<div class="dlg-overlay" id="clrDlg">
+ <div class="dlg-card clr-card" data-s="0">
+  <div class="clr-ic"><svg class="i"><use href="#i-alert"/></svg></div>
+  <div class="clr-n" id="clrN"></div>
+  <div class="clr-dots" id="clrDots"></div>
+  <h3 id="clrT2"></h3>
+  <p id="clrP"></p>
+  <div class="clr-safe">
+   <svg class="i"><use href="#i-shield"/></svg>
+   <div><b>I tuoi file sono al sicuro.</b> Le cartelle e i PDF sul tuo PC restano intatti: spariscono solo da questa interfaccia web.</div>
+  </div>
+  <div class="clr-actions">
+   <button class="btn" id="clrNo" type="button">Annulla</button>
+   <button class="btn pri" id="clrYes" type="button">Continua</button>
   </div>
  </div>
 </div>
@@ -553,12 +649,16 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 <script>
 const F=[["A400",38.1,21.2,"A4",210,297,5,13,4.7,10.7,2.5,0,2,0],["A400 Z",38.1,21.2,"A4",210,297,5,13,9.7,10.7,0,0,0,0],["A401",37,14,"A4",210,297,5,20,6.5,8.5,3,0,2,0],["A402",37.5,23.5,"A4",210,297,5,12,7.2,7.5,2,0,2,0],["A403",34,34,"A4",210,297,5,7,13,19,3.5,3.5,2,0],["A405",46,11,"A4",210,297,4,21,6,16,4.7,1.7,2,0],["A406",47.5,25.5,"A4",210,297,4,11,5.5,8.2,3,0,2,0],["A407",47.5,35,"A4",210,297,4,8,5.5,8.5,3,0,2,0],["A408",47.5,46.5,"A4",210,297,4,6,5.5,9,3,0,2,0],["A409",47.7,70,"A4",210,297,4,4,5.1,8.5,3,0,2,0],["A410",63.5,38.1,"A4",210,297,3,7,7.2,15.1,2.5,0,2,0],["A415",63.5,46.6,"A4",210,297,3,6,7.2,8.7,2.5,0,2,0],["A420",63.5,72,"A4",210,297,3,4,7.2,4.5,2.5,0,2,0],["A425",64,34,"A4",210,297,3,8,6.5,12.5,2.5,0,2,0],["A430",70,52,"A4",210,297,2,5,23.3,18.5,23.5,0,2,0],["A431",76.2,46.4,"A4",210,297,2,6,27.3,9.3,3,0,2,0],["A435",99.1,34,"A4",210,297,2,8,4.7,12.5,2.5,0,2,0],["A440",99.1,38.1,"A4",210,297,2,7,4.7,15.1,2.5,0,2,0],["A445",99.1,57,"A4",210,297,2,5,4.7,6,2.5,0,2,0],["A450",99.1,67.7,"A4",210,297,2,4,4.7,13.1,2.5,0,2,0],["A455",99.1,93.1,"A4",210,297,2,3,4.7,8.9,2.5,0,2,0],["A456",100,17,"A4",210,297,2,15,4,7,2,2,2,0],["A460",114,114,"A4",210,297,1,2,63,17,0,35,57,1],["A463",117.5,117.5,"A4",210,297,1,2,46.3,15.5,0,31,58.75,1],["A464",117.5,117.5,"A4",210,297,1,2,46.3,15.5,0,31,58.75,1],["A465",99.1,139,"A4",210,297,2,2,4.7,9.5,2.5,0,2,0],["A466",15,140,"A4",210,297,13,2,7.5,7,0,3,2,0],["A467",190,38,"A4",210,297,1,7,10,15.5,0,0,2,0],["A470",199.6,143.5,"A4",210,297,1,2,5.2,5,0,0,2,0],["A475",199.6,289.1,"A4",210,297,1,1,5.2,4,0,0,2,0],["C500",70,36,"A4",210,297,3,8,0,4.5,0,0,0,0],["C501",105,36,"A4",210,297,2,8,0,4.5,0,0,0,0],["C502",105,72,"A4",210,297,2,4,0,4.5,0,0,0,0],["C503",210,297,"A4",210,297,1,1,0,0,0,0,0,0],["C504",105,48,"A4",210,297,2,6,0,4.5,0,0,0,0],["C505",105,140,"A4",210,297,2,2,0,8.5,0,0,0,0],["C506",70,25,"A4",210,297,3,12,0,0,0,0,0,0],["C507",105,59,"A4",210,297,2,5,0,0,0,0,0,0],["C508",105,42,"A4",210,297,2,7,0,0,0,0,0,0],["C509",210,148,"A4",210,297,1,2,0,0,0,0,0,0],["C509 A3",210,148,"A3",297,420,1,1,0,0,0,0,0,0],["C510",70,37,"A4",210,297,3,8,0,0,0,0,0,0],["C511",105,37,"A4",210,297,2,8,0,0,0,0,0,0],["C512",105,74,"A4",210,297,2,4,0,0,0,0,0,0],["C513",52.5,29.7,"A4",210,297,4,10,0,0,0,0,0,0],["C514",70,297,"A4",210,297,3,1,0,0,0,0,0,0],["C515",70,72,"A4",210,297,3,4,0,4.5,0,0,0,0],["C516",40,297,"A4",210,297,5,1,5,0,0,0,0,0],["C517",70,48,"A4",210,297,3,6,0,4.5,0,0,0,0],["C518",70,40,"A4",210,297,3,7,0,8.5,0,0,0,0],["C519",105,148,"A4",210,297,2,2,0,0,0,0,0,0],["C519 A5",105,148,"A5",148,210,2,1,0,0,0,0,0,0],["C520",210,99,"A4",210,297,1,3,0,0,0,0,0,0],["C520 A3",210,99,"A3",297,420,1,1,0,0,0,0,0,0],["C521",70,42,"A4",210,297,3,7,0,0,0,0,0,0],["C522",35,59,"A4",210,297,6,5,0,0,0,0,0,0],["C523",70,41,"A4",210,297,3,7,0,5,0,0,0,0],["C524",56,28,"A4",210,297,3,9,11,10.5,10,3,2,0],["C525",210,37,"A4",210,297,1,8,0,0,0,0,0,0],["C526",35,23.5,"A4",210,297,6,12,0,7.5,0,0,0,0],["C527",210,25,"A4",210,297,1,12,0,0,0,0,0,0],["C528",145,17,"A4",210,297,1,16,32.5,12.5,0,0,2,0],["C529",210,48,"A4",210,297,1,6,0,4.5,0,0,0,0],["C530",48,25,"A4",210,297,4,12,9,0,0,0,0,0],["C531",48,30,"A4",210,297,4,10,9,0,0,0,0,0],["C532",16.3,35.4,"A4",210,297,12,8,7.2,6.9,0,0,0,0],["C535",190,61,"A4",210,297,1,4,10,26.5,0,0,2,0],["C536",103.5,36,"A4",210,297,2,8,0,4.5,3,0,2,0],["C537",67,10,"A4",210,297,3,28,4.5,8.5,0,0,0,0],["C539",210,128,"A4",210,297,1,2,0,20.5,0,0,0,0],["C540",105,99,"A4",210,297,2,3,0,0,0,0,0,0],["C542",70,148,"A4",210,297,3,2,0,0,0,0,0,0],["C543",52.5,37,"A4",210,297,4,8,0,0,0,0,0,0],["C544",52.5,72,"A4",210,297,4,4,0,4.5,0,0,0,0],["C546",105,40,"A4",210,297,2,7,0,8.5,0,0,0,0],["C547",105,25,"A4",210,297,2,12,0,0,0,0,0,0],["C548",45,29.7,"A4",210,297,4,10,15,0,0,0,0,0],["C549",70,35,"A4",210,297,3,8,0,8.5,0,0,0,0],["C550",210,280,"A4",210,297,1,1,0,8.5,0,0,0,0],["C551",45,23,"A4",210,297,4,11,10,12,3.3,2,2,0],["C552",66,33.9,"A4",210,297,3,8,6,13.1,0,0,0,0],["C553",48.5,25.4,"A4",210,297,4,10,8,21.5,0,0,0,0],["C554",70,38.1,"A4",210,297,3,7,0,15.1,0,0,0,0],["C555",52.5,21.2,"A4",210,297,4,14,0,0,0,0,0,0],["C556",52.5,25,"A4",210,297,4,12,0,0,0,0,0,0],["C557",70,29.7,"A4",210,297,3,10,0,0,0,0,0,0],["C558",105,35,"A4",210,297,2,8,0,8.5,0,0,0,0],["C560",210,72,"A4",210,297,1,4,0,4.5,0,0,0,0],["C562",48.5,16.5,"A4",210,297,4,17,8,8.2,0,0,0,0],["C564",210,74,"A4",210,297,1,4,0,0,0,0,0,0],["C565",105,29.7,"A4",210,297,2,10,0,0,0,0,0,0],["C566",210,140,"A4",210,297,1,2,0,8.5,0,0,0,0],["C567",210,29.7,"A4",210,297,1,10,0,0,0,0,0,0],["C568",42,25,"A4",210,297,5,12,0,0,0,0,0,0],["C570",70,16.9,"A4",210,297,3,17,0,4.8,0,0,0,0],["C571",52.5,16.9,"A4",210,297,4,17,0,4.8,0,0,0,0],["C572",105,16.9,"A4",210,297,2,17,0,4.8,0,0,0,0],["C573",210,16.9,"A4",210,297,1,17,0,4.8,0,0,0,0],["C574",210,59,"A4",210,297,1,5,0,0,0,0,0,0],["C575",101,36,"A4",210,297,2,8,4,4.5,0,0,0,0],["C576",101,48,"A4",210,297,2,6,4,4.5,0,0,0,0],["C577",101,57,"A4",210,297,2,5,4,6,0,0,0,0],["C578",101,72,"A4",210,297,2,4,4,4.5,0,0,0,0],["C579",101,95,"A4",210,297,2,3,4,6,0,0,0,0],["C580",105,57,"A4",210,297,2,5,0,6,0,0,0,0],["C581",19,10,"A4",210,297,10,28,10,8.5,0,0,0,0],["C582",87.5,53,"A4",210,297,2,5,17.5,16,0,0,0,0],["C583",105,297,"A4",210,297,2,1,0,0,0,0,0,0],["R300",20,20,"A4",210,297,8,11,14.5,23.5,3,3,10,1],["R305",40,40,"A4",210,297,4,6,20.5,21,3,3,20,1],["R310",60,60,"A4",210,297,3,4,12,24,3,3,30,1],["R315",85,85,"A4",210,297,2,3,17.5,16,5,5,42.5,1],["C559",52.5,29.7,"A4",210,297,4,10,0,0,0,0,0,0],["R320",22,16,"A4",210,297,8,15,9.5,9.5,2.1,2.7,0,0],["R325",36,26,"A4",210,297,5,10,10,10,2.5,1.8,0,0],["R330",36,19,"A4",210,297,5,13,10,10,2.5,2.5,0,0],["R335",36,21,"A4",210,297,5,12,11,8,2.5,3,0,0],["R340",45,21,"A4",210,297,4,12,10,10,3.3,2.7,0,0]];
 const MM=72/25.4;
-const P=2; 
+/* Calitatea previzualizării: factorul de rasterizare (px per punct PDF).
+   Se adaptează automat la fiecare PDF (max 4, dar fără să depășească ~4096 px pe latura mare). */
+const P_MAX=4, P_MIN=2, CAN_MAX=4096;
+let P=P_MAX;
 const D=F.map(a=>{const[code,W,H,fmt,SW,SH,c,r,ml,mt,gh,gv,rad,ci]=a;return{code,W,H,fmt,SW,SH,c,r,ml,mt,gh,gv,rad,ci,n:c*r,mr:SW-(ml+c*W+(c-1)*gh),mb:SH-(mt+r*H+(r-1)*gv)}});
 const $=id=>document.getElementById(id);
 let cur=D.find(d=>d.code==='A455')||D[0],tgt=null,fam='*',txt='',S=null;
 let qtyMode = 'sheet';
 let rot=0;
+const DEFAULT_FMT='C503'; // formato standard per i PDF senza formato riconosciuto
 
 
 const TG=()=>tgt||cur;
@@ -606,6 +706,36 @@ function shape(x,px,py,w,h,r,ci){
   r=Math.min(r,w/2,h/2);
   if(r>0&&x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h);
  }
+}
+
+/* ---------- Bordi anteprima: un solo tracciato SVG sottile ---------- */
+function cellPath(x,y,w,h,r,ci){
+ const q=v=>v.toFixed(3);
+ if(ci){
+  const R=Math.min(w,h)/2,cx=x+w/2,cy=y+h/2;
+  return `M${q(cx+R)} ${q(cy)}A${q(R)} ${q(R)} 0 1 0 ${q(cx-R)} ${q(cy)}A${q(R)} ${q(R)} 0 1 0 ${q(cx+R)} ${q(cy)}Z`;
+ }
+ r=Math.min(r||0,w/2,h/2);
+ if(r<=0)return `M${q(x)} ${q(y)}H${q(x+w)}V${q(y+h)}H${q(x)}Z`;
+ return `M${q(x+r)} ${q(y)}H${q(x+w-r)}A${q(r)} ${q(r)} 0 0 1 ${q(x+w)} ${q(y+r)}V${q(y+h-r)}A${q(r)} ${q(r)} 0 0 1 ${q(x+w-r)} ${q(y+h)}H${q(x+r)}A${q(r)} ${q(r)} 0 0 1 ${q(x)} ${q(y+h-r)}V${q(y+r)}A${q(r)} ${q(r)} 0 0 1 ${q(x+r)} ${q(y)}Z`;
+}
+function bordersSvg(SW,SH,groups){
+ const ns='http://www.w3.org/2000/svg',s=document.createElementNS(ns,'svg');
+ s.setAttribute('class','bsvg');
+ s.setAttribute('viewBox','0 0 '+SW+' '+SH);
+ s.setAttribute('preserveAspectRatio','none');
+ groups.forEach(g=>{
+  if(!g.d)return;
+  const p=document.createElementNS(ns,'path');
+  p.setAttribute('d',g.d);
+  p.setAttribute('fill','none');
+  p.setAttribute('stroke',g.c);
+  p.setAttribute('stroke-width','1');
+  p.setAttribute('vector-effect','non-scaling-stroke');
+  if(g.dash)p.setAttribute('stroke-dasharray',g.dash);
+  s.appendChild(p);
+ });
+ return s;
 }
 
 function outName(){
@@ -791,33 +921,45 @@ async function loadPDF(file){
   const bytes=new Uint8Array(await file.arrayBuffer());
   const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
   const pg=await doc.getPage(1);
-  const v1=pg.getViewport({scale:1}),vp=pg.getViewport({scale:P});
+  const v1=pg.getViewport({scale:1});
+  // calitate maximă adaptată la dimensiunea paginii (A4 -> 4x, A3 -> ~3.4x)
+  P=clamp(CAN_MAX/Math.max(v1.width,v1.height),P_MIN,P_MAX);
+  const vp=pg.getViewport({scale:P});
   const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
   const ctx=cv.getContext('2d',{willReadFrequently:true});
   ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
   await pg.render({canvasContext:ctx,viewport:vp}).promise;
-  const code=detect(file.name),pick=code?refine(code,v1.width,v1.height):null;
+  // PDF senza formato riconosciuto -> formato standard C503
+  const code=detect(file.name),pick=code?refine(code,v1.width,v1.height):DEFAULT_FMT;
   S={name:file.name,base:file.name.replace(/\.[^.]*$/,''),bytes,pages:doc.numPages,W:v1.width,H:v1.height,cv,ctx,code,det:pick,rot:pg.rotate||0,start:1,rp:0,total:0,sheets:1,totAuto:true,exclusions:{}};
-  if(pick){cur=D.find(x=>x.code===pick);if(tgt===cur)tgt=null;fam='*';txt='';$('q').value='';
+  if(pick){cur=D.find(x=>x.code===pick)||cur;if(tgt===cur)tgt=null;fam='*';txt='';$('q').value='';
    $('chips').querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0))}
   setupCells();
   buildList();render();
   const el=document.querySelector('.it.on');if(el&&el.scrollIntoView)el.scrollIntoView({block:'nearest'});
  }catch(e){toast('Impossibile leggere il PDF: '+(e.message||e))}}
 
+/* Dimensionează foile și setează --bk (scara bulinelor) în funcție de mărimea reală a etichetei pe ecran */
 function fitSheets(){
  if(!S)return;
- [['b1','sh1',S.W/S.H],['b2','sh2',TG().SW/TG().SH]].forEach(([b,s,r])=>{
+ [['b1','sh1',S.W/S.H,cur],['b2','sh2',TG().SW/TG().SH,TG()]].forEach(([b,s,r,f])=>{
   const B=$(b),w=B.clientWidth-16,h=B.clientHeight-16;
   const W=Math.max(10,Math.min(w,h*r)),e=$(s);
-  e.style.width=W+'px';e.style.height=(W/r)+'px'})}
+  e.style.width=W+'px';e.style.height=(W/r)+'px';
+  // dimensiunea minimă a unei etichete în pixeli pe ecran
+  const minPx=W*Math.min(f.W,f.H)/f.SW;
+  const bk=clamp(minPx/70,0.3,1);
+  e.style.setProperty('--bk',bk.toFixed(3))})}
 
 function drawSrc(){
  const d=cur,w=$('sh1');
  w.innerHTML='';w.appendChild(S.cv);
+ // bordi: un unico tracciato sottile (nessun ispessimento dove si sovrappongono)
+ const pth=S.cells.map(p=>cellPath(p[0],p[1],d.W,d.H,d.rad,d.ci)).join('');
+ w.appendChild(bordersSvg(d.SW,d.SH,[{d:pth,c:'#000'}]));
  S.cells.forEach((p,i)=>{
   const e=document.createElement('div');
-  e.className='cell'+(d.ci?' circle':'');
+  e.className='cell';
   e.style.cssText=`left:${p[0]/d.SW*100}%;top:${p[1]/d.SH*100}%;width:${d.W/d.SW*100}%;height:${d.H/d.SH*100}%`;
   e.innerHTML=`<span class="no">${i+1}</span>`;
   w.appendChild(e);
@@ -829,9 +971,12 @@ function drawRes(){
  const totalSlotsCount = seq.length;
  const pages=Math.max(1,Math.ceil(totalSlotsCount/n));
  S.rp=clamp(S.rp,0,pages-1);
- const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,k2=MM*P,fb=fit(d,t);
+ const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,fb=fit(d,t);
+ // rezoluție înaltă pentru foaia rezultat (max ~4096 px pe latura mare)
+ const k2=Math.min(MM*P_MAX,CAN_MAX/Math.max(t.SW,t.SH));
  const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+ x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
 
  const pageStartSlot = pg * n;
  const pageEndSlot = (pg + 1) * n;
@@ -853,7 +998,7 @@ drawRot(x,S.cv, s[0]*sxm*P,
     x.restore();
 
     if(oc){
-     x.lineWidth=1;x.strokeStyle='#000';
+     x.lineWidth=Math.max(1,k2/MM*0.35);x.strokeStyle='#000';
      shape(x, p[0]*k2, p[1]*k2, t.W*k2, t.H*k2, t.rad*k2, t.ci);
      x.stroke();
     }
@@ -861,26 +1006,22 @@ drawRot(x,S.cv, s[0]*sxm*P,
   }
  }
 
- {
-  x.save();x.lineWidth=2;
-  T.forEach((p,j)=>{
-   const slot = pg*n + j;
-   if(slot < seq.length){
-    const isExcluded = S.exclusions && S.exclusions[slot];
-    x.strokeStyle = isExcluded ? '#ff6b81' : '#000';
-    x.setLineDash(isExcluded ? [4,4] : []);
-    shape(x, p[0]*k2, p[1]*k2, t.W*k2, t.H*k2, t.rad*k2, t.ci);
-    x.stroke();
-   } else {
-    x.strokeStyle='#8a8fa8';x.setLineDash([8,6]);
-    shape(x, p[0]*k2, p[1]*k2, t.W*k2, t.H*k2, t.rad*k2, t.ci);
-    x.stroke();
-   }
-  });
-  x.restore();
- }
-
  const w=$('sh2');w.innerHTML='';w.appendChild(c);
+
+ // bordi anteprima: tracciati SVG sottili, uno per tipo (attive / escluse / vuote)
+ let pAct='',pExc='',pEmp='';
+ T.forEach((p,j)=>{
+  const slot = pg*n + j;
+  const sp = cellPath(p[0],p[1],t.W,t.H,t.rad,t.ci);
+  if(slot < seq.length){
+   if(S.exclusions && S.exclusions[slot])pExc+=sp;else pAct+=sp;
+  } else pEmp+=sp;
+ });
+ w.appendChild(bordersSvg(t.SW,t.SH,[
+  {d:pEmp,c:'#8a8fa8',dash:'5 4'},
+  {d:pExc,c:'#ff6b81',dash:'4 3'},
+  {d:pAct,c:'#000'}
+ ]));
 
  T.forEach((p,j)=>{
   const slot = pg*n + j;
@@ -1026,7 +1167,6 @@ function render(){
 
  const t=TG();
  $('fcode').textContent=d.code;$('tcode').textContent=t.code;
- $('targetFmtBtnText').textContent='DOPO · '+t.code;
  document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===t.code));
  if(pm){
   $('fname').textContent=S.name;
@@ -1035,14 +1175,100 @@ function render(){
   $('l2').textContent=t.code;
   syncTotal();
   drawSrc();drawRes();updSummary();
+  fitSheets();
   requestAnimationFrame(fitSheets)}
  else updSummary()}
 
 let pickMode='tgt';
+
+/* Miniatură foaie: doar conturul etichetelor (cache pe cod format) */
+const TH={};
+function thumb(d){
+ if(TH[d.code])return TH[d.code];
+ const p=cells(d).map(c=>cellPath(c[0],c[1],d.W,d.H,d.rad,d.ci)).join('');
+ const h=84,w=Math.round(h*d.SW/d.SH);
+
+ return TH[d.code]=`<span class="thumb"><svg width="${w}" height="${h}" viewBox="0 0 ${d.SW} ${d.SH}" preserveAspectRatio="none"><rect width="${d.SW}" height="${d.SH}" fill="#fff" fill-opacity=".92" rx="3"/><path d="${p}" fill="none" stroke="#1a0f18" stroke-width="1" vector-effect="non-scaling-stroke"/></svg></span>`}
+
+/* Fade sus/jos la scroll */
+function listFade(){
+ const l=$('list'),max=l.scrollHeight-l.clientHeight,t=l.scrollTop,F=32;
+ l.style.setProperty('--ft',Math.min(F,t)+'px');
+ l.style.setProperty('--fb',Math.min(F,Math.max(0,max-t))+'px')}
+$('list').addEventListener('scroll',listFade,{passive:true});
+
+/* ---------- Previzualizare mare format (hover) ---------- */
+const hlCode=()=>pickMode==='src'?cur.code:TG().code;
+
+/* Foaia formatului `t` umplută cu etichetele PDF-ului (imagine pentru panou) */
+let FMC={};
+function fmImg(t){
+ if(!S||pickMode!=='tgt')return null;
+ const act=[];S.cp.forEach((v,i)=>{if(v)act.push(i)});
+ if(!act.length)return null;
+ const [ox,oy]=off(),key=[S.name,cur.code,t.code,rot,mval(),ox,oy].join('|');
+ if(FMC[key])return FMC[key];
+ if(Object.keys(FMC).length>40)FMC={};
+ const old=tgt;tgt=(t===cur?null:t);
+ try{
+  const dd=cur,fb=fit(dd,t),sxm=S.W/dd.SW,sym=S.H/dd.SH;
+  const k2=Math.min(MM*2,2000/Math.max(t.SW,t.SH));
+  const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+  x.imageSmoothingQuality='high';
+  cells(t,ox,oy).forEach((p,j)=>{
+   const i=act[j%act.length],s=S.cells[i],q=place(i,p,fb);
+   x.save();
+   shape(x,p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,t.rad*k2,t.ci);x.clip();
+   drawRot(x,S.cv,s[0]*sxm*P,s[1]*sym*P,dd.W*sxm*P,dd.H*sym*P,q.x*k2,q.y*k2,q.w*k2,q.h*k2);
+   x.restore()});
+  return FMC[key]=c.toDataURL('image/jpeg',.9);
+ }catch(e){return null}
+ finally{tgt=old}}
+
+function fmSvg(d,img){
+ const u=d.SW/210,pad=15*u,fs=4*u,sw=.35*u,A='#ffb35c',B='#ff5d8f',M='#9097b8';
+ const tx=(x,y,t,c,r)=>`<text x="${x}" y="${y}" font-size="${fs}" font-weight="700" fill="${c}" text-anchor="middle" font-family="system-ui,sans-serif"${r?` transform="rotate(-90 ${x} ${y})"`:''}>${t}</text>`;
+ const hl=(x1,x2,y,c)=>`<path d="M${x1} ${y}H${x2}M${x1} ${y-1.4*u}V${y+1.4*u}M${x2} ${y-1.4*u}V${y+1.4*u}" stroke="${c}" stroke-width="${sw*1.3}" fill="none"/>`;
+ const vl=(y1,y2,x,c)=>`<path d="M${x} ${y1}V${y2}M${x-1.4*u} ${y1}H${x+1.4*u}M${x-1.4*u} ${y2}H${x+1.4*u}" stroke="${c}" stroke-width="${sw*1.3}" fill="none"/>`;
+ let o=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-pad} ${-pad} ${d.SW+2*pad} ${d.SH+2*pad}">`;
+ o+=`<rect width="${d.SW}" height="${d.SH}" rx="${2*u}" fill="#fff"/>`;
+ if(img)o+=`<image href="${img}" width="${d.SW}" height="${d.SH}" preserveAspectRatio="none"/>`;
+ cells(d).forEach(c=>{
+  o+=`<path d="${cellPath(c[0],c[1],d.W,d.H,d.rad,d.ci)}" fill="none" stroke="#000" stroke-width="${sw*1.5}"/>`});
+
+ const y0=-4*u,x0=-4*u;
+ if(d.ml>0)o+=hl(0,d.ml,y0,A)+tx(d.ml/2,y0-2*u,nf(d.ml),A);
+ o+=hl(d.ml,d.ml+d.W,y0,B)+tx(d.ml+d.W/2,y0-2*u,nf(d.W),B);
+ if(d.mt>0)o+=vl(0,d.mt,x0,A)+tx(x0-2*u,d.mt/2,nf(d.mt),A,1);
+ o+=vl(d.mt,d.mt+d.H,x0,B)+tx(x0-2*u,d.mt+d.H/2,nf(d.H),B,1);
+ o+=tx(d.SW/2,d.SH+9*u,d.fmt+' · '+d.SW+' × '+d.SH+' mm',M);
+ return o+'</svg>'}
+
+function fmShow(code){
+ const d=D.find(x=>x.code===code),el=$('fmPrev');
+ if(!d||!el)return;
+ const st=(l,v)=>`<div class="fm-st"><span>${l}</span><b>${v}</b></div>`;
+ const use=Math.round(d.n*(d.ci?Math.PI/4:1)*d.W*d.H/(d.SW*d.SH)*100);
+ el.innerHTML=`<div class="fm-head"><div class="fm-code">${d.code}</div><div class="fm-sheet">${d.fmt} · ${d.SW}×${d.SH} mm</div></div>`
++`<div class="fm-art">${fmSvg(d,fmImg(d))}</div><div class="fm-stats">`
+  +st('Etichetta',nf(d.W)+' × '+nf(d.H)+' mm')+st('Griglia',d.c+' × '+d.r+' = '+d.n)
+  +st('Margine sx / sup',nf(d.ml)+' / '+nf(d.mt))+st('Margine dx / inf',nf(d.mr)+' / '+nf(d.mb))
+  +st('Spazio orizz. / vert.',nf(d.gh)+' / '+nf(d.gv))+st('Forma',d.ci?'Cerchio':(d.rad?'Angoli '+nf(d.rad)+' mm':'Angoli retti'))
+  +st('Utilizzo foglio',use+'%')+st('Per foglio',d.n+' etichette')+'</div>'}
+let fmT=0;
+$('list').addEventListener('mouseover',e=>{const b=e.target.closest('.it');if(!b)return;clearTimeout(fmT);fmT=setTimeout(()=>fmShow(b.dataset.c),40)});
+$('list').addEventListener('focusin',e=>{const b=e.target.closest('.it');if(b){clearTimeout(fmT);fmShow(b.dataset.c)}});
+$('list').addEventListener('mouseleave',()=>{clearTimeout(fmT);fmShow(hlCode())});
+
+
+
 function buildList(){
  const q=txt.toLowerCase().replace(/\s+/g,'');
  const L=D.filter(d=>(fam==='*'||d.code[0]===fam)&&(!q||(d.code+d.W+'x'+d.H).toLowerCase().replace(/\s+/g,'').includes(q)));
- $('list').innerHTML=L.map(d=>`<button class="it" type="button" data-c="${d.code}"><b>${d.code}</b><small>${nf(d.W)}×${nf(d.H)} · ${d.n}</small></button>`).join('')||'<div style="color:var(--m)">Nessun formato</div>';
+ $('list').innerHTML=L.map(d=>`<button class="it" type="button" data-c="${d.code}">${thumb(d)}<b>${d.code}</b><small>${nf(d.W)}×${nf(d.H)} · ${d.n}</small></button>`).join('')||'<div style="color:var(--m)">Nessun formato</div>';
+ requestAnimationFrame(listFade);
+
  $('list').querySelectorAll('.it').forEach(b=>b.onclick=()=>{
   const x=D.find(d=>d.code===b.dataset.c);
   if(pickMode==='src'){
@@ -1059,8 +1285,10 @@ function buildList(){
   }
   closeModal();
   render()});
- const hl=pickMode==='src'?cur.code:TG().code;
- document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===hl))}
+ const hl=hlCode();
+ document.querySelectorAll('.it').forEach(b=>b.classList.toggle('on',b.dataset.c===hl));
+ fmShow(hl)}
+
 
 
 $('chips').innerHTML=[['*','Tutti'],['A','A400...'],['C','C500...'],['R','R300...']].map(([k,n])=>`<button class="chip${k==='*'?' on':''}" type="button" data-k="${k}">${n}</button>`).join('');
@@ -1117,6 +1345,18 @@ const DBN='SmartLabelLib';
 let dbp=null,LIB=[],LIBQ='',LAST=[],importing=false;
 const OPEN=new Map();
 
+/* ---------- Ultima actualizare a folderului încărcat (salvată local) ---------- */
+const UPD_KEY='sls_lib_updated';
+function getUpd(){try{const v=parseInt(localStorage.getItem(UPD_KEY),10);return v>0?v:0}catch(_){return 0}}
+function setUpd(ts){try{if(ts)localStorage.setItem(UPD_KEY,String(ts));else localStorage.removeItem(UPD_KEY)}catch(_){}}
+function showUpd(){
+ const el=$('clkU'),ts=getUpd();
+ if(!ts||!LIB.length){el.hidden=true;el.textContent='';return}
+ const dt=new Date(ts);
+ const s=dt.toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})+' · '+dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',hour12:false});
+ el.innerHTML='Cartella aggiornata: <b>'+esc(s)+'</b>';
+ el.hidden=false}
+
 function idb(){
  return dbp||(dbp=new Promise((res,rej)=>{
   if(!window.indexedDB){rej(new Error('IndexedDB non disponibile'));return}
@@ -1161,9 +1401,10 @@ function renderLib(){
  const has=LIB.length>0;
  $('drop2').hidden=has;
  $('libTree').hidden=!has;
- $('libStatus').hidden=!has;
+ $('libBar').hidden=!has;
  $('btnClearLib').hidden=!has;
  $('libq').disabled=!has;
+ showUpd();
  if(!has){LAST=[];return}
  const terms=LIBQ.toLowerCase().split(/\s+/).filter(Boolean);
  const list=terms.length?LIB.filter(m=>{
@@ -1186,6 +1427,8 @@ async function openLib(path){
   loadPDF(new File([blob],m.name,{type:'application/pdf'}));
  }catch(e){toast('Errore apertura: '+(e.message||e))}}
 
+/* Import veloce: confronta path + dimensione + data di modifica con quanto già
+   salvato e salta subito i file invariati (nessuna scrittura su IndexedDB). */
 async function importItems(items){
  if(importing){toast('Importazione già in corso…');return}
  const ok=[];let ign=0;
@@ -1197,6 +1440,20 @@ async function importItems(items){
  try{
   const db=await idb();
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  $('libBar').hidden=false;
+  $('libStatus').textContent='Controllo '+ok.length+' file…';
+  await new Promise(r=>setTimeout(r,0));
+
+  // 1) quali file sono nuovi / modificati / invariati
+  const known=new Map(LIB.map(m=>[m.path,m]));
+  const todo=[];let same=0,added=0,upd=0;
+  for(const it of ok){
+   const k=known.get(it.path);
+   if(k&&k.size===it.file.size&&(k.mtime||0)===(it.file.lastModified||0)){same++;continue}
+   todo.push(it);
+   if(k)upd++;else added++}
+
+  // 2) rimozione dei file spariti dalla cartella (sync sempre attivo)
   const seen=new Set(ok.map(o=>o.path));
   let removed=0;
   if($('syncDel').checked){
@@ -1207,22 +1464,27 @@ async function importItems(items){
     old.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
     await txDone(tx);removed=old.length}
   }
-  const known=new Set(LIB.map(m=>m.path));
-  let added=0,upd=0;
-  const CH=40;
-  for(let i=0;i<ok.length;i+=CH){
-   $('libStatus').hidden=false;
-   $('libStatus').textContent='Importazione '+Math.min(i+CH,ok.length)+' / '+ok.length+'…';
+
+  // 3) scrittura solo di ciò che serve
+  const CH=60;
+  for(let i=0;i<todo.length;i+=CH){
+   $('libStatus').textContent='Importazione '+Math.min(i+CH,todo.length)+' / '+todo.length+'…';
    const tx=db.transaction(['meta','data'],'readwrite'),mS=tx.objectStore('meta'),dS=tx.objectStore('data');
-   for(const it of ok.slice(i,i+CH)){
+   for(const it of todo.slice(i,i+CH)){
     mS.put({path:it.path,name:it.name,size:it.file.size,mtime:it.file.lastModified||0,code:detect(it.name)});
-    dS.put(it.file,it.path);
-    if(known.has(it.path))upd++;else added++}
+    dS.put(it.file,it.path)}
    await txDone(tx);
    await new Promise(r=>setTimeout(r,0));
   }
+  setUpd(Date.now());
   await refreshLib();
-  toast(added+' nuovi · '+upd+' aggiornati'+(removed?' · '+removed+' rimossi':'')+(ign?' · '+ign+' file non PDF ignorati':''),true);
+  const parts=[];
+  if(added)parts.push(added+' nuovi');
+  if(upd)parts.push(upd+' aggiornati');
+  if(removed)parts.push(removed+' rimossi');
+  if(same)parts.push(same+' già presenti (saltati)');
+  if(ign)parts.push(ign+' non PDF ignorati');
+  toast(parts.length?parts.join(' · '):'Nessuna modifica',true);
  }catch(e){
   toast('Errore importazione: '+(e.message||e));
   refreshLib().catch(()=>{});
@@ -1256,22 +1518,88 @@ $('dir').onchange=e=>{
  const fl=[...e.target.files];e.target.value='';
  importItems(fl.map(f=>({file:f,path:f.webkitRelativePath||f.name})))};
 
-let clrT=0;
-$('btnClearLib').onclick=async()=>{
- const b=$('btnClearLib');
- if(!b.dataset.arm){
-  b.dataset.arm='1';$('clrTxt').textContent='Sicuro? Clicca ancora';
-  clrT=setTimeout(()=>{delete b.dataset.arm;$('clrTxt').textContent='Svuota'},3000);return}
- clearTimeout(clrT);delete b.dataset.arm;$('clrTxt').textContent='Svuota';
+/* ---------- Svuota libreria: conferma in 5 passaggi ---------- */
+const CLR_STEPS=[
+ ()=>['Svuotare la libreria?','Stai per rimuovere dall\'interfaccia tutte le cartelle e i '+LIB.length+' PDF salvati nel browser.','Continua'],
+ ()=>['Sei davvero sicuro?','Tutta la struttura delle cartelle e l\'elenco dei file spariranno da qui.','Sì, continua'],
+ ()=>['Non si può annullare','Per riavere la libreria dovrai caricare di nuovo le cartelle dal tuo PC.','Ho capito, continua'],
+ ()=>['Penultimo avviso','Ultima occasione per ripensarci: al prossimo passaggio ti chiederò la conferma finale.','Procedi'],
+ ()=>['Conferma finale','Premendo il pulsante rosso la libreria verrà svuotata subito.','Sì, svuota tutto']
+];
+let clrStep=0,clrLock=0;
+const clrDlg=$('clrDlg');
+function clrShow(){
+ const s=CLR_STEPS[clrStep](),last=clrStep===CLR_STEPS.length-1,yes=$('clrYes');
+ clrDlg.firstElementChild.dataset.s=clrStep;
+ $('clrN').textContent='Passaggio '+(clrStep+1)+' di '+CLR_STEPS.length;
+ $('clrDots').innerHTML=CLR_STEPS.map((_,i)=>`<i class="${i<clrStep?'d':i===clrStep?'on':''}"></i>`).join('');
+ $('clrT2').textContent=s[0];
+ $('clrP').textContent=s[1];
+ yes.textContent=s[2];
+ yes.classList.toggle('danger',last);yes.classList.toggle('pri',!last);
+ yes.disabled=true;clearTimeout(clrLock);
+ clrLock=setTimeout(()=>{yes.disabled=false},700)}
+function clrClose(){clrDlg.classList.remove('open');clearTimeout(clrLock)}
+async function clrDo(){
  try{
   const db=await idb();
   const tx=db.transaction(['meta','data'],'readwrite');
   tx.objectStore('meta').clear();tx.objectStore('data').clear();
   await txDone(tx);
   OPEN.clear();LIBQ='';$('libq').value='';
+  setUpd(0);
   await refreshLib();
-  toast('Libreria svuotata',true);
- }catch(e){toast('Errore: '+(e.message||e))}};
+  toast('Libreria svuotata (i file sul PC sono intatti)',true);
+ }catch(e){toast('Errore: '+(e.message||e))}}
+$('btnClearLib').onclick=()=>{if(!LIB.length)return;clrStep=0;clrShow();clrDlg.classList.add('open')};
+$('clrNo').onclick=clrClose;
+$('clrYes').onclick=()=>{
+ if(clrStep<CLR_STEPS.length-1){clrStep++;clrShow();return}
+ clrClose();clrDo()};
+clrDlg.addEventListener('mousedown',e=>{if(e.target===clrDlg)clrClose()});
+
+/* ---------- Ricerca rapida PDF (Spazio o scrivendo ovunque) ---------- */
+const pdfModal=$('pdfModal');
+let pRes=[],pSel=0;
+function pdfSelect(n,scroll){
+ const items=$('pdfList').querySelectorAll('.lf');
+ if(!items.length)return;
+ pSel=(n+items.length)%items.length;
+ items.forEach((b,i)=>b.classList.toggle('sel',i===pSel));
+ if(scroll)items[pSel].scrollIntoView({block:'nearest'})}
+function pdfRender(){
+ const terms=$('pq').value.toLowerCase().split(/\s+/).filter(Boolean);
+ pRes=LIB.filter(m=>{
+  const h=(m.name+' '+(m.code||'')).toLowerCase(),h2=h.replace(/\s+/g,'');
+  return terms.every(t=>h.includes(t)||h2.includes(t))
+ }).sort((a,b)=>nat(a.name,b.name)).slice(0,100);
+ $('pdfList').innerHTML=pRes.length?pRes.map((m,i)=>`<button type="button" class="lf${m.code?'':' nofmt'}" data-i="${i}"><span class="pi2">PDF</span><span class="ln">${esc(m.name)}</span>${m.code?`<b class="bd">${esc(m.code)}</b>`:'<b class="bd">senza formato</b>'}</button>`).join(''):'<div class="lib-none">Nessun PDF trovato</div>';
+ pdfSelect(0,false)}
+function openPdfModal(init){
+ if(!LIB.length){if(!init)pickFile();return}
+ const pq=$('pq');
+ pq.value=init||'';pdfRender();
+ pdfModal.classList.add('open');
+ pq.focus();
+ try{const n=pq.value.length;pq.setSelectionRange(n,n)}catch(_){}
+ setTimeout(()=>{if(pdfModal.classList.contains('open')&&document.activeElement!==pq){pq.focus();try{const n=pq.value.length;pq.setSelectionRange(n,n)}catch(_){}}},30)}
+function closePdfModal(){pdfModal.classList.remove('open');$('pq').blur()}
+function pickFromModal(i){
+ const m=pRes[i];if(!m)return;
+ closePdfModal();openLib(m.path)}
+$('pq').addEventListener('input',pdfRender);
+$('pq').addEventListener('keydown',e=>{
+ if(e.key==='ArrowDown'){e.preventDefault();pdfSelect(pSel+1,true)}
+ else if(e.key==='ArrowUp'){e.preventDefault();pdfSelect(pSel-1,true)}
+ else if(e.key==='Enter'){e.preventDefault();pickFromModal(pSel)}
+ else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closePdfModal()}
+});
+$('pdfList').addEventListener('click',e=>{const b=e.target.closest('.lf');if(b)pickFromModal(+b.dataset.i)});
+$('pdfList').addEventListener('mousemove',e=>{const b=e.target.closest('.lf');if(b&&+b.dataset.i!==pSel)pdfSelect(+b.dataset.i,false)});
+pdfModal.addEventListener('mousedown',e=>{if(e.target===pdfModal)closePdfModal()});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&clrDlg.classList.contains('open')){e.preventDefault();clrClose()}
+});
 
 function focusSearch(){if(window.innerWidth>1000&&!$('libq').disabled)setTimeout(()=>$('libq').focus(),50)}
 
@@ -1303,7 +1631,16 @@ $('oc').checked=false;rot=0;
  $('tot').value=1;
  hideMg();
  buildList();render();
+ // Uscendo dal PDF: le sottocartelle si richiudono, la cartella principale resta aperta
+ OPEN.clear();renderLib();
  focusSearch()};
+
+/* Click su "Smart Label Studio" -> pagina principale */
+function goHome(){
+ if(S){$('clr').click();return}
+ LIBQ='';$('libq').value='';OPEN.clear();renderLib();focusSearch()}
+$('brandCard').onclick=goHome;
+$('brandCard').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();goHome()}});
 
 window.addEventListener('resize',fitSheets);
 if(window.ResizeObserver)new ResizeObserver(fitSheets).observe(document.querySelector('.stage'));
@@ -1369,7 +1706,6 @@ function openModal(mode){
 
 
 function closeModal(){ modal.classList.remove('open'); }
-$('btnOpenFmtModal').onclick = () => openModal('tgt');
 $('l1').onclick=()=>{if(S)openModal('src')};
 $('l2').onclick=()=>{if(S)openModal('tgt')};
 $('l1').title='Cambia il formato originale del PDF';
@@ -1426,23 +1762,36 @@ document.addEventListener('keydown',e=>{
  const k=e.key;
  const isDel=(k==='Delete'||k==='Backspace'||k==='Escape');
  const isSpace=(k===' '||e.code==='Space');
- if(!isDel&&!isSpace)return;
+ // qualsiasi carattere stampabile (senza Ctrl/Cmd/Alt) apre la ricerca PDF
+ const isChar=!isSpace&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.isComposing&&typeof k==='string'&&k.length===1;
+ if(!isDel&&!isSpace&&!isChar)return;
  const a=document.activeElement,tg=a&&a.tagName;
- if(tg==='TEXTAREA'||tg==='SELECT')return;
+ if(tg==='TEXTAREA'||tg==='SELECT'||(a&&a.isContentEditable))return;
  if(isSpace&&tg==='INPUT')return;
  if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
- if(modal.classList.contains('open'))return;
+ if(modal.classList.contains('open')||pdfModal.classList.contains('open')||clrDlg.classList.contains('open'))return;
  if(isSpace&&a&&a.closest&&a.closest('#lib'))return;
+ if(isChar){
+  if(!LIB.length)return;
+  e.preventDefault();
+  if(tg==='BUTTON'||tg==='SUMMARY')a.blur();
+  openPdfModal(k);
+  return}
  if(isSpace){
   e.preventDefault();
   if(tg==='BUTTON'||tg==='SUMMARY')a.blur();
-  pickFile();
+  openPdfModal('');
   return}
  if(!S)return;
  e.preventDefault();
  $('clr').click()});
 
-
+/* ---------- Ora (con secondi) + data ---------- */
+function tickClock(){
+ const n=new Date();
+ $('clkT').textContent=n.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+ $('clkD').textContent=n.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+tickClock();setInterval(tickClock,1000);
 
 buildList();render();
 refreshLib().then(focusSearch).catch(e=>toast('Libreria non disponibile: '+(e.message||e)));
