@@ -1414,7 +1414,7 @@ $('mg').addEventListener('wheel',e=>{
   if(!e.deltaY)return;
   const mn=parseFloat(el.min)||1;
   let mx=parseFloat(el.max);if(!isFinite(mx))mx=9999;
-  let v=(parseInt(el.value,10)||mn)+(e.deltaY>0?1:-1);
+  let v=(parseInt(el.value,10)||mn)+(e.deltaY>0?-1:1);
   v=Math.max(mn,Math.min(mx,v));
   if(String(v)===el.value)return;
   el.value=v;
@@ -1464,8 +1464,12 @@ function showUpd(){
 function idb(){
  return dbp||(dbp=new Promise((res,rej)=>{
   if(!window.indexedDB){rej(new Error('IndexedDB non disponibile'));return}
-  const r=indexedDB.open(DBN,1);
-  r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('meta',{keyPath:'path'});d.createObjectStore('data')};
+  const r=indexedDB.open(DBN,2);
+  r.onupgradeneeded=()=>{const d=r.result;
+   if(!d.objectStoreNames.contains('meta'))d.createObjectStore('meta',{keyPath:'path'});
+   if(!d.objectStoreNames.contains('data'))d.createObjectStore('data');
+   if(!d.objectStoreNames.contains('h'))d.createObjectStore('h')};
+
   r.onsuccess=()=>res(r.result);
   r.onerror=()=>rej(r.error);
  }).catch(e=>{dbp=null;throw e}))}
@@ -1609,6 +1613,38 @@ async function walk(entry,out){
   for(let i=0;i<all.length;i+=64)
    await Promise.all(all.slice(i,i+64).map(c=>walk(c,out)))}}
 
+async function walkHandle(dir,prefix,out){
+ const files=[];
+ for await(const [n,h] of dir.entries()){
+  if(h.kind==='directory')await walkHandle(h,prefix+n+'/',out);
+  else if(/\.pdf$/i.test(n)&&!n.startsWith('._'))files.push([n,h]);
+ }
+ for(let i=0;i<files.length;i+=64)
+  await Promise.all(files.slice(i,i+64).map(async([n,h])=>{
+   out.push({file:await h.getFile(),path:prefix+n})}));
+}
+async function getH(){const db=await idb();return reqP(db.transaction('h').objectStore('h').get('root'))}
+async function setH(h){const db=await idb();const tx=db.transaction('h','readwrite');tx.objectStore('h').put(h,'root');await txDone(tx)}
+async function updFolder(){
+ try{
+  let h=null;
+  try{h=await getH()}catch(_){}
+  if(h){
+   let p=await h.queryPermission({mode:'read'});
+   if(p!=='granted')p=await h.requestPermission({mode:'read'});
+   if(p!=='granted')h=null;
+  }
+  if(!h){h=await showDirectoryPicker({mode:'read'});await setH(h)}
+  $('libBar').hidden=false;
+  $('libStatus').textContent='Scansione cartella…';
+  const out=[];
+  await walkHandle(h,h.name+'/',out);
+  importItems(out);
+ }catch(e){
+  if(e&&e.name!=='AbortError')toast('Errore cartella: '+(e.message||e));
+ }
+}
+
 
 $('libq').oninput=e=>{LIBQ=e.target.value;renderLib()};
 $('libq').addEventListener('keydown',e=>{
@@ -1623,8 +1659,9 @@ $('libTree').addEventListener('toggle',e=>{
 
 $('btnPdf').onclick=pickFile;
 $('btnPdf2').onclick=e=>{e.stopPropagation();pickFile()};
-$('btnFolder').onclick=()=>$('dir').click();
-$('btnFolder2').onclick=e=>{e.stopPropagation();$('dir').click()};
+$('btnFolder').onclick=()=>window.showDirectoryPicker?updFolder():$('dir').click();
+$('btnFolder2').onclick=e=>{e.stopPropagation();window.showDirectoryPicker?updFolder():$('dir').click()};
+
 $('dir').onchange=e=>{
  const fl=[...e.target.files];e.target.value='';
  importItems(fl.map(f=>({file:f,path:f.webkitRelativePath||f.name})))};
