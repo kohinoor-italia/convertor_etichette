@@ -666,7 +666,8 @@ function place(i,p,fb){
  const X=base.x,Y=base.y,W=base.w,H=base.h;
  const ix0=X+a0*W,iy0=Y+b0*H,ix1=X+a1*W,iy1=Y+b1*H;
  const cx0=Math.max(p[0],m),cy0=Math.max(p[1],m),cx1=Math.min(p[0]+t.W,t.SW-m),cy1=Math.min(p[1]+t.H,t.SH-m);
- const tol=0.3;
+ const tol=0.5;
+
  if(ix0>=cx0-tol&&iy0>=cy0-tol&&ix1<=cx1+tol&&iy1<=cy1+tol)return base;
  const g=GAP,gx0=Math.max(p[0]+g,m),gy0=Math.max(p[1]+g,m),gx1=Math.min(p[0]+t.W-g,t.SW-m),gy1=Math.min(p[1]+t.H-g,t.SH-m);
  const iw=ix1-ix0,ih=iy1-iy0;
