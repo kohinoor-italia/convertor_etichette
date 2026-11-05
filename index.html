@@ -227,9 +227,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .res-cell.excluded{background:repeating-linear-gradient(45deg,rgba(10,12,24,.6) 0 6px,rgba(10,12,24,.42) 6px 12px);border-color:rgba(255,107,129,.95)}
 .res-cell.excluded:hover{background:rgba(255,255,255,.3)}
 
-/* Empty */
-.empty{flex:1;display:grid;place-items:center;padding:30px}
-.empty .box{max-width:520px;width:100%;text-align:center;border:2px dashed var(--line2);border-radius:26px;padding:52px 26px;transition:.22s var(--ease);cursor:pointer;background:radial-gradient(400px 220px at 50% 0%,rgba(255,179,92,.07),transparent 70%),rgba(255,255,255,.015)}
+/* Empty + Libreria */
+.empty{flex:1;min-height:0;display:flex;flex-direction:column;padding:18px 20px;gap:12px}
+.empty .box{max-width:520px;width:100%;margin:auto;text-align:center;border:2px dashed var(--line2);border-radius:26px;padding:52px 26px;transition:.22s var(--ease);cursor:pointer;background:radial-gradient(400px 220px at 50% 0%,rgba(255,179,92,.07),transparent 70%),rgba(255,255,255,.015)}
 .empty .box:hover,.empty .box.over{border-color:var(--a);background:radial-gradient(400px 220px at 50% 0%,rgba(255,179,92,.14),transparent 70%),rgba(255,179,92,.04);transform:translateY(-3px)}
 .empty .em{font-size:60px;line-height:1;color:var(--a);filter:drop-shadow(0 12px 28px rgba(255,93,143,.45));margin-bottom:6px;animation:float 3.2s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -237,6 +237,36 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .empty p{margin:0 0 20px;color:var(--m);font-size:13px}
 .steps{display:flex;gap:8px;justify-content:center;margin-top:22px;flex-wrap:wrap}
 .steps span{font-size:11.5px;color:var(--m);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:5px 13px;border-radius:99px;font-weight:500}
+
+.lib{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.lib-top{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.srch{position:relative;flex:1;min-width:220px;display:flex;align-items:center}
+.srch .i{position:absolute;left:14px;color:var(--m);pointer-events:none}
+.srch .inp{padding-left:40px;height:44px;font-size:14.5px}
+.srch .inp:disabled{opacity:.5}
+.lib-opts{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.lib-opts .ck{margin:0;font-size:11.5px;color:var(--m)}
+.lib-status{color:var(--m);font-size:12px;font-variant-numeric:tabular-nums}
+.lib-tree{flex:1;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.22);padding:8px;box-shadow:inset 0 4px 24px rgba(0,0,0,.3)}
+.lib-none{color:var(--m);text-align:center;padding:40px 10px;font-size:13px}
+.fd{margin:2px 0}
+.fd>summary{list-style:none;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;user-select:none;transition:background .15s}
+.fd>summary::-webkit-details-marker{display:none}
+.fd>summary:hover{background:rgba(255,255,255,.06)}
+.fd>summary .chev{transition:transform .2s var(--ease);color:var(--m)}
+.fd[open]>summary .chev{transform:rotate(90deg)}
+.fd>summary .fi{color:var(--a)}
+.fd>summary .fn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fd>summary em{margin-left:auto;font-style:normal;font-size:10.5px;color:var(--m);background:var(--panel2);border:1px solid var(--line);padding:1px 8px;border-radius:99px;font-weight:700;flex:none}
+.fc{margin-left:14px;padding-left:10px;border-left:1px solid var(--line)}
+.lf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 10px;margin:2px 0;border-radius:10px;border:1px solid transparent;background:transparent;font-size:13px;transition:.15s var(--ease)}
+.lf:hover{background:rgba(255,179,92,.08);border-color:rgba(255,179,92,.35);transform:translateX(2px)}
+.lf .pi2{width:26px;height:20px;border-radius:5px;background:linear-gradient(160deg,#fff,#d4d8ea);color:#c0264b;font-weight:900;font-size:8px;display:grid;place-items:center;flex:none}
+.lf .ln{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lf .bd{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--grad);color:#1a0f18;flex:none;white-space:nowrap}
+.lf.nofmt{border:1px dashed rgba(144,151,184,.4);background:rgba(255,255,255,.02);font-style:italic;color:var(--m)}
+.lf.nofmt .pi2{background:rgba(255,255,255,.14);color:var(--m)}
+.lf.nofmt .bd{background:transparent;color:var(--m);border:1px dashed var(--m2);font-weight:700;font-style:normal}
 
 /* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(3,4,10,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:flex-end;justify-content:center}
@@ -268,6 +298,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .mgp .s{font-size:12.5px;color:var(--m);font-weight:500;font-variant-numeric:tabular-nums}
 
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;background:rgba(26,29,46,.96);border:1px solid var(--bad);border-left-width:4px;color:#fff;padding:13px 20px;border-radius:14px;transition:.3s var(--ease);z-index:99;pointer-events:none;max-width:90vw;box-shadow:0 16px 40px rgba(0,0,0,.55);font-weight:600}
+.toast.ok{border-color:var(--ok)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 
 @media(max-width:1000px){
@@ -277,6 +308,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
  .stage{min-height:70vh}
  .panes{flex-direction:column}
  .pane{height:75vh;flex:none}
+ .lib-tree{max-height:60vh}
 }
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{animation:none!important;transition:none!important}
@@ -301,6 +333,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
  <symbol id="i-grow" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
  <symbol id="i-rot" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+ <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+ <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+ <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
 </defs></svg>
 
 
@@ -341,6 +376,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
    <button class="btn sm" id="clr" title="Rimuovi PDF"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
   <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+  <input type="file" id="dir" webkitdirectory directory multiple hidden>
  </section>
 
  <!-- SECTION 2 INVERSATĂ: Dall'etichetta n. PRIMA, Fogli/Etichette A DOUA -->
@@ -435,12 +471,32 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
  </div>
 
  <div class="empty" id="empty">
-  <div class="box" id="drop2">
-   <div class="em"><svg class="i"><use href="#i-tag"/></svg></div>
-   <h2>Trascina qui il PDF con le etichette</h2>
-   <p>oppure clicca per scegliere il file dal computer</p>
-   <button class="btn pri" type="button"><svg class="i"><use href="#i-up"/></svg>Scegli PDF</button>
-   <div class="steps"><span>1 · Carica</span><span>2 · Configura</span><span>3 · Esporta</span><span>4 · Stampa</span></div>
+  <div class="lib" id="lib">
+   <div class="lib-top">
+    <div class="srch">
+     <svg class="i"><use href="#i-search"/></svg>
+     <input type="search" class="inp" id="libq" placeholder="Cerca nella libreria: nome, formato, cartella…" autocomplete="off" disabled>
+    </div>
+    <button class="btn" id="btnPdf" type="button"><svg class="i"><use href="#i-file"/></svg>Scegli PDF</button>
+    <button class="btn pri" id="btnFolder" type="button"><svg class="i"><use href="#i-folder"/></svg>Carica / aggiorna cartella</button>
+   </div>
+   <div class="lib-opts">
+    <label class="ck"><input type="checkbox" id="syncDel" checked> Elimina i file rimossi dalla cartella (sincronizza)</label>
+    <button class="btn sm" id="btnClearLib" type="button" hidden><svg class="i"><use href="#i-trash"/></svg><span id="clrTxt">Svuota</span></button>
+   </div>
+   <div class="lib-status" id="libStatus" hidden></div>
+   <div class="lib-tree" id="libTree" hidden></div>
+
+   <div class="box" id="drop2">
+    <div class="em"><svg class="i"><use href="#i-tag"/></svg></div>
+    <h2>Trascina qui il PDF o una cartella</h2>
+    <p>Le cartelle con i PDF restano salvate nel browser e le trovi con la ricerca</p>
+    <div class="row2" style="justify-content:center">
+     <button class="btn" type="button" id="btnPdf2"><svg class="i"><use href="#i-up"/></svg>Scegli PDF</button>
+     <button class="btn pri" type="button" id="btnFolder2"><svg class="i"><use href="#i-folder"/></svg>Carica cartella</button>
+    </div>
+    <div class="steps"><span>1 · Carica</span><span>2 · Configura</span><span>3 · Esporta</span><span>4 · Stampa</span></div>
+   </div>
   </div>
  </div>
 
@@ -526,7 +582,7 @@ const off=()=>[parseFloat($('ox').value)||0,parseFloat($('oy').value)||0];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),4200)}
+function toast(m,ok){const t=$('toast');t.textContent=m;t.classList.toggle('ok',!!ok);t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),4200)}
 function cells(d,ox=0,oy=0){const o=[];for(let j=0;j<d.r;j++)for(let i=0;i<d.c;i++)o.push([d.ml+i*(d.W+d.gh)+ox,d.mt+j*(d.H+d.gv)+oy]);return o}
 function save(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function printBlob(b){const u=URL.createObjectURL(b),fr=document.createElement('iframe');fr.style.cssText='position:fixed;width:0;height:0;border:0';fr.src=u;fr.onload=()=>{try{fr.contentWindow.focus();fr.contentWindow.print()}catch(e){window.open(u)}};document.body.appendChild(fr);setTimeout(()=>fr.remove(),60000)}
@@ -1054,9 +1110,186 @@ $('fileCard').addEventListener('click',e=>{
 });
 $('fileCard').title='Clicca per sostituire il PDF';
 
+/* ============================================================
+   LIBRERIA PDF (IndexedDB) — cartelle salvate nel browser
+   ============================================================ */
+const DBN='SmartLabelLib';
+let dbp=null,LIB=[],LIBQ='',LAST=[],importing=false;
+const OPEN=new Map();
+
+function idb(){
+ return dbp||(dbp=new Promise((res,rej)=>{
+  if(!window.indexedDB){rej(new Error('IndexedDB non disponibile'));return}
+  const r=indexedDB.open(DBN,1);
+  r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('meta',{keyPath:'path'});d.createObjectStore('data')};
+  r.onsuccess=()=>res(r.result);
+  r.onerror=()=>rej(r.error);
+ }).catch(e=>{dbp=null;throw e}))}
+const reqP=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const txDone=tx=>new Promise((res,rej)=>{tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error||new Error('Transazione annullata'))});
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const nat=(a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'});
+const fmtSize=b=>b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
+const normPath=p=>String(p).replace(/\\/g,'/').replace(/^\/+/,'').replace(/\/{2,}/g,'/');
+
+async function refreshLib(){
+ const db=await idb();
+ LIB=await reqP(db.transaction('meta').objectStore('meta').getAll());
+ renderLib()}
+
+function buildTree(list){
+ const root={d:{},f:[]};
+ for(const m of list){
+  const parts=m.path.split('/');parts.pop();
+  let n=root;
+  for(const p of parts)n=n.d[p]||(n.d[p]={d:{},f:[]});
+  n.f.push(m)}
+ return root}
+const countF=n=>n.f.length+Object.values(n.d).reduce((s,c)=>s+countF(c),0);
+
+function renderNode(n,path,depth,forceOpen){
+ let h='';
+ Object.keys(n.d).sort(nat).forEach(k=>{
+  const p=path?path+'/'+k:k,c=n.d[k];
+  const open=forceOpen?true:(OPEN.has(p)?OPEN.get(p):depth===0);
+  h+=`<details class="fd" data-p="${esc(p)}"${open?' open':''}><summary><svg class="i chev"><use href="#i-right"/></svg><svg class="i fi"><use href="#i-folder"/></svg><span class="fn">${esc(k)}</span><em>${countF(c)}</em></summary><div class="fc">${renderNode(c,p,depth+1,forceOpen)}</div></details>`});
+ n.f.slice().sort((a,b)=>nat(a.name,b.name)).forEach(m=>{
+  h+=`<button type="button" class="lf${m.code?'':' nofmt'}" data-p="${esc(m.path)}" title="${esc(m.path)}"><span class="pi2">PDF</span><span class="ln">${esc(m.name)}</span>${m.code?`<b class="bd">${esc(m.code)}</b>`:'<b class="bd">senza formato</b>'}</button>`});
+ return h}
+
+function renderLib(){
+ const has=LIB.length>0;
+ $('drop2').hidden=has;
+ $('libTree').hidden=!has;
+ $('libStatus').hidden=!has;
+ $('btnClearLib').hidden=!has;
+ $('libq').disabled=!has;
+ if(!has){LAST=[];return}
+ const terms=LIBQ.toLowerCase().split(/\s+/).filter(Boolean);
+ const list=terms.length?LIB.filter(m=>{
+  const h=(m.path+' '+(m.code||'')).toLowerCase(),h2=h.replace(/\s+/g,'');
+  return terms.every(t=>h.includes(t)||h2.includes(t))}):LIB;
+ LAST=list;
+ const nofmt=LIB.filter(m=>!m.code).length,tot=LIB.reduce((s,m)=>s+(m.size||0),0);
+ $('libStatus').textContent=(terms.length?list.length+' risultati su '+LIB.length+' PDF':LIB.length+' PDF')+' · '+nofmt+' senza formato · '+fmtSize(tot);
+ const tr=$('libTree'),st=tr.scrollTop;
+ if(!list.length){tr.innerHTML='<div class="lib-none">Nessun risultato</div>';return}
+ tr.innerHTML=renderNode(buildTree(list),'',0,terms.length>0);
+ tr.scrollTop=st}
+
+async function openLib(path){
+ try{
+  const db=await idb();
+  const blob=await reqP(db.transaction('data').objectStore('data').get(path));
+  const m=LIB.find(x=>x.path===path);
+  if(!blob||!m){toast('File non trovato nella libreria');return}
+  loadPDF(new File([blob],m.name,{type:'application/pdf'}));
+ }catch(e){toast('Errore apertura: '+(e.message||e))}}
+
+async function importItems(items){
+ if(importing){toast('Importazione già in corso…');return}
+ const ok=[];let ign=0;
+ for(const it of items){
+  const path=normPath(it.path||it.file.name),name=path.split('/').pop();
+  if(/\.pdf$/i.test(name)&&!name.startsWith('._'))ok.push({file:it.file,path,name});else ign++}
+ if(!ok.length){toast('Nessun PDF trovato'+(ign?' ('+ign+' file ignorati)':''));return}
+ importing=true;
+ try{
+  const db=await idb();
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  const seen=new Set(ok.map(o=>o.path));
+  let removed=0;
+  if($('syncDel').checked){
+   const roots=new Set(ok.filter(o=>o.path.includes('/')).map(o=>o.path.split('/')[0]));
+   const old=LIB.filter(m=>m.path.includes('/')&&roots.has(m.path.split('/')[0])&&!seen.has(m.path));
+   if(old.length){
+    const tx=db.transaction(['meta','data'],'readwrite');
+    old.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
+    await txDone(tx);removed=old.length}
+  }
+  const known=new Set(LIB.map(m=>m.path));
+  let added=0,upd=0;
+  const CH=40;
+  for(let i=0;i<ok.length;i+=CH){
+   $('libStatus').hidden=false;
+   $('libStatus').textContent='Importazione '+Math.min(i+CH,ok.length)+' / '+ok.length+'…';
+   const tx=db.transaction(['meta','data'],'readwrite'),mS=tx.objectStore('meta'),dS=tx.objectStore('data');
+   for(const it of ok.slice(i,i+CH)){
+    mS.put({path:it.path,name:it.name,size:it.file.size,mtime:it.file.lastModified||0,code:detect(it.name)});
+    dS.put(it.file,it.path);
+    if(known.has(it.path))upd++;else added++}
+   await txDone(tx);
+   await new Promise(r=>setTimeout(r,0));
+  }
+  await refreshLib();
+  toast(added+' nuovi · '+upd+' aggiornati'+(removed?' · '+removed+' rimossi':'')+(ign?' · '+ign+' file non PDF ignorati':''),true);
+ }catch(e){
+  toast('Errore importazione: '+(e.message||e));
+  refreshLib().catch(()=>{});
+ }finally{importing=false}}
+
+function readDir(r){return new Promise((res,rej)=>r.readEntries(res,rej))}
+async function walk(entry,out){
+ if(entry.isFile){
+  const f=await new Promise((res,rej)=>entry.file(res,rej));
+  out.push({file:f,path:entry.fullPath.replace(/^\/+/,'')});
+ }else if(entry.isDirectory){
+  const r=entry.createReader();let b;
+  do{b=await readDir(r);for(const c of b)await walk(c,out)}while(b.length)}}
+
+$('libq').oninput=e=>{LIBQ=e.target.value;renderLib()};
+$('libq').addEventListener('keydown',e=>{
+ if(e.key==='Enter'&&LAST.length===1){e.preventDefault();openLib(LAST[0].path)}
+ else if(e.key==='Escape'&&$('libq').value){e.preventDefault();e.stopPropagation();$('libq').value='';LIBQ='';renderLib()}
+});
+$('libTree').addEventListener('click',e=>{
+ const b=e.target.closest('.lf');if(b)openLib(b.dataset.p)});
+$('libTree').addEventListener('toggle',e=>{
+ const d=e.target;
+ if(d&&d.classList&&d.classList.contains('fd')&&!LIBQ.trim())OPEN.set(d.dataset.p,d.open)},true);
+
+$('btnPdf').onclick=pickFile;
+$('btnPdf2').onclick=e=>{e.stopPropagation();pickFile()};
+$('btnFolder').onclick=()=>$('dir').click();
+$('btnFolder2').onclick=e=>{e.stopPropagation();$('dir').click()};
+$('dir').onchange=e=>{
+ const fl=[...e.target.files];e.target.value='';
+ importItems(fl.map(f=>({file:f,path:f.webkitRelativePath||f.name})))};
+
+let clrT=0;
+$('btnClearLib').onclick=async()=>{
+ const b=$('btnClearLib');
+ if(!b.dataset.arm){
+  b.dataset.arm='1';$('clrTxt').textContent='Sicuro? Clicca ancora';
+  clrT=setTimeout(()=>{delete b.dataset.arm;$('clrTxt').textContent='Svuota'},3000);return}
+ clearTimeout(clrT);delete b.dataset.arm;$('clrTxt').textContent='Svuota';
+ try{
+  const db=await idb();
+  const tx=db.transaction(['meta','data'],'readwrite');
+  tx.objectStore('meta').clear();tx.objectStore('data').clear();
+  await txDone(tx);
+  OPEN.clear();LIBQ='';$('libq').value='';
+  await refreshLib();
+  toast('Libreria svuotata',true);
+ }catch(e){toast('Errore: '+(e.message||e))}};
+
+function focusSearch(){if(window.innerWidth>1000&&!$('libq').disabled)setTimeout(()=>$('libq').focus(),50)}
+
 ['dragover','dragenter'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('over');$('drop2').classList.add('over')}));
 ['dragleave','drop'].forEach(ev=>window.addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over');$('drop2').classList.remove('over')}));
-window.addEventListener('drop',e=>{const fl=e.dataTransfer&&e.dataTransfer.files[0];if(fl)loadPDF(fl)});
+window.addEventListener('drop',async e=>{
+ const dt=e.dataTransfer;if(!dt)return;
+ const ents=[...(dt.items||[])].map(i=>i.kind==='file'&&i.webkitGetAsEntry?i.webkitGetAsEntry():null).filter(Boolean);
+ const files=[...(dt.files||[])];
+ if(ents.some(x=>x.isDirectory)){
+  try{
+   const out=[];
+   for(const en of ents)await walk(en,out);
+   importItems(out);
+  }catch(err){toast('Errore lettura cartella: '+(err.message||err))}
+  return}
+ if(files.length>1){importItems(files.map(f=>({file:f,path:f.name})));return}
+ if(files[0])loadPDF(files[0])});
 $('clr').onclick=()=>{
  S=null;tgt=null;fam='*';txt='';
  cur=D.find(d=>d.code==='A455')||D[0];
@@ -1069,7 +1302,8 @@ $('oc').checked=false;rot=0;
  $('sstart').value=1;$('sstart').max='';
  $('tot').value=1;
  hideMg();
- buildList();render()};
+ buildList();render();
+ focusSearch()};
 
 window.addEventListener('resize',fitSheets);
 if(window.ResizeObserver)new ResizeObserver(fitSheets).observe(document.querySelector('.stage'));
@@ -1198,6 +1432,7 @@ document.addEventListener('keydown',e=>{
  if(isSpace&&tg==='INPUT')return;
  if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
  if(modal.classList.contains('open'))return;
+ if(isSpace&&a&&a.closest&&a.closest('#lib'))return;
  if(isSpace){
   e.preventDefault();
   if(tg==='BUTTON'||tg==='SUMMARY')a.blur();
@@ -1210,6 +1445,7 @@ document.addEventListener('keydown',e=>{
 
 
 buildList();render();
+refreshLib().then(focusSearch).catch(e=>toast('Libreria non disponibile: '+(e.message||e)));
 </script>
 
 <script>
