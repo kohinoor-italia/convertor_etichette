@@ -896,12 +896,16 @@ async function buildResult(){
   const i=seq[slot];
   if(i===null||i===undefined)continue;
   const pg=pgs[Math.floor(slot/n)],p=T[slot%n],s=S.cells[i];
-  if(!emb[i])emb[i]=await out.embedPage(sp,{left:s[0]*sxm,right:(s[0]+d.W)*sxm,bottom:ph-(s[1]+d.H)*sym,top:ph-s[1]*sym});
+  if(!emb.all)emb.all=await out.embedPage(sp,{left:0,right:pw,bottom:0,top:ph});
   
   const w=t.W*MM,h=t.H*MM;
   pg.pushOperators(...clipOps(p[0]*MM,osh-(p[1]+t.H)*MM,w,h,Math.min(t.rad*MM,w/2,h/2),t.ci));
   const q=place(i,p,fb);
-  pg.drawPage(emb[i],rotPlace(q.x*MM,osh-(q.y+q.h)*MM,q.w*MM,q.h*MM));
+  const rp=rotPlace(q.x*MM,osh-(q.y+q.h)*MM,q.w*MM,q.h*MM);
+  const fx=rp.width/(d.W*sxm),fy=rp.height/(d.H*sym),lx=s[0]*sxm*fx,ly=(ph-(s[1]+d.H)*sym)*fy;
+  const th=-Math.PI/2*rot,co=Math.round(Math.cos(th)),si=Math.round(Math.sin(th));
+  pg.drawPage(emb.all,{x:rp.x-(lx*co-ly*si),y:rp.y-(lx*si+ly*co),width:pw*fx,height:ph*fy,rotate:rp.rotate});
+
 
   pg.pushOperators(L.popGraphicsState());
   if($('oc').checked)outline(pg,p,t,osh)}
