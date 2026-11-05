@@ -651,34 +651,53 @@ function inkBox(i){
   if(e>=0)r=[(x0+a)/kx-c[0],(y0+b)/ky-c[1],(x0+e+1)/kx-c[0],(y0+f+1)/ky-c[1]];
  }
  S.ink[i]=r;return r}
-function place(i,p,fb){
- const t=TG(),d=cur,base={x:p[0]+fb.x,y:p[1]+fb.y,w:fb.w,h:fb.h},m=SAFE[t.code]??SAFE_DEF;
- if(!m||i==null)return base;
- if(p[0]>=m-.01&&p[1]>=m-.01&&p[0]+t.W<=t.SW-m+.01&&p[1]+t.H<=t.SH-m+.01)return base;
-
- const ik=inkBox(i);if(!ik)return base;
+function geo(i,p,fb){
+ const t=TG(),d=cur,m=SAFE[t.code]??SAFE_DEF;
+ if(!m||i==null)return null;
+ const ik=inkBox(i);if(!ik)return null;
  const u0=ik[0]/d.W,v0=ik[1]/d.H,u1=ik[2]/d.W,v1=ik[3]/d.H;
  let a0,b0,a1,b1;
  if(rot===0)[a0,b0,a1,b1]=[u0,v0,u1,v1];
  else if(rot===1)[a0,b0,a1,b1]=[1-v1,u0,1-v0,u1];
  else if(rot===2)[a0,b0,a1,b1]=[1-u1,1-v1,1-u0,1-v0];
  else [a0,b0,a1,b1]=[v0,1-u1,v1,1-u0];
- const X=base.x,Y=base.y,W=base.w,H=base.h;
- const ix0=X+a0*W,iy0=Y+b0*H,ix1=X+a1*W,iy1=Y+b1*H;
+ const X=p[0]+fb.x,Y=p[1]+fb.y,W=fb.w,H=fb.h;
+ return{m,t,a0,b0,a1,b1,X,Y,W,H,ix0:X+a0*W,iy0:Y+b0*H,ix1:X+a1*W,iy1:Y+b1*H}}
+
+function needK(g,p){
+ const t=g.t,m=g.m,tol=0.5,e=GAP;
  const cx0=Math.max(p[0],m),cy0=Math.max(p[1],m),cx1=Math.min(p[0]+t.W,t.SW-m),cy1=Math.min(p[1]+t.H,t.SH-m);
- const tol=0.5;
+ if(g.ix0>=cx0-tol&&g.iy0>=cy0-tol&&g.ix1<=cx1+tol&&g.iy1<=cy1+tol)return 1;
+ const gx0=Math.max(p[0]+e,m),gy0=Math.max(p[1]+e,m),gx1=Math.min(p[0]+t.W-e,t.SW-m),gy1=Math.min(p[1]+t.H-e,t.SH-m);
+ return Math.min(1,(gx1-gx0)/(g.ix1-g.ix0),(gy1-gy0)/(g.iy1-g.iy0))}
 
- if(ix0>=cx0-tol&&iy0>=cy0-tol&&ix1<=cx1+tol&&iy1<=cy1+tol)return base;
- const g=GAP,gx0=Math.max(p[0]+g,m),gy0=Math.max(p[1]+g,m),gx1=Math.min(p[0]+t.W-g,t.SW-m),gy1=Math.min(p[1]+t.H-g,t.SH-m);
- const iw=ix1-ix0,ih=iy1-iy0;
- const k=Math.min(1,(gx1-gx0)/iw,(gy1-gy0)/ih);
- const nw=iw*k,nh=ih*k;
- const nx=clamp((ix0+ix1)/2-nw/2,gx0,gx1-nw),ny=clamp((iy0+iy1)/2-nh/2,gy0,gy1-nh);
+function uniK(fb){
+ const t=TG(),o=off(),m=SAFE[t.code]??SAFE_DEF;
+ const key=[t.code,rot,o[0],o[1],mval(),m,GAP,cur.code].join('|');
+ if(S.kgKey===key)return S.kgVal;
+ const T=cells(t,o[0],o[1]);let k=1;
+ for(let i=0;i<S.cells.length;i++){
+  if(!S.cp[i])continue;
+  T.forEach(p=>{const g=geo(i,p,fb);if(g)k=Math.min(k,needK(g,p))});
+ }
+ S.kgKey=key;S.kgVal=k;return k}
 
- return{x:nx-a0*W*k,y:ny-b0*H*k,w:W*k,h:H*k}}
+function place(i,p,fb){
+ const base={x:p[0]+fb.x,y:p[1]+fb.y,w:fb.w,h:fb.h};
+ const g=geo(i,p,fb);if(!g)return base;
+ if(needK(g,p)>=0.9999)return base;
+ const kg=uniK(fb);
+ if(kg>=0.9999)return base;
+ const t=g.t,m=g.m,e=GAP;
+ const gx0=Math.max(p[0]+e,m),gy0=Math.max(p[1]+e,m),gx1=Math.min(p[0]+t.W-e,t.SW-m),gy1=Math.min(p[1]+t.H-e,t.SH-m);
+ const nw=(g.ix1-g.ix0)*kg,nh=(g.iy1-g.iy0)*kg;
+ const nx=clamp((g.ix0+g.ix1)/2-nw/2,gx0,gx1-nw),ny=clamp((g.iy0+g.iy1)/2-nh/2,gy0,gy1-nh);
+ return{x:nx-g.a0*g.W*kg,y:ny-g.b0*g.H*kg,w:g.W*kg,h:g.H*kg}}
+
 
 function setupCells(){
- S.cells=cells(cur);S.ink={};
+ resetZ();S.cells=cells(cur);S.ink={};
+
  S.emp=S.cells.map((_,i)=>isEmpty(i));
  S.cp=S.emp.map(e=>e?0:1);
  S.exclusions = {};
@@ -958,6 +977,15 @@ resetMg();
 $('chips').innerHTML=[['*','Tutti'],['A','A400...'],['C','C500...'],['R','R300...']].map(([k,n])=>`<button class="chip${k==='*'?' on':''}" type="button" data-k="${k}">${n}</button>`).join('');
 $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fam=b.dataset.k;$('chips').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));buildList()});
 $('q').oninput=e=>{txt=e.target.value;buildList()};
+$('q').addEventListener('keydown',e=>{
+ if(e.key==='Enter'){
+  const f=$('list').querySelector('.it');
+  if(f){e.preventDefault();f.click()}
+ } else if(e.key==='Escape'){
+  e.preventDefault();closeModal();
+ }
+});
+
 ['ox','oy'].forEach(i=>$(i).oninput=()=>{if(S)drawRes()});
 $('oc').onchange=()=>{if(S)drawRes()};
 $('rotBtn').onclick=()=>{rot=(rot+1)%4;resetMg();if(S)drawRes()};
@@ -1049,11 +1077,53 @@ $('dl').onclick=async()=>{if(!S)return;try{save(await buildResult(),outName())}c
 $('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(e){toast(e.message||e)}};
 
 const modal = $('fmtModal');
-function openModal(){ modal.classList.add('open'); }
+function openModal(){ modal.classList.add('open'); setTimeout(()=>{const q=$('q');q.focus();q.select()},60); }
+
 function closeModal(){ modal.classList.remove('open'); }
 $('btnOpenFmtModal').onclick = openModal;
 $('btnCloseModal').onclick = closeModal;
 modal.onclick = (e) => { if(e.target === modal) closeModal(); };
+
+const ZM={b1:{z:1,x:0,y:0},b2:{z:1,x:0,y:0}};
+function applyZ(b){
+ const s=$(b==='b1'?'sh1':'sh2'),q=ZM[b];
+ s.style.transformOrigin='50% 50%';
+ s.style.transform=(q.z===1&&!q.x&&!q.y)?'':'translate('+q.x+'px,'+q.y+'px) scale('+q.z+')'}
+function resetZ(){['b1','b2'].forEach(b=>{ZM[b].z=1;ZM[b].x=0;ZM[b].y=0;applyZ(b)})}
+['b1','b2'].forEach(b=>{
+ const el=$(b),q=ZM[b];
+ let pd=null,sup=false;
+ el.addEventListener('wheel',e=>{
+  if(!S)return;
+  e.preventDefault();
+  const r=el.getBoundingClientRect(),cx=e.clientX-r.left-r.width/2,cy=e.clientY-r.top-r.height/2;
+  const z2=clamp(q.z*Math.exp(-e.deltaY*0.0015),1,8);
+  if(z2===q.z)return;
+  const f=z2/q.z;
+  q.x=cx-(cx-q.x)*f;q.y=cy-(cy-q.y)*f;q.z=z2;
+  if(z2<=1){q.x=0;q.y=0;q.z=1}
+  applyZ(b)},{passive:false});
+ el.addEventListener('dblclick',()=>{q.z=1;q.x=0;q.y=0;applyZ(b)});
+ el.addEventListener('pointerdown',e=>{if(q.z>1)pd={x:e.clientX,y:e.clientY,qx:q.x,qy:q.y,m:false}});
+ window.addEventListener('pointermove',e=>{
+  if(!pd)return;
+  const dx=e.clientX-pd.x,dy=e.clientY-pd.y;
+  if(Math.abs(dx)+Math.abs(dy)>4)pd.m=true;
+  if(pd.m){q.x=pd.qx+dx;q.y=pd.qy+dy;applyZ(b)}});
+ window.addEventListener('pointerup',()=>{
+  if(pd&&pd.m){sup=true;setTimeout(()=>{sup=false},60)}
+  pd=null});
+ el.addEventListener('click',e=>{if(sup){e.stopPropagation();e.preventDefault()}},true)});
+
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Delete'&&e.key!=='Backspace')return;
+ const a=document.activeElement,tg=a&&a.tagName;
+ if(tg==='TEXTAREA'||tg==='SELECT')return;
+ if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
+ if(!S||modal.classList.contains('open'))return;
+ e.preventDefault();
+ $('clr').click()});
+
 
 buildList();render();
 </script>
