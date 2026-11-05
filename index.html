@@ -1203,10 +1203,24 @@ const hlCode=()=>pickMode==='src'?cur.code:TG().code;
 /* Foaia formatului `t` umplută cu etichetele PDF-ului (imagine pentru panou) */
 let FMC={};
 function fmImg(t){
- if(!S||pickMode!=='tgt')return null;
+ if(!S)return null;
+ if(pickMode==='src'){
+  const key='src|'+S.name+'|'+t.code;
+  if(FMC[key])return FMC[key];
+  if(Object.keys(FMC).length>40)FMC={};
+  try{
+   const k2=Math.min(MM*2,2000/Math.max(t.SW,t.SH));
+   const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
+   const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+   x.imageSmoothingQuality='high';
+   x.drawImage(S.cv,0,0,S.cv.width,S.cv.height,0,0,c.width,c.height);
+   return FMC[key]=c.toDataURL('image/jpeg',.9);
+  }catch(e){return null}
+ }
  const act=[];S.cp.forEach((v,i)=>{if(v)act.push(i)});
  if(!act.length)return null;
  const [ox,oy]=off(),key=[S.name,cur.code,t.code,rot,mval(),ox,oy].join('|');
+
  if(FMC[key])return FMC[key];
  if(Object.keys(FMC).length>40)FMC={};
  const old=tgt;tgt=(t===cur?null:t);
