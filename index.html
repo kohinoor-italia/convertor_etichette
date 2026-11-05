@@ -1570,10 +1570,13 @@ async function importItems(items){
   }
 
   // 3) scrittura solo di ciò che serve
-  const CH=60;
+  const CH=300;
   for(let i=0;i<todo.length;i+=CH){
    $('libStatus').textContent='Importazione '+Math.min(i+CH,todo.length)+' / '+todo.length+'…';
-   const tx=db.transaction(['meta','data'],'readwrite'),mS=tx.objectStore('meta'),dS=tx.objectStore('data');
+   let tx;
+   try{tx=db.transaction(['meta','data'],'readwrite',{durability:'relaxed'})}
+   catch(_){tx=db.transaction(['meta','data'],'readwrite')}
+   const mS=tx.objectStore('meta'),dS=tx.objectStore('data');
    for(const it of todo.slice(i,i+CH)){
     mS.put({path:it.path,name:it.name,size:it.file.size,mtime:it.file.lastModified||0,code:detect(it.name)});
     dS.put(it.file,it.path)}
@@ -1597,11 +1600,15 @@ async function importItems(items){
 function readDir(r){return new Promise((res,rej)=>r.readEntries(res,rej))}
 async function walk(entry,out){
  if(entry.isFile){
+  if(!/\.pdf$/i.test(entry.name)||entry.name.startsWith('._'))return;
   const f=await new Promise((res,rej)=>entry.file(res,rej));
   out.push({file:f,path:entry.fullPath.replace(/^\/+/,'')});
  }else if(entry.isDirectory){
-  const r=entry.createReader();let b;
-  do{b=await readDir(r);for(const c of b)await walk(c,out)}while(b.length)}}
+  const r=entry.createReader(),all=[];let b;
+  do{b=await readDir(r);all.push(...b)}while(b.length);
+  for(let i=0;i<all.length;i+=64)
+   await Promise.all(all.slice(i,i+64).map(c=>walk(c,out)))}}
+
 
 $('libq').oninput=e=>{LIBQ=e.target.value;renderLib()};
 $('libq').addEventListener('keydown',e=>{
