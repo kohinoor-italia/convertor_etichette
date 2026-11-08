@@ -3302,6 +3302,28 @@ $('edErP').onclick=()=>{
 $('btnNew').onclick=()=>openModal('new');
 $('edClose').onclick=()=>$('clr').click();
 
+/* Scroll pe campurile numerice din editor (click pe valoare, apoi rotita) */
+{
+ const WS=[['edX',.01],['edY',.01],['edR',.01],['edW',.01],['edH',.01],['edSz',.1],['edBs',.1]];
+ WS.forEach(([id,st])=>{
+  const el=$(id);
+  el.addEventListener('wheel',e=>{
+   if(document.activeElement!==el||el.readOnly||el.disabled)return;
+   e.preventDefault();
+   if(!e.deltaY)return;
+   const dec=st<.05?2:1;
+   let v=parseFloat(String(el.value).replace(',','.'));
+   if(!isFinite(v))v=0;
+   v+=(e.deltaY>0?-1:1)*st;
+   const mn=parseFloat(el.min);
+   if(isFinite(mn))v=Math.max(mn,v);
+   el.value=v.toFixed(dec);
+   el.dispatchEvent(new Event('input',{bubbles:true}));
+  },{passive:false});
+ });
+}
+
+
 /* Proprieta + Allinea&posiziona: vizibile doar cu selectie */
 {
  const boxes=[...document.querySelectorAll('#edCard > details.ed-box')].filter(d=>!d.id);
