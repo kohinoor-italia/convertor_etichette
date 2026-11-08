@@ -446,42 +446,49 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .ldr-card em{font-style:normal;font-size:12px;font-weight:800;color:var(--a);font-variant-numeric:tabular-nums;min-height:1em}
 
 /* ===== Editor etichette ===== */
-#edCard{padding:12px;display:flex;flex-direction:column;gap:8px}
+#edCard{padding:10px;display:flex;flex-direction:column;gap:6px}
 #edCard small{color:var(--m2);font-weight:600;font-size:9.5px;margin-left:3px}
 
 /* Header */
-.ed-hd{display:flex;align-items:center;gap:9px;min-width:0}
-.ed-logo{width:26px;height:26px;border-radius:8px;background:var(--grad);color:#1a0f18;display:grid;place-items:center;flex:none;box-shadow:0 4px 14px rgba(56,189,248,.35),inset 0 1px 0 rgba(255,255,255,.45)}
-.ed-logo .i{width:14px;height:14px;stroke-width:2.4}
-.ed-hd h2{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:1.3px;color:var(--m);font-weight:800;flex:none}
-.ed-info{flex:1;min-width:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;font-weight:700;color:var(--a);letter-spacing:.1px}
+.ed-hd{display:flex;align-items:center;gap:8px;min-width:0;padding:0 2px 2px}
+.ed-logo{width:24px;height:24px;border-radius:8px;background:var(--grad);color:#1a0f18;display:grid;place-items:center;flex:none;box-shadow:0 4px 14px rgba(56,189,248,.35),inset 0 1px 0 rgba(255,255,255,.45)}
+.ed-logo .i{width:13px;height:13px;stroke-width:2.4}
+.ed-hd h2{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:1.3px;color:var(--t);font-weight:800;flex:none}
+.ed-info{flex:1;min-width:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:700;color:var(--a);letter-spacing:.1px}
 
 /* Adaugă */
 .ed-add{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.ed-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:48px;padding:0 2px;border-radius:11px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));color:var(--t);font-size:10px;font-weight:700;letter-spacing:.2px;box-shadow:var(--hi);transition:.15s var(--ease)}
+.ed-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:42px;padding:0 2px;border-radius:10px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));color:var(--t);font-size:9.5px;font-weight:700;letter-spacing:.2px;box-shadow:var(--hi);transition:.15s var(--ease)}
 .ed-tile:hover{border-color:var(--a);background:rgba(45,212,191,.12);transform:translateY(-1px);box-shadow:0 6px 16px rgba(45,212,191,.15),var(--hi)}
 .ed-tile:active{transform:scale(.96)}
-.ed-tile .i{width:17px;height:17px;color:var(--a);stroke-width:1.9}
-.ed-tile .g{font:900 16px/17px Georgia,serif;color:var(--a);height:17px}
+.ed-tile .i{width:16px;height:16px;color:var(--a);stroke-width:1.9}
+.ed-tile .g{font:900 15px/16px Georgia,serif;color:var(--a);height:16px}
 
 /* Icon buttons */
-.ib{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 4px;border:0;border-radius:8px;background:transparent;color:var(--m);font-size:13px;font-weight:700;transition:background .15s,color .15s,transform .1s}
-.ib .i{width:16px;height:16px;stroke-width:1.8}
+.ib{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 4px;border:0;border-radius:7px;background:transparent;color:var(--m);font-size:13px;font-weight:700;transition:background .15s,color .15s,transform .1s}
+.ib .i{width:15px;height:15px;stroke-width:1.8}
 .ib:hover{background:rgba(255,255,255,.1);color:var(--t)}
 .ib:active{transform:scale(.9)}
 .ib.dn:hover{background:rgba(255,92,92,.22);color:#ff8f8f}
 .ib:disabled{opacity:.25;pointer-events:none}
+.sep{width:1px;height:14px;background:var(--line2);flex:none}
 
 /* Toolbar */
-.ed-tb{display:flex;align-items:center;justify-content:space-between;padding:3px 4px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:11px;box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
-.sep{width:1px;height:16px;background:var(--line2);flex:none}
+.ed-tb{display:flex;align-items:center;justify-content:space-between;padding:2px 4px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
 
-/* Casete */
-.ed-box{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:13px;padding:9px 10px 10px;box-shadow:inset 0 2px 6px rgba(0,0,0,.18)}
-.ed-sec{display:flex;align-items:center;gap:8px;font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--m);font-weight:800;margin-bottom:8px}
+/* Casete pliabile */
+.ed-box{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;box-shadow:inset 0 2px 6px rgba(0,0,0,.15);transition:border-color .15s}
+.ed-box:hover{border-color:var(--line2)}
+.ed-sec{display:flex;align-items:center;gap:7px;font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--m);font-weight:800}
+.ed-box>summary.ed-sec{cursor:pointer;list-style:none;user-select:none;padding:8px 10px}
+.ed-box>summary.ed-sec::-webkit-details-marker{display:none}
+.ed-sec::before{content:"";width:5px;height:5px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .2s var(--ease);flex:none;margin:0 2px 0 1px}
+.ed-box[open]>summary.ed-sec::before{transform:rotate(45deg)}
 .ed-sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
-.ed-sub{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px}
-.ed-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ed-box[open]>summary.ed-sec{color:var(--t)}
+.ed-bd{padding:0 10px 10px;display:flex;flex-direction:column;gap:6px}
+.ed-sub{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ed-chips{display:flex;flex-wrap:wrap;gap:5px}
 
 /* Segment */
 .ed-seg{display:flex;align-items:stretch;gap:1px;padding:2px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:9px}
@@ -491,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .ed-seg .tg:hover{background:rgba(255,255,255,.1);color:var(--t)}
 .ed-seg .tg:has(input:checked){background:var(--grad);color:#1a0f18;box-shadow:0 2px 8px rgba(56,189,248,.35)}
 
-/* Toggle chip */
+/* Toggle */
 .tgl{position:relative;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px 0 7px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--m);font:700 10.5px/1 inherit;font-family:inherit;cursor:pointer;user-select:none;white-space:nowrap;transition:.15s}
 .tgl input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
 .tgl::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid var(--m2);flex:none;transition:.15s}
@@ -501,37 +508,50 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .tgl.btn-like::before{display:none}
 .tgl.btn-like{padding:0 10px;margin-left:auto}
 .tgl.btn-like:hover{background:rgba(255,255,255,.08)}
+.tgl.sq{height:30px;width:100%;justify-content:center;padding:0;border-radius:9px}
+.tgl.sq::before{display:none}
+.tgl.sq .i{width:15px;height:15px}
 
 /* Aliniere + poziționare */
-.ed-ap{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
-.ed-apl{display:flex;flex-direction:column;gap:6px;min-width:0}
-.ed-al{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
-.ed-al .ib{height:26px;min-width:0}
-.ed-al2{display:flex;align-items:center;gap:4px}
-.ed-al2 .ib{background:rgba(0,0,0,.3);border:1px solid var(--line);flex:none;width:30px}
-.ed-al2 .tgl{margin-left:auto}
-.ed-apr{display:flex;flex-direction:column;gap:6px;align-items:stretch}
-.ed-pos{display:grid;grid-template-columns:repeat(3,28px);grid-auto-rows:24px;gap:3px;padding:3px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
-.ed-pos .ib{height:24px;min-width:0;padding:0;font-size:13px}
+.ed-ap{display:flex;flex-direction:column;gap:9px}
+.ed-cap{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--m2);margin:0 0 4px 2px}
+.ed-al{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:2px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
+.ed-al .ib{height:28px;min-width:0;padding:0}
+.ed-al .ib:nth-child(3){margin-right:3px;position:relative}
+.ed-al .ib:nth-child(3)::after{content:"";position:absolute;right:-3px;top:6px;bottom:6px;width:1px;background:var(--line2)}
+.ed-al2{display:grid;grid-template-columns:1fr 1fr 2fr;gap:4px}
+.ed-al2 .ib{width:auto;min-width:0;height:28px;padding:0;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:9px}
+.ed-al2 .ib:hover{background:rgba(255,255,255,.1)}
+.ed-al2 .tgl{margin-left:0;height:28px;width:100%;justify-content:center;border-radius:9px}
+.ed-pr{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch}
+.ed-pr>div{display:flex;flex-direction:column;min-width:0}
+.ed-pos{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:2px;padding:2px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
+.ed-pos .ib{height:auto;min-height:24px;min-width:0;padding:0;font-size:13px}
 .ed-pos .ib.c{color:var(--a);background:rgba(45,212,191,.14)}
+.ed-pm{flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:8px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
+.ed-pm small{margin:0!important;font-size:9.5px;color:var(--m2);text-align:center;line-height:1.3}
+.ed-pr .pf.mg{height:28px;width:100%}
+.ed-pr .pf.mg>span{font-size:9px;min-width:0}
+.ed-pr .pf.mg .ein{width:100%;flex:1}
+
 
 /* Câmpuri */
-.pf{display:flex;align-items:center;height:30px;border-radius:9px;border:1px solid var(--line2);background:rgba(0,0,0,.38);transition:.15s;min-width:0;overflow:hidden}
+.pf{display:flex;align-items:center;height:28px;border-radius:9px;border:1px solid var(--line2);background:rgba(0,0,0,.38);transition:.15s;min-width:0;overflow:hidden}
 .pf:focus-within{border-color:var(--a);box-shadow:0 0 0 3px rgba(45,212,191,.14)}
 .pf>span{flex:none;padding:0 0 0 8px;font-size:9.5px;font-weight:800;color:var(--m);text-transform:uppercase;letter-spacing:.5px;min-width:22px}
 .pf .ein{border:0;background:transparent;box-shadow:none!important;height:100%;padding:0 6px 0 4px;text-align:right}
-.pf.u{border:0;background:none;justify-content:flex-start;font-size:10px;color:var(--m2)}
-.pf.u>span{padding:0;text-transform:none;font-weight:600}
-.pf.mg{height:26px}
+.pf.mg{height:24px}
 .pf.mg>span{font-size:8.5px;min-width:0}
-.pf.mg .ein{width:46px}
+.pf.mg .ein{width:42px}
 .pf.rg .ein{padding:0 8px 0 4px}
-.ed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.ed-g3{display:grid;grid-template-columns:.8fr 1.5fr .6fr;gap:5px;margin-top:6px}
-#gBar .ed-g3{grid-template-columns:1.2fr .9fr .6fr}
-.ein{width:100%;height:30px;padding:0 8px;border-radius:9px;border:1px solid var(--line2);background:rgba(0,0,0,.38);color:var(--t);outline:none;font-weight:700;font-size:12px;font-variant-numeric:tabular-nums;min-width:0;transition:.15s}
+.ed-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.ed-grid>.pf{grid-column:span 2}
+.ed-grid>.tgl.sq{grid-column:span 1}
+.ed-g3{display:grid;grid-template-columns:76px 1fr 34px;gap:5px}
+#gBar .ed-g3{grid-template-columns:1fr 76px 34px}
+.ein{width:100%;height:28px;padding:0 8px;border-radius:9px;border:1px solid var(--line2);background:rgba(0,0,0,.38);color:var(--t);outline:none;font-weight:700;font-size:12px;font-variant-numeric:tabular-nums;min-width:0;transition:.15s}
 .ein:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(45,212,191,.14)}
-textarea.ein{height:auto;min-height:44px;padding:6px 9px;resize:vertical;font-weight:600;line-height:1.35}
+textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-weight:600;line-height:1.35}
 .ein[type=color]{padding:2px;cursor:pointer}
 .ein[type=range]{padding:0;border:0;background:none;accent-color:var(--a2);box-shadow:none}
 .ein:disabled{opacity:.35}
@@ -539,13 +559,13 @@ textarea.ein{height:auto;min-height:44px;padding:6px 9px;resize:vertical;font-we
 .pf:has(.ein:disabled){opacity:.45}
 
 /* Scorciatoie */
-.ed-keys{border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:11px;padding:6px 11px}
-.ed-keys summary{cursor:pointer;font-size:10.5px;font-weight:700;color:var(--m);list-style:none;user-select:none;text-transform:uppercase;letter-spacing:1px}
+.ed-keys{border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:10px;padding:6px 10px}
+.ed-keys summary{cursor:pointer;font-size:10px;font-weight:700;color:var(--m);list-style:none;user-select:none;text-transform:uppercase;letter-spacing:1px}
 .ed-keys summary::-webkit-details-marker{display:none}
 .ed-keys summary::before{content:"▸ ";display:inline-block;transition:transform .2s}
 .ed-keys[open] summary::before{transform:rotate(90deg)}
-.ed-keys ul{margin:8px 0 2px;padding:0;list-style:none;display:grid;gap:5px;font-size:10.5px;color:var(--m)}
-.ed-keys kbd{font:700 9.5px system-ui;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:var(--t)}
+.ed-keys ul{margin:8px 0 2px;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:10px;color:var(--m);line-height:1.4}
+.ed-keys kbd{font:700 9px system-ui;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:var(--t)}
 
 
 
@@ -644,8 +664,7 @@ textarea.ein{height:auto;min-height:44px;padding:6px 9px;resize:vertical;font-we
    <h2>Editor</h2>
    <div class="ed-info" id="edInfo"></div>
    <button class="ib dn" id="edClose" type="button" title="Chiudi editor"><svg class="i"><use href="#i-x"/></svg></button>
-
-    </div>
+  </div>
 
   <div class="ed-add">
    <button class="ed-tile" id="edAddT" type="button"><span class="g">T</span>Testo</button>
@@ -668,111 +687,142 @@ textarea.ein{height:auto;min-height:44px;padding:6px 9px;resize:vertical;font-we
    <button class="ib" id="edFy" type="button" title="Specchia verticale"><svg class="i" viewBox="0 0 24 24" style="transform:rotate(90deg)"><path d="M12 3v18"/><path d="M8 7L3 17h5z"/><path d="M16 7l5 10h-5z"/></svg></button>
   </div>
 
-  <div class="ed-box">
-   <div class="ed-sec">Allinea &amp; posiziona</div>
-   <div class="ed-ap">
-    <div class="ed-apl">
-     <div class="ed-al">
-      <button class="ib" data-al="l" type="button" title="Allinea a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="13" height="4" rx="1"/><rect x="7" y="14" width="8" height="4" rx="1"/></svg></button>
-      <button class="ib" data-al="ch" type="button" title="Centra orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/></svg></button>
-      <button class="ib" data-al="r" type="button" title="Allinea a destra"><svg class="i" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="4" y="6" width="13" height="4" rx="1"/><rect x="9" y="14" width="8" height="4" rx="1"/></svg></button>
-      <button class="ib" data-al="t" type="button" title="Allinea in alto"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="13" rx="1"/><rect x="14" y="7" width="4" height="8" rx="1"/></svg></button>
-      <button class="ib" data-al="cv" type="button" title="Centra verticale"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/></svg></button>
-      <button class="ib" data-al="b" type="button" title="Allinea in basso"><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="4" width="4" height="13" rx="1"/><rect x="14" y="9" width="4" height="8" rx="1"/></svg></button>
+  <!-- Contestuale: apar sub toolbar doar când e selectat un element -->
+  <details class="ed-box" id="gTxt" open hidden>
+   <summary class="ed-sec">Testo</summary>
+   <div class="ed-bd">
+    <textarea class="ein" id="edTxt" rows="2" placeholder="Scrivi il testo…"></textarea>
+    <div class="ed-g3">
+     <div class="pf"><span>pt</span><input class="ein" id="edSz" type="number" step="any" min="0.1" title="Dimensione (pt)"></div>
+     <select class="ein" id="edFont" title="Font"><option>Arial</option><option>Helvetica</option><option>Verdana</option><option>Tahoma</option><option>Trebuchet MS</option><option>Times New Roman</option><option>Georgia</option><option>Courier New</option><option>Impact</option></select>
+     <input class="ein" id="edCol" type="color" title="Colore">
+    </div>
+    <div class="ed-sub">
+     <div class="ed-seg">
+      <label class="tg" title="Grassetto"><input type="checkbox" id="edTb"><b>B</b></label>
+      <label class="tg" title="Corsivo"><input type="checkbox" id="edTi"><i>I</i></label>
      </div>
-     <div class="ed-al2">
-      <button class="ib" data-ds="h" type="button" title="Distribuisci orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4v16M20 4v16"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg></button>
-      <button class="ib" data-ds="v" type="button" title="Distribuisci verticale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16M4 20h16"/><rect x="7" y="9" width="10" height="6" rx="1"/></svg></button>
-      <label class="tgl" title="Allinea gli elementi selezionati tra loro"><input type="checkbox" id="edRel"><span>Tra loro</span></label>
+     <div class="ed-seg">
+      <button class="ib" data-ta="left" type="button" title="Testo a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></svg></button>
+      <button class="ib" data-ta="center" type="button" title="Testo centrato"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M5 18h14"/></svg></button>
+      <button class="ib" data-ta="right" type="button" title="Testo a destra"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M10 12h10M6 18h14"/></svg></button>
      </div>
+     <button class="tgl btn-like" id="edAuto" type="button"><span>Largh. auto</span></button>
     </div>
-    <div class="ed-apr">
-     <div class="ed-pos">
-      <button class="ib" data-p="0,0" type="button" title="Angolo sup. sinistro">↖</button>
-      <button class="ib" data-p="1,0" type="button" title="Alto centro">↑</button>
-      <button class="ib" data-p="2,0" type="button" title="Angolo sup. destro">↗</button>
-      <button class="ib" data-p="0,1" type="button" title="Sinistra centro">←</button>
-      <button class="ib c" data-p="1,1" type="button" title="Centro">●</button>
-      <button class="ib" data-p="2,1" type="button" title="Destra centro">→</button>
-      <button class="ib" data-p="0,2" type="button" title="Angolo inf. sinistro">↙</button>
-      <button class="ib" data-p="1,2" type="button" title="Basso centro">↓</button>
-      <button class="ib" data-p="2,2" type="button" title="Angolo inf. destro">↘</button>
+   </div>
+  </details>
+
+  <details class="ed-box" id="gBar" open hidden>
+   <summary class="ed-sec">Codice a barre</summary>
+   <div class="ed-bd">
+    <input class="ein" id="edBv" type="text" placeholder="Codice (EAN-13: 12 cifre, la 13ª è automatica)">
+    <div class="ed-g3">
+     <select class="ein" id="edBk" title="Tipo"><option value="ean13">EAN-13</option><option value="code128">Code 128</option></select>
+     <div class="pf"><span>pt</span><input class="ein" id="edBs" type="number" step="any" min="0.1" title="Dimensione cifre (pt)"></div>
+     <input class="ein" id="edBc" type="color" title="Colore">
+    </div>
+    <div class="ed-chips">
+     <label class="tgl"><input type="checkbox" id="edBt"><span>Cifre</span></label>
+     <label class="tgl"><input type="checkbox" id="edBb"><span>Cifre bold</span></label>
+     <label class="tgl"><input type="checkbox" id="edBg"><span>Sfondo bianco</span></label>
+    </div>
+   </div>
+  </details>
+
+  <details class="ed-box" id="gImg" open hidden>
+   <summary class="ed-sec">Immagine</summary>
+   <div class="ed-bd">
+    <div class="pf rg"><span>Opacità</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
+   </div>
+  </details>
+
+
+  <details class="ed-box" open>
+   <summary class="ed-sec">Proprietà <small>mm</small></summary>
+   <div class="ed-bd">
+    <div class="ed-grid">
+     <div class="pf"><span>X</span><input class="ein" id="edX" type="number" step="0.1"></div>
+     <div class="pf"><span>Y</span><input class="ein" id="edY" type="number" step="0.1"></div>
+     <div class="pf"><span>↻</span><input class="ein" id="edR" type="number" step="0.1" title="Rotazione (°)"></div>
+     <div class="pf"><span>L</span><input class="ein" id="edW" type="number" step="0.1" title="Larghezza (mm)"></div>
+     <div class="pf"><span>A</span><input class="ein" id="edH" type="number" step="0.1" title="Altezza (mm)"></div>
+     <label class="tgl sq" title="Blocca proporzioni"><input type="checkbox" id="edLock" checked><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></label>
+     <label class="tgl sq" title="Calamita (Alt = off)"><input type="checkbox" id="edSnap" checked><svg class="i" viewBox="0 0 24 24"><path d="M6 3v8a6 6 0 0 0 12 0V3h-4v8a2 2 0 0 1-4 0V3z"/><path d="M6 7h4M14 7h4"/></svg></label>
+    </div>
+   </div>
+  </details>
+
+  <details class="ed-box" open>
+   <summary class="ed-sec">Allinea &amp; posiziona</summary>
+
+   <div class="ed-bd">
+    <div class="ed-ap">
+
+     <div>
+      <div class="ed-cap">Allinea</div>
+      <div class="ed-al">
+       <button class="ib" data-al="l" type="button" title="Allinea a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="13" height="4" rx="1"/><rect x="7" y="14" width="8" height="4" rx="1"/></svg></button>
+       <button class="ib" data-al="ch" type="button" title="Centra orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/></svg></button>
+       <button class="ib" data-al="r" type="button" title="Allinea a destra"><svg class="i" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="4" y="6" width="13" height="4" rx="1"/><rect x="9" y="14" width="8" height="4" rx="1"/></svg></button>
+       <button class="ib" data-al="t" type="button" title="Allinea in alto"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="13" rx="1"/><rect x="14" y="7" width="4" height="8" rx="1"/></svg></button>
+       <button class="ib" data-al="cv" type="button" title="Centra verticale"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/></svg></button>
+       <button class="ib" data-al="b" type="button" title="Allinea in basso"><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="4" width="4" height="13" rx="1"/><rect x="14" y="9" width="4" height="8" rx="1"/></svg></button>
+      </div>
      </div>
-     <div class="pf mg"><span>Marg. mm</span><input class="ein" id="edMg" type="number" step="0.1" value="0"></div>
+
+     <div>
+      <div class="ed-cap">Distribuisci</div>
+      <div class="ed-al2">
+       <button class="ib" data-ds="h" type="button" title="Distribuisci orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4v16M20 4v16"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg></button>
+       <button class="ib" data-ds="v" type="button" title="Distribuisci verticale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16M4 20h16"/><rect x="7" y="9" width="10" height="6" rx="1"/></svg></button>
+       <label class="tgl" title="Allinea gli elementi selezionati tra loro"><input type="checkbox" id="edRel"><span>Tra loro</span></label>
+      </div>
+     </div>
+
+     <div class="ed-pr">
+      <div>
+       <div class="ed-cap">Posizione</div>
+       <div class="ed-pos">
+        <button class="ib" data-p="0,0" type="button" title="Angolo sup. sinistro">↖</button>
+        <button class="ib" data-p="1,0" type="button" title="Alto centro">↑</button>
+        <button class="ib" data-p="2,0" type="button" title="Angolo sup. destro">↗</button>
+        <button class="ib" data-p="0,1" type="button" title="Sinistra centro">←</button>
+        <button class="ib c" data-p="1,1" type="button" title="Centro">●</button>
+        <button class="ib" data-p="2,1" type="button" title="Destra centro">→</button>
+        <button class="ib" data-p="0,2" type="button" title="Angolo inf. sinistro">↙</button>
+        <button class="ib" data-p="1,2" type="button" title="Basso centro">↓</button>
+        <button class="ib" data-p="2,2" type="button" title="Angolo inf. destro">↘</button>
+       </div>
+      </div>
+      <div>
+       <div class="ed-cap">Margine</div>
+       <div class="ed-pm">
+        <div class="pf mg"><span>mm</span><input class="ein" id="edMg" type="number" step="0.1" value="0"></div>
+        <small>distanza dal bordo etichetta</small>
+       </div>
+      </div>
+     </div>
+
     </div>
    </div>
-  </div>
+  </details>
 
-  <div class="ed-box">
-   <div class="ed-sec">Proprietà</div>
-   <div class="ed-grid">
-    <div class="pf"><span>X</span><input class="ein" id="edX" type="number" step="0.1"></div>
-    <div class="pf"><span>Y</span><input class="ein" id="edY" type="number" step="0.1"></div>
-    <div class="pf"><span>↻</span><input class="ein" id="edR" type="number" step="0.1" title="Rotazione (°)"></div>
-    <div class="pf"><span>L</span><input class="ein" id="edW" type="number" step="0.1" title="Larghezza (mm)"></div>
-    <div class="pf"><span>A</span><input class="ein" id="edH" type="number" step="0.1" title="Altezza (mm)"></div>
-    <div class="pf u"><span>mm</span></div>
-   </div>
-   <div class="ed-chips">
-    <label class="tgl"><input type="checkbox" id="edLock" checked><span>Blocca proporzioni</span></label>
-    <label class="tgl"><input type="checkbox" id="edSnap" checked><span>Calamita <small>Alt = off</small></span></label>
-   </div>
-  </div>
-
-  <div class="ed-box" id="gTxt" hidden>
-   <div class="ed-sec">Testo</div>
-   <textarea class="ein" id="edTxt" rows="2" placeholder="Scrivi il testo…"></textarea>
-   <div class="ed-g3">
-    <div class="pf"><span>pt</span><input class="ein" id="edSz" type="number" step="any" min="0.1" title="Dimensione (pt)"></div>
-    <select class="ein" id="edFont" title="Font"><option>Arial</option><option>Helvetica</option><option>Verdana</option><option>Tahoma</option><option>Trebuchet MS</option><option>Times New Roman</option><option>Georgia</option><option>Courier New</option><option>Impact</option></select>
-    <input class="ein" id="edCol" type="color" title="Colore">
-   </div>
-   <div class="ed-sub">
-    <div class="ed-seg">
-     <label class="tg" title="Grassetto"><input type="checkbox" id="edTb"><b>B</b></label>
-     <label class="tg" title="Corsivo"><input type="checkbox" id="edTi"><i>I</i></label>
-    </div>
-    <div class="ed-seg">
-     <button class="ib" data-ta="left" type="button" title="Testo a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></svg></button>
-     <button class="ib" data-ta="center" type="button" title="Testo centrato"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M5 18h14"/></svg></button>
-     <button class="ib" data-ta="right" type="button" title="Testo a destra"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M10 12h10M6 18h14"/></svg></button>
-    </div>
-    <button class="tgl btn-like" id="edAuto" type="button"><span>Largh. auto</span></button>
-   </div>
-  </div>
-
-  <div class="ed-box" id="gBar" hidden>
-   <div class="ed-sec">Codice a barre</div>
-   <input class="ein" id="edBv" type="text" placeholder="Codice (EAN-13: 12 cifre, la 13ª è automatica)">
-   <div class="ed-g3">
-    <select class="ein" id="edBk" title="Tipo"><option value="ean13">EAN-13</option><option value="code128">Code 128</option></select>
-    <div class="pf"><span>pt</span><input class="ein" id="edBs" type="number" step="any" min="0.1" title="Dimensione cifre (pt)"></div>
-    <input class="ein" id="edBc" type="color" title="Colore">
-   </div>
-   <div class="ed-chips">
-    <label class="tgl"><input type="checkbox" id="edBt"><span>Cifre</span></label>
-    <label class="tgl"><input type="checkbox" id="edBb"><span>Cifre bold</span></label>
-    <label class="tgl"><input type="checkbox" id="edBg"><span>Sfondo bianco</span></label>
-   </div>
-  </div>
-
-  <div class="ed-box" id="gImg" hidden>
-   <div class="ed-sec">Immagine</div>
-   <div class="pf rg"><span>Opacità</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
-  </div>
 
   <details class="ed-keys">
    <summary>Scorciatoie</summary>
    <ul>
-    <li><kbd>Ctrl+V</kbd> incolla imagine / text</li>
-    <li><kbd>Ctrl+C</kbd> <kbd>X</kbd> <kbd>D</kbd> copiază / taie / duplică</li>
-    <li><kbd>Ctrl+Z</kbd> <kbd>Y</kbd> undo / redo · <kbd>Ctrl+A</kbd> tot</li>
-    <li><kbd>Canc</kbd> șterge · săgeți 0,1 mm · <kbd>Shift</kbd> 1 mm</li>
-    <li>Colț = proporțional · <kbd>Shift</kbd> = liber</li>
-    <li>Mâner rotund sus = rotire · <kbd>Shift</kbd> = 15°</li>
+    <li><kbd>Ctrl+V</kbd> incolla immagine / testo</li>
+    <li><kbd>Ctrl+C</kbd> <kbd>X</kbd> <kbd>D</kbd> copia / taglia / duplica</li>
+    <li><kbd>Ctrl+Z</kbd> <kbd>Y</kbd> annulla / ripeti</li>
+    <li><kbd>Ctrl+A</kbd> seleziona tutto</li>
+    <li><kbd>Canc</kbd> elimina</li>
+    <li>Frecce 0,1 mm · <kbd>Shift</kbd> 1 mm</li>
+    <li>Angolo = proporzionale · <kbd>Shift</kbd> = libero</li>
+    <li>Maniglia rotonda = rotazione · <kbd>Shift</kbd> = 15°</li>
    </ul>
   </details>
  </section>
+
 
 
 
@@ -2736,9 +2786,39 @@ window.startDesign=function(t){
  sizeCv();cur=v;tgt=t;rot=0;resetMg();$('ox').value=0;$('oy').value=0;
  resetStart();resetZ();snapNow();render();commit()};
 window.setDesignFmt=function(t){
- const E=S.design;E.w=t.W;E.h=t.H;E.ci=t.ci;E.rad=t.rad;
+ const E=S.design;
+ /* cadrul original al designului (fix): primul format în care s-a lucrat */
+ if(!E.fr){E.fr={x:0,y:0,w:E.w,h:E.h};E.ow=E.w;E.oh=E.h;E.oci=E.ci}
+ /* cel mai mare cadru cu aspectul original care încape în noul format */
+ let k=Math.min(t.W/E.ow,t.H/E.oh);
+ if(t.ci&&!E.oci)k=Math.min(k,Math.min(t.W,t.H)/Math.hypot(E.ow,E.oh));
+ const nw=E.ow*k,nh=E.oh*k,nx=(t.W-nw)/2,ny=(t.H-nh)/2,fr=E.fr,s=nw/fr.w;
+ /* mută elementele din cadrul vechi în cadrul nou */
+ E.items.forEach(it=>{
+  it.x=nx+(it.x-fr.x)*s;it.y=ny+(it.y-fr.y)*s;it.w*=s;it.h*=s;
+  if(it.type==='text')it.size=+(it.size*s).toFixed(3);
+  if(it.type==='bar')it.tsize=+(it.tsize*s).toFixed(3)});
+ /* siguranță: niciun element nu rămâne în afara etichetei noi */
+ E.items.forEach(it=>{
+  let b=bbox([it]),bw=b[2]-b[0],bh=b[3]-b[1];
+  if(bw>t.W||bh>t.H){
+   const f=Math.min(t.W/bw,t.H/bh),cx=it.x+it.w/2,cy=it.y+it.h/2;
+   it.w*=f;it.h*=f;it.x=cx-it.w/2;it.y=cy-it.h/2;
+   if(it.type==='text')it.size=+(it.size*f).toFixed(3);
+   if(it.type==='bar')it.tsize=+(it.tsize*f).toFixed(3);
+   b=bbox([it])}
+  let mx=0,my=0;
+  if(b[0]<0)mx=-b[0];else if(b[2]>t.W)mx=t.W-b[2];
+  if(b[1]<0)my=-b[1];else if(b[3]>t.H)my=t.H-b[3];
+  it.x+=mx;it.y+=my});
+ E.fr={x:nx,y:ny,w:nw,h:nh};
+
+ E.w=t.W;E.h=t.H;E.ci=t.ci;E.rad=t.rad;
+ E.hist=[];E.hi=-1;
  Object.assign(cur,{W:t.W,H:t.H,SW:t.W,SH:t.H,rad:t.rad,ci:t.ci});
- tgt=t;S.W=t.W*MM;S.H=t.H*MM;S.cells=[[0,0]];sizeCv();resetStart();resetZ();render();commit()};
+ tgt=t;S.W=t.W*MM;S.H=t.H*MM;S.cells=[[0,0]];sizeCv();resetStart();resetZ();snapNow();render();commit()};
+
+
 
 /* ---------- PDF (raster 600 dpi) ---------- */
 async function designPdf(){
@@ -2952,7 +3032,8 @@ function syncInsp(){
  const s=sel(E),it=s[0],o=s.length===1;
  ['edX','edY','edW','edH','edR'].forEach(id=>$(id).disabled=!o);
  $('gTxt').hidden=!(o&&it.type==='text');$('gBar').hidden=!(o&&it.type==='bar');$('gImg').hidden=!(o&&it.type==='img');
- $('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':' elemento selezionato')):'Nessuna selezione · Ctrl+V incolla un\'immagine';
+$('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':' elemento selezionato')):'';
+
  if(!o)return;
  const r=v=>+(+v).toFixed(2);
  setv('edX',r(it.x));setv('edY',r(it.y));setv('edW',r(it.w));setv('edH',r(it.h));setv('edR',r(it.rot));
