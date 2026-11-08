@@ -419,6 +419,33 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
  .mq{animation:mqs var(--mqd,16s) linear infinite!important}
 }
 
+/* ===== Loading PDF ===== */
+.stage{position:relative}
+.ldr{position:absolute;inset:0;z-index:40;display:grid;place-items:center;background:rgba(6,8,17,.74);opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+.ldr.on{opacity:1;pointer-events:auto}
+.ldr-card{display:flex;flex-direction:column;align-items:center;gap:8px;max-width:80%;padding:28px 38px 24px;border-radius:24px;background:linear-gradient(180deg,#1b1f38,#12152a);border:1px solid var(--line2);box-shadow:0 30px 80px rgba(0,0,0,.65),var(--hi);transform:scale(.96);transition:transform .25s var(--ease)}
+.ldr.on .ldr-card{transform:none}
+.ldr-ring{width:58px;height:58px;border-radius:50%;margin-bottom:6px;
+ background:conic-gradient(from 0deg,rgba(94,234,212,0) 0,#5eead4 35%,#38bdf8 70%,#818cf8 100%);
+ -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px));
+ mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px));
+ animation:ldrSpin .9s linear infinite;will-change:transform}
+.ldr-card b{font-size:15px;font-weight:900;letter-spacing:-.2px}
+.ldr-card span{font-size:11.5px;font-weight:600;color:var(--m);max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ldr-bar{width:230px;height:4px;margin-top:8px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}
+.ldr-bar i{display:block;width:40%;height:100%;border-radius:4px;background:var(--grad);animation:ldrBar 1.2s var(--ease) infinite;will-change:transform}
+@keyframes ldrSpin{to{transform:rotate(360deg)}}
+@keyframes ldrBar{from{transform:translateX(-100%)}to{transform:translateX(260%)}}
+@media(prefers-reduced-motion:reduce){
+ .ldr .ldr-ring{animation:ldrSpin 1.6s linear infinite!important}
+ .ldr .ldr-bar i{animation:ldrBar 1.6s linear infinite!important}
+}
+
+/* ===== Loading import cartella ===== */
+.ldr-bar.det i{width:100%;animation:none;transform-origin:0 50%;transform:scaleX(var(--p,0));transition:transform .25s var(--ease)}
+.ldr-card em{font-style:normal;font-size:12px;font-weight:800;color:var(--a);font-variant-numeric:tabular-nums;min-height:1em}
+
+
 </style>
 </head><body>
 
@@ -1122,6 +1149,60 @@ drawRot(x,S.cv, s[0]*sxm*P,
 
  const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy&&ZM.b2.z<=1?aaCanvas(c,w):c);
 
+/* ===== Loading overlay la încărcarea PDF ===== */
+{
+ const st=document.querySelector('.stage');
+ const ov=document.createElement('div');
+ ov.className='ldr';
+ ov.innerHTML='<div class="ldr-card"><div class="ldr-ring"></div><b>Caricamento etichette…</b><span></span><div class="ldr-bar"><i></i></div></div>';
+ st.appendChild(ov);
+ const nm=ov.querySelector('span'),_lp2=loadPDF;
+ loadPDF=async function(f){
+  nm.textContent=(f&&f.name)||'';
+  const t0=performance.now();
+  ov.classList.add('on');
+  /* lasă browserul să deseneze overlay-ul înainte de munca grea */
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  try{return await _lp2(f)}
+  finally{
+   setTimeout(()=>ov.classList.remove('on'),Math.max(0,350-(performance.now()-t0)));
+  }};
+}
+
+/* ===== Loading overlay la importul cartelei ===== */
+{
+ const st=document.querySelector('.stage'),ls=$('libStatus');
+ const ov=document.createElement('div');
+ ov.className='ldr';
+ ov.innerHTML='<div class="ldr-card"><div class="ldr-ring"></div><b>Scansione cartella…</b><em></em><div class="ldr-bar"><i></i></div></div>';
+ st.appendChild(ov);
+ const tt=ov.querySelector('b'),em=ov.querySelector('em'),bar=ov.querySelector('.ldr-bar');
+ const on=()=>ov.classList.contains('on'),hide=()=>ov.classList.remove('on');
+
+ new MutationObserver(()=>{
+  const s=ls.textContent,m=s.match(/^Importazione (\d+) \/ (\d+)/);
+  if(m){
+   if(S)return; /* scanarea automată în fundal nu blochează un PDF deschis */
+   const a=+m[1],b=+m[2];
+   ov.classList.add('on');
+   tt.textContent='Importazione PDF…';
+   em.textContent=a+' / '+b+' · '+Math.round(a/b*100)+'%';
+   bar.classList.add('det');bar.style.setProperty('--p',(a/b).toFixed(3));
+  }else if(/^Scansione/.test(s)){
+   if(S)return;
+   ov.classList.add('on');
+   tt.textContent='Scansione cartella…';em.textContent='';bar.classList.remove('det');
+  }else if(/^Controllo/.test(s)){
+   if(on()){tt.textContent='Controllo file…';em.textContent=s.replace(/^Controllo /,'').replace('…','');bar.classList.remove('det')}
+  }else hide();
+ }).observe(ls,{childList:true,characterData:true,subtree:true});
+
+ /* siguranță: erorile și „Nessun PDF trovato" închid overlay-ul */
+ const _t=toast;
+ toast=function(m,ok){
+  if(!/^Importazione già/.test(m||''))hide();
+  return _t(m,ok)};
+}
 
 
  // bordi anteprima: tracciati SVG sottili, uno per tipo (attive / escluse / vuote)
