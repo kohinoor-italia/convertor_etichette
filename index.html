@@ -237,6 +237,23 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .pbox{flex:1;min-height:0;display:grid;place-items:center;border-radius:18px;overflow:hidden;border:1px solid var(--line);
  background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;background-color:rgba(0,0,0,.26);box-shadow:inset 0 4px 24px rgba(0,0,0,.35)}
 .sheet{position:relative;--bk:1}
+
+/* Hint pe foaia originală (stânga): întunecare + blur ușor, doar la hover */
+#b1{position:relative}
+.b1-hint{position:absolute;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none;opacity:0;
+ background:rgba(4,6,14,.52);transition:opacity .22s var(--ease)}
+.b1-card{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;max-width:80%;padding:16px 24px;border-radius:18px;
+ background:rgba(18,20,38,.78);border:1px solid var(--line2);box-shadow:0 18px 50px rgba(0,0,0,.5),var(--hi);
+ transform:translateY(8px) scale(.97);transition:transform .25s var(--ease)}
+.b1-card .i{width:24px;height:24px;color:var(--a);margin-bottom:4px}
+.b1-card b{font-size:14.5px;font-weight:900;letter-spacing:-.2px;color:var(--t)}
+.b1-card span{font-size:11.5px;font-weight:600;color:var(--m)}
+/* blur-ul se activează doar cât timp e hover (zero cost în repaus) */
+#b1:hover:not(.zm) .b1-hint{opacity:1;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#b1:hover:not(.zm) .b1-card{transform:none}
+/* pe touch nu există hover real: nu îl afișăm */
+@media(hover:none){.b1-hint{display:none}}
+
 .sheet>canvas,.sheet>img{display:block;width:100%;height:100%;background:#fff;border-radius:6px!important;box-shadow:0 20px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08);image-rendering:auto}
 
 /* Bordi anteprima (sinistra + destra): un singolo tracciato SVG sottile,
@@ -245,14 +262,19 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 
 .cell{position:absolute;pointer-events:none}
 /* Buline numerotate: se micșorează automat pe etichetele mici (--bk setat din JS) */
-.no{position:absolute;top:max(1.5px,calc(4px*var(--bk,1)));left:max(1.5px,calc(4px*var(--bk,1)));font:800 max(5.5px,calc(10px*var(--bk,1)))/1 system-ui,sans-serif;background:var(--grad);color:#1a0f18;padding:calc(3px*var(--bk,1)) calc(6px*var(--bk,1));border-radius:99px;pointer-events:none;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.no{position:absolute;top:max(1.5px,calc(4px*var(--bk,1)));left:max(1.5px,calc(4px*var(--bk,1)));width:max(11px,calc(22px*var(--bk,1)));height:max(11px,calc(22px*var(--bk,1)));display:grid;place-items:center;padding:0;box-sizing:border-box;font:800 max(5.5px,calc(10.5px*var(--bk,1)))/1 system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.2px;background:#000;color:#fff;border-radius:50%;pointer-events:none;z-index:2;box-shadow:0 0 0 max(.75px,calc(1.5px*var(--bk,1))) #fff,0 2px 8px rgba(0,0,0,.45)}
+
 
 .res-cell{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:4px;transition:background .15s}
 .res-cell.circle{border-radius:50%}
 .res-cell:hover{background:rgba(0,0,0,.08)}
 
-.res-no{position:absolute;top:max(1.5px,calc(4px*var(--bk,1)));left:max(1.5px,calc(4px*var(--bk,1)));font:800 max(5.5px,calc(10px*var(--bk,1)))/1 system-ui,sans-serif;background:#14121f;color:var(--a);padding:calc(3px*var(--bk,1)) calc(6px*var(--bk,1));border-radius:99px;pointer-events:none;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.res-no{position:absolute;top:max(1.5px,calc(4px*var(--bk,1)));left:max(1.5px,calc(4px*var(--bk,1)));width:max(11px,calc(22px*var(--bk,1)));height:max(11px,calc(22px*var(--bk,1)));display:grid;place-items:center;padding:0;box-sizing:border-box;font:800 max(5.5px,calc(10.5px*var(--bk,1)))/1 system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.2px;background:#000;color:#fff;border-radius:50%;pointer-events:none;z-index:2;box-shadow:0 0 0 max(.75px,calc(1.5px*var(--bk,1))) #fff,0 2px 8px rgba(0,0,0,.45)}
+
 .res-cell.excluded{background:repeating-linear-gradient(45deg,rgba(10,12,24,.6) 0 6px,rgba(10,12,24,.42) 6px 12px)}
+.no.n3,.res-no.n3{font-size:max(4.8px,calc(8.6px*var(--bk,1)));letter-spacing:-.4px}
+.no.n4,.res-no.n4{font-size:max(4.2px,calc(7px*var(--bk,1)));letter-spacing:-.4px}
+
 .res-cell.excluded:hover{background:rgba(255,255,255,.3)}
 
 /* Empty + Libreria */
@@ -546,7 +568,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
    </div>
   </div>
 
+  <button class="btn sm" id="aaBtn" type="button" title="Activează/dezactivează anti-aliasing la previzualizare">Anti-alias: ON</button>
+
   <div class="clock" id="clock" aria-live="off">
+
    <div class="clk-time" id="clkT">--:--:--</div>
    <div class="clk-date" id="clkD"></div>
    <div class="clk-upd" id="clkU" hidden></div>
@@ -589,7 +614,16 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
    <div class="panes">
     <div class="pane">
      <div class="pl"><span>Prima &middot; <b id="l1"></b></span></div>
-     <div class="pbox" id="b1"><div class="sheet" id="sh1"></div></div>
+     <div class="pbox" id="b1"><div class="sheet" id="sh1"></div>
+      <div class="b1-hint" aria-hidden="true">
+       <div class="b1-card">
+        <svg class="i"><use href="#i-file"/></svg>
+        <b>Foglio originale</b>
+        <span>Le modifiche si fanno a destra</span>
+       </div>
+      </div>
+     </div>
+
     </div>
     <div class="pane">
      <div class="pl">
@@ -963,6 +997,50 @@ async function loadPDF(file){
  }catch(e){toast('Impossibile leggere il PDF: '+(e.message||e))}}
 
 /* Dimensionează foile și setează --bk (scara bulinelor) în funcție de mărimea reală a etichetei pe ecran */
+/* ---------- Anti-aliasing previzualizare (mipmap: reducere în trepte ÷2) ---------- */
+let AA=true;
+try{AA=localStorage.getItem('sls_aa')!=='0'}catch(_){}
+function aaCanvas(src,box){
+ const dpr=window.devicePixelRatio||1;
+ const tw=Math.round(box.clientWidth*dpr),th=Math.round(box.clientHeight*dpr);
+ if(tw<2||th<2||(tw>=src.width&&th>=src.height))return src;
+ if(src._aa&&src._aa.width===tw&&src._aa.height===th)return src._aa;
+ let cur=src,cw=src.width,ch=src.height;
+ while(cw/2>=tw&&ch/2>=th){
+  const nw=Math.ceil(cw/2),nh=Math.ceil(ch/2);
+  const c=document.createElement('canvas');c.width=nw;c.height=nh;
+  const x=c.getContext('2d');
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  x.drawImage(cur,0,0,cw,ch,0,0,nw,nh);
+  cur=c;cw=nw;ch=nh;
+ }
+ const out=document.createElement('canvas');out.width=tw;out.height=th;
+ const ox=out.getContext('2d');
+ ox.imageSmoothingEnabled=true;ox.imageSmoothingQuality='high';
+ ox.drawImage(cur,0,0,cw,ch,0,0,tw,th);
+ src._aa=out;out._hi=src;
+ return out}
+/* Cât timp se mișcă sliderul: fără reducere în trepte (rapid). La final: o singură aplicare. */
+let aaBusy=false,aaT=0;
+function aaDefer(){
+ aaBusy=true;
+ clearTimeout(aaT);
+ aaT=setTimeout(()=>{aaBusy=false;repaintAA()},180)}
+function swapQ(b){
+ const w=$(b==='b1'?'sh1':'sh2'),cv=w.querySelector(':scope>canvas');
+ if(!cv)return;
+ const base=cv._hi||cv;
+ const nx=(AA&&!aaBusy&&ZM[b].z<=1)?aaCanvas(base,w):base;
+ if(nx!==cv)w.replaceChild(nx,cv)}
+
+function repaintAA(){if(S){swapQ('b1');swapQ('b2')}}
+function updAA(){$('aaBtn').textContent='Anti-alias: '+(AA?'ON':'OFF')}
+$('aaBtn').onclick=()=>{
+ AA=!AA;
+ try{localStorage.setItem('sls_aa',AA?'1':'0')}catch(_){}
+ updAA();repaintAA()};
+updAA();
+
 function fitSheets(){
  if(!S)return;
  [['b1','sh1',S.W/S.H,cur],['b2','sh2',TG().SW/TG().SH,TG()]].forEach(([b,s,r,f])=>{
@@ -972,11 +1050,14 @@ function fitSheets(){
   // dimensiunea minimă a unei etichete în pixeli pe ecran
   const minPx=W*Math.min(f.W,f.H)/f.SW;
   const bk=clamp(minPx/70,0.3,1);
-  e.style.setProperty('--bk',bk.toFixed(3))})}
+  e.style.setProperty('--bk',bk.toFixed(3))});
+ repaintAA()}
+
 
 function drawSrc(){
  const d=cur,w=$('sh1');
- w.innerHTML='';w.appendChild(S.cv);
+ w.innerHTML='';w.appendChild(AA&&ZM.b1.z<=1?aaCanvas(S.cv,w):S.cv);
+
  // bordi: un unico tracciato sottile (nessun ispessimento dove si sovrappongono)
  const pth=S.cells.map(p=>cellPath(p[0],p[1],d.W,d.H,d.rad,d.ci)).join('');
  w.appendChild(bordersSvg(d.SW,d.SH,[{d:pth,c:'#000'}]));
@@ -984,7 +1065,8 @@ function drawSrc(){
   const e=document.createElement('div');
   e.className='cell';
   e.style.cssText=`left:${p[0]/d.SW*100}%;top:${p[1]/d.SH*100}%;width:${d.W/d.SW*100}%;height:${d.H/d.SH*100}%`;
-  e.innerHTML=`<span class="no">${i+1}</span>`;
+  e.innerHTML=`<span class="no n${Math.min(4,String(i+1).length)}">${i+1}</span>`;
+
   w.appendChild(e);
  });
 }
@@ -997,14 +1079,23 @@ function drawRes(){
  const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,fb=fit(d,t);
  // rezoluție înaltă pentru foaia rezultat (max ~4096 px pe latura mare)
  const k2=Math.min(MM*P_MAX,CAN_MAX/Math.max(t.SW,t.SH));
- const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
- const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
- x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+ // cache: pagina curentă se redesenează doar dacă i s-a schimbat conținutul
+ const ckey=[S.name,d.code,t.code,rot,mval(),ox,oy,oc?1:0,k2.toFixed(3),pg,seq.slice(pg*n,(pg+1)*n).join(',')].join('|');
+ const hit=!!(S.rc&&S.rc.key===ckey);
+ const c=hit?S.rc.cv:document.createElement('canvas');
+ let x=null;
+ if(!hit){
+  c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
+  x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+ }
+
 
  const pageStartSlot = pg * n;
  const pageEndSlot = (pg + 1) * n;
 
- for(let slot = pageStartSlot; slot < pageEndSlot; slot++){
+ for(let slot = hit ? pageEndSlot : pageStartSlot; slot < pageEndSlot; slot++){
+
   if(slot < seq.length){
    const sourceCellIdx = seq[slot];
    if(sourceCellIdx !== null && sourceCellIdx !== undefined){
@@ -1029,7 +1120,9 @@ drawRot(x,S.cv, s[0]*sxm*P,
   }
  }
 
- const w=$('sh2');w.innerHTML='';w.appendChild(c);
+ const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy&&ZM.b2.z<=1?aaCanvas(c,w):c);
+
+
 
  // bordi anteprima: tracciati SVG sottili, uno per tipo (attive / escluse / vuote)
  let pAct='',pExc='',pEmp='';
@@ -1054,12 +1147,15 @@ drawRot(x,S.cv, s[0]*sxm*P,
    div.className = 'res-cell ' + (t.ci ? 'circle ' : '') + (isExcluded ? 'excluded' : 'active');
    div.style.cssText = `left:${p[0]/t.SW*100}%;top:${p[1]/t.SH*100}%;width:${t.W/t.SW*100}%;height:${t.H/t.SH*100}%`;
    div.dataset.slot = slot;
-   div.innerHTML = `<span class="res-no">${slot + 1}</span>`;
+   div.innerHTML = `<span class="res-no n${Math.min(4,String(slot + 1).length)}">${slot + 1}</span>`;
+
    w.appendChild(div);
   }
  });
 
+ if(!hit)S.rc={key:ckey,cv:c};
  $('pn').textContent='foglio '+(pg+1)+' / '+pages;
+
  $('pv').disabled=pg<=0;$('nx').disabled=pg>=pages-1}
 
 function updSummary(){
@@ -1262,6 +1358,31 @@ const hlCode=()=>pickMode==='src'?cur.code:TG().code;
 
 /* Foaia formatului `t` umplută cu etichetele PDF-ului (imagine pentru panou) */
 let FMC={};
+/* Reducere în trepte ÷2 (mipmap) până la dimensiunea țintă */
+function mipDown(src,tw,th){
+ let cu=src,cw=src.width,ch=src.height;
+ while(cw/2>=tw&&ch/2>=th){
+  const nw=Math.ceil(cw/2),nh=Math.ceil(ch/2);
+  const c=document.createElement('canvas');c.width=nw;c.height=nh;
+  const x=c.getContext('2d');
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  x.drawImage(cu,0,0,cw,ch,0,0,nw,nh);
+  cu=c;cw=nw;ch=nh;
+ }
+ if(cw!==tw||ch!==th){
+  const c=document.createElement('canvas');c.width=tw;c.height=th;
+  const x=c.getContext('2d');
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  x.drawImage(cu,0,0,cw,ch,0,0,tw,th);
+  cu=c;
+ }
+ return cu}
+/* Imaginea finală pentru panou: ~900 px pe latura mare (×2 pe ecrane dense) */
+function fmFinish(c,t){
+ const kT=Math.min(c.width/t.SW,(900*Math.min(2,window.devicePixelRatio||1))/Math.max(t.SW,t.SH));
+ const tw=Math.max(2,Math.round(t.SW*kT)),th=Math.max(2,Math.round(t.SH*kT));
+ return mipDown(c,tw,th).toDataURL('image/jpeg',.95)}
+
 function fmImg(t){
  if(!S)return null;
  if(pickMode==='src'){
@@ -1269,12 +1390,12 @@ function fmImg(t){
   if(FMC[key])return FMC[key];
   if(Object.keys(FMC).length>40)FMC={};
   try{
-   const k2=Math.min(MM*2,2000/Math.max(t.SW,t.SH));
+   const k2=Math.min(MM*3,2800/Math.max(t.SW,t.SH));
    const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
    x.imageSmoothingQuality='high';
    x.drawImage(S.cv,0,0,S.cv.width,S.cv.height,0,0,c.width,c.height);
-   return FMC[key]=c.toDataURL('image/jpeg',.9);
+   return FMC[key]=fmFinish(c,t);
   }catch(e){return null}
  }
  const act=[];S.cp.forEach((v,i)=>{if(v)act.push(i)});
@@ -1286,7 +1407,7 @@ function fmImg(t){
  const old=tgt;tgt=(t===cur?null:t);
  try{
   const dd=cur,fb=fit(dd,t),sxm=S.W/dd.SW,sym=S.H/dd.SH;
-  const k2=Math.min(MM*2,2000/Math.max(t.SW,t.SH));
+  const k2=Math.min(MM*3,2800/Math.max(t.SW,t.SH));
   const c=document.createElement('canvas');c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
   const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
   x.imageSmoothingQuality='high';
@@ -1296,16 +1417,17 @@ function fmImg(t){
    shape(x,p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,t.rad*k2,t.ci);x.clip();
    drawRot(x,S.cv,s[0]*sxm*P,s[1]*sym*P,dd.W*sxm*P,dd.H*sym*P,q.x*k2,q.y*k2,q.w*k2,q.h*k2);
    x.restore()});
-  return FMC[key]=c.toDataURL('image/jpeg',.9);
+  return FMC[key]=fmFinish(c,t);
  }catch(e){return null}
  finally{tgt=old}}
+
 
 function fmSvg(d,img){
  const u=d.SW/210,pad=15*u,fs=4*u,sw=.35*u,A='#2dd4bf',B='#38bdf8',M='#9097b8';
  const tx=(x,y,t,c,r)=>`<text x="${x}" y="${y}" font-size="${fs}" font-weight="700" fill="${c}" text-anchor="middle" font-family="system-ui,sans-serif"${r?` transform="rotate(-90 ${x} ${y})"`:''}>${t}</text>`;
  const hl=(x1,x2,y,c)=>`<path d="M${x1} ${y}H${x2}M${x1} ${y-1.4*u}V${y+1.4*u}M${x2} ${y-1.4*u}V${y+1.4*u}" stroke="${c}" stroke-width="${sw*1.3}" fill="none"/>`;
  const vl=(y1,y2,x,c)=>`<path d="M${x} ${y1}V${y2}M${x-1.4*u} ${y1}H${x+1.4*u}M${x-1.4*u} ${y2}H${x+1.4*u}" stroke="${c}" stroke-width="${sw*1.3}" fill="none"/>`;
- let o=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-pad} ${-pad} ${d.SW+2*pad} ${d.SH+2*pad}">`;
+ let o=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-pad} ${-pad} ${d.SW+2*pad} ${d.SH+2*pad}" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">`;
  o+=`<rect width="${d.SW}" height="${d.SH}" rx="${2*u}" fill="#fff"/>`;
  if(img)o+=`<image href="${img}" width="${d.SW}" height="${d.SH}" preserveAspectRatio="none"/>`;
  cells(d).forEach(c=>{
@@ -1386,7 +1508,8 @@ $('rotBtn').onclick=()=>{rot=(rot+1)%4;resetMg();if(S)drawRes()};
 
 
 
-$('mg').oninput=()=>{$('mgv').textContent=nf(mval());if(S){drawRes();showMg()}};
+$('mg').oninput=()=>{$('mgv').textContent=nf(mval());if(S){aaDefer();drawRes();showMg()}};
+
 $('mg').addEventListener('pointerdown',()=>{mgDown=true;clearTimeout(mgT);showMg()});
 ['pointerup','pointercancel'].forEach(ev=>window.addEventListener(ev,()=>{if(mgDown){mgDown=false;clearTimeout(mgT);mgT=setTimeout(hideMg,250)}}));
 $('mg0').onclick=()=>{$('mg').value=0;$('mg').oninput()};
@@ -1542,7 +1665,8 @@ async function openLib(path){
 
 /* Import veloce: confronta path + dimensione + data di modifica con quanto già
    salvato e salta subito i file invariati (nessuna scrittura su IndexedDB). */
-async function importItems(items){
+async function importItems(items,quiet){
+
  if(importing){toast('Importazione già in corso…');return}
  const ok=[];let ign=0;
  for(const it of items){
@@ -1600,7 +1724,8 @@ async function importItems(items){
   if(removed)parts.push(removed+' rimossi');
   if(same)parts.push(same+' già presenti (saltati)');
   if(ign)parts.push(ign+' non PDF ignorati');
-  toast(parts.length?parts.join(' · '):'Nessuna modifica',true);
+  if(!quiet||added||upd||removed)toast(parts.length?parts.join(' · '):'Nessuna modifica',true);
+
  }catch(e){
   toast('Errore importazione: '+(e.message||e));
   refreshLib().catch(()=>{});
@@ -1670,6 +1795,35 @@ $('btnFolder2').onclick=e=>{e.stopPropagation();window.showDirectoryPicker?updFo
 $('dir').onchange=e=>{
  const fl=[...e.target.files];e.target.value='';
  importItems(fl.map(f=>({file:f,path:f.webkitRelativePath||f.name})))};
+
+/* ---------- Scansione automatica cartella ogni 60 minuti ---------- */
+const AUTO_MS=60*60*1000;
+let lastAuto=0,needPerm=false;
+async function autoScan(){
+ if(importing||!window.showDirectoryPicker)return;
+ // "Cartella aggiornata" (getUpd) conta anche per le scansioni manuali
+ if(Date.now()-Math.max(getUpd(),lastAuto)<AUTO_MS)return;
+ try{
+  const h=await getH();
+  if(!h)return;
+  const p=await h.queryPermission({mode:'read'});
+  if(p!=='granted'){needPerm=true;return}
+  lastAuto=Date.now();
+  const out=[];
+  await walkHandle(h,h.name+'/',out);
+  await importItems(out,true);
+ }catch(_){}
+}
+// se il browser chiede di nuovo il permesso, lo richiede al primo click dell'utente
+document.addEventListener('click',async()=>{
+ if(!needPerm)return;
+ needPerm=false;
+ try{
+  const h=await getH();
+  if(h&&await h.requestPermission({mode:'read'})==='granted')autoScan();
+ }catch(_){}
+},true);
+
 
 /* ---------- Svuota libreria: conferma in 5 passaggi ---------- */
 const CLR_STEPS=[
@@ -1795,8 +1949,12 @@ function goHome(){
 $('brandCard').onclick=goHome;
 $('brandCard').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();goHome()}});
 
-window.addEventListener('resize',fitSheets);
-if(window.ResizeObserver)new ResizeObserver(fitSheets).observe(document.querySelector('.stage'));
+{
+ let r=0;const fs=()=>{if(r)return;r=requestAnimationFrame(()=>{r=0;fitSheets()})};
+ window.addEventListener('resize',fs);
+ if(window.ResizeObserver)new ResizeObserver(fs).observe(document.querySelector('.stage'));
+}
+
 
 $('sh2').onclick=e=>{
  if(!S)return;
@@ -1906,7 +2064,11 @@ const ZM={b1:{z:1,x:0,y:0},b2:{z:1,x:0,y:0}};
 function applyZ(b){
  const s=$(b==='b1'?'sh1':'sh2'),q=ZM[b];
  s.style.transformOrigin='50% 50%';
- s.style.transform=(q.z===1&&!q.x&&!q.y)?'':'translate('+q.x+'px,'+q.y+'px) scale('+q.z+')'}
+ s.style.transform=(q.z===1&&!q.x&&!q.y)?'':'translate('+q.x+'px,'+q.y+'px) scale('+q.z+')';
+ $(b).classList.toggle('zm',q.z>1);
+ swapQ(b)}
+
+
 function resetZ(){['b1','b2'].forEach(b=>{ZM[b].z=1;ZM[b].x=0;ZM[b].y=0;applyZ(b)})}
 ['b1','b2'].forEach(b=>{
  const el=$(b),q=ZM[b];
@@ -1969,7 +2131,128 @@ function tickClock(){
 tickClock();setInterval(tickClock,1000);
 
 buildList();render();
-refreshLib().catch(e=>toast('Libreria non disponibile: '+(e.message||e)));
+refreshLib().then(()=>autoScan()).catch(e=>toast('Libreria non disponibile: '+(e.message||e)));
+setInterval(autoScan,60000);
+
+
+/* ===== OPTIMIZĂRI (paste la finalul primului <script>) ===== */
+
+/* 2) ImageBitmap ca sursă (GPU) — S.cv rămâne pentru citirea pixelilor */
+{
+ const _dr=drawRot;
+ drawRot=function(x,img,...a){
+  if(S&&S.bm&&img===S.cv)img=S.bm;
+  return _dr(x,img,...a)};
+ const _lp=loadPDF;
+ loadPDF=async function(f){
+  await _lp(f);
+  const s0=S;
+  if(s0&&!s0.bm&&window.createImageBitmap){
+   try{const old=s0.bm;s0.bm=await createImageBitmap(s0.cv);if(old&&old.close)old.close()}catch(_){}
+  }};
+}
+
+/* 4) seqList memoizat */
+{
+ const _sq0=seqList;let _sq=null;
+ seqList=function(){
+  if(!S)return [];
+  const k=[qtyMode,S.start,S.total,S.sheets,TG().n,S.cp.join(''),JSON.stringify(S.exclusions||{})].join('|');
+  if(_sq&&_sq.S===S&&_sq.k===k)return _sq.v;
+  const v=_sq0();_sq={S,k,v};return v};
+}
+
+/* 5) debounce căutare bibliotecă */
+$('libq').oninput=(()=>{let tm;return e=>{
+ const v=e.target.value;clearTimeout(tm);
+ tm=setTimeout(()=>{LIBQ=v;renderLib()},120)}})();
+
+/* 1) drawRes cu „tile cache": eticheta identică se randează o dată, apoi se copiază */
+function drawRes(){
+ const d=cur,t=TG(),[ox,oy]=off(),seq=seqList(),n=t.n,oc=$('oc').checked;
+ const pages=Math.max(1,Math.ceil(seq.length/n));
+ S.rp=clamp(S.rp,0,pages-1);
+ const pg=S.rp,T=cells(t,ox,oy),sxm=S.W/d.SW,sym=S.H/d.SH,fb=fit(d,t);
+ const k2=Math.min(MM*P_MAX,CAN_MAX/Math.max(t.SW,t.SH));
+ const ckey=[S.name,d.code,t.code,rot,mval(),ox,oy,oc?1:0,k2.toFixed(3),pg,seq.slice(pg*n,(pg+1)*n).join(',')].join('|');
+ const hit=!!(S.rc&&S.rc.key===ckey);
+ const c=hit?S.rc.cv:((S.rc&&S.rc.cv&&S.rc.cv.width===Math.round(t.SW*k2)&&S.rc.cv.height===Math.round(t.SH*k2))?(S.rc.cv._aa=null,S.rc.key='',S.rc.cv):document.createElement('canvas'));
+
+ if(!hit){
+  c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+
+  const tk=[S.name,d.code,t.code,rot,k2.toFixed(3)].join('|');
+  if(!S.tc||S.tc.k!==tk||S.tc.m.size>150)S.tc={k:tk,m:new Map()};
+  const tw=Math.max(1,Math.round(t.W*k2)),th=Math.max(1,Math.round(t.H*k2));
+  const kx=tw/t.W,ky=th/t.H;
+
+  for(let slot=pg*n;slot<(pg+1)*n&&slot<seq.length;slot++){
+   const i=seq[slot];
+   if(i===null||i===undefined)continue;
+   const p=T[slot%n],s=S.cells[i],q=place(i,p,fb);
+
+   if(n===1){ // o singură etichetă pe foaie: desen direct, fără tile
+    x.save();
+    shape(x,p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,t.rad*k2,t.ci);x.clip();
+    drawRot(x,S.cv,s[0]*sxm*P,s[1]*sym*P,d.W*sxm*P,d.H*sym*P,q.x*k2,q.y*k2,q.w*k2,q.h*k2);
+    x.restore();
+   }else{
+    const key=i+'|'+(q.x-p[0]).toFixed(3)+'|'+(q.y-p[1]).toFixed(3)+'|'+q.w.toFixed(3)+'|'+q.h.toFixed(3);
+    let tile=S.tc.m.get(key);
+    if(!tile){
+     tile=document.createElement('canvas');tile.width=tw;tile.height=th;
+     const y=tile.getContext('2d');y.imageSmoothingEnabled=true;y.imageSmoothingQuality='high';
+     y.save();
+     shape(y,0,0,tw,th,t.rad*kx,t.ci);y.clip();
+     drawRot(y,S.cv,s[0]*sxm*P,s[1]*sym*P,d.W*sxm*P,d.H*sym*P,(q.x-p[0])*kx,(q.y-p[1])*ky,q.w*kx,q.h*ky);
+     y.restore();
+     S.tc.m.set(key,tile);
+    }
+    x.drawImage(tile,Math.round(p[0]*k2),Math.round(p[1]*k2));
+   }
+
+   if(oc){
+    x.lineWidth=Math.max(1,k2/MM*0.35);x.strokeStyle='#000';
+    shape(x,p[0]*k2,p[1]*k2,t.W*k2,t.H*k2,t.rad*k2,t.ci);
+    x.stroke();
+   }
+  }
+ }
+
+ const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy&&ZM.b2.z<=1?aaCanvas(c,w):c);
+
+ let pAct='',pExc='',pEmp='';
+ T.forEach((p,j)=>{
+  const slot=pg*n+j;
+  const sp=cellPath(p[0],p[1],t.W,t.H,t.rad,t.ci);
+  if(slot<seq.length){
+   if(S.exclusions&&S.exclusions[slot])pExc+=sp;else pAct+=sp;
+  }else pEmp+=sp;
+ });
+ w.appendChild(bordersSvg(t.SW,t.SH,[
+  {d:pEmp,c:'#8a8fa8',dash:'5 4'},
+  {d:pExc,c:'#ff5c5c',dash:'4 3'},
+  {d:pAct,c:'#000'}
+ ]));
+
+ T.forEach((p,j)=>{
+  const slot=pg*n+j;
+  if(slot<seq.length){
+   const isExcluded=S.exclusions&&S.exclusions[slot];
+   const div=document.createElement('div');
+   div.className='res-cell '+(t.ci?'circle ':'')+(isExcluded?'excluded':'active');
+   div.style.cssText=`left:${p[0]/t.SW*100}%;top:${p[1]/t.SH*100}%;width:${t.W/t.SW*100}%;height:${t.H/t.SH*100}%`;
+   div.dataset.slot=slot;
+   div.innerHTML=`<span class="res-no n${Math.min(4,String(slot+1).length)}">${slot+1}</span>`;
+   w.appendChild(div);
+  }
+ });
+
+ if(!hit)S.rc={key:ckey,cv:c};
+ $('pn').textContent='foglio '+(pg+1)+' / '+pages;
+ $('pv').disabled=pg<=0;$('nx').disabled=pg>=pages-1}
 
 </script>
 
