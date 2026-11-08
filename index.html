@@ -519,9 +519,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .er-r2 .ein[type=color]{height:28px;padding:2px}
 .er-main{height:32px;font-size:11px;font-weight:800;letter-spacing:.3px}
 .er-hint{margin:0!important;font-size:9.5px!important;line-height:1.4;color:var(--m2);text-align:center}
-
-
 .tgl.sq{height:30px;width:100%;justify-content:center;padding:0;border-radius:9px}
+
 .tgl.sq::before{display:none}
 .tgl.sq .i{width:15px;height:15px}
 
@@ -758,12 +757,11 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
       <button class="tgl btn-like er-b" id="edErU" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Annulla ultima</span></button>
       <button class="tgl btn-like er-b" id="edErR" type="button"><svg class="i"><use href="#i-reset"/></svg><span>Ripristina</span></button>
      </div>
-     <small class="er-hint">Attiva «Cancella area» e trascina sull'immagine. Zoom con la rotella per più precisione.</small>
+     <small class="er-hint">Attiva "Cancella area" e trascina sull'immagine. Zoom con la rotella per piu precisione.</small>
     </div>
+
    </div>
   </details>
-
-
 
 
   <details class="ed-box" open>
@@ -2737,19 +2735,16 @@ function cfgSave(){
  }catch(_){}
 }
 
-/* dupa fiecare PDF incarcat cu succes, il salvam */
 const _lp3=loadPDF;
 loadPDF=async function(f){
  await _lp3(f);
  if(S&&!S.design&&f&&S.name===f.name)lastSave(f);
 };
 
-/* setarile se salveaza periodic si la inchiderea paginii */
 setInterval(cfgSave,1500);
 window.addEventListener('pagehide',cfgSave);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)cfgSave()});
 
-/* iesire completa din eticheta -> stergem din memorie */
 $('clr').addEventListener('click',()=>{if(!S)lastDrop()});
 
 async function lastRestore(){
@@ -2812,11 +2807,11 @@ const ctr=it=>[it.x+it.w/2,it.y+it.h/2];
 function corners(it){const[cx,cy]=ctr(it),hw=it.w/2,hh=it.h/2;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([a,b])=>rp(cx+a,cy+b,cx,cy,it.rot))}
 function bbox(list){let a=1e9,b=1e9,c=-1e9,d=-1e9;list.forEach(it=>corners(it).forEach(([x,y])=>{a=Math.min(a,x);b=Math.min(b,y);c=Math.max(c,x);d=Math.max(d,y)}));return[a,b,c,d]}
 const mmOf=(E,e)=>{const r=E.dom.ed.getBoundingClientRect();return[(e.clientX-r.left)/r.width*E.w,(e.clientY-r.top)/r.height*E.h]};
-/* punct (mm) -> coordonate normalizate 0..1 în interiorul imaginii (ține cont de rotație și oglindire) */
+/* punct (mm) -> coordonate 0..1 in interiorul imaginii (cu rotatie si oglindire) */
 const loc=(it,mx,my)=>{const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);let u=(p[0]-(cx-it.w/2))/it.w,v=(p[1]-(cy-it.h/2))/it.h;if(it.fx)u=1-u;if(it.fy)v=1-v;return[u,v]};
 
-let ERM=false; /* modul „Cancella area" */
-let ERP=false,ERPold='#ffffff'; /* modul pipetă */
+let ERM=false;
+let ERP=false,ERPold='#ffffff';
 function setER(v){ERM=!!v;if(!ERM&&ERP)setERP(false);$('edEr').classList.toggle('on',ERM);paintEd()}
 function setERP(v){
  ERP=!!v;$('edErP').classList.toggle('on',ERP);
@@ -2842,7 +2837,6 @@ window.addEventListener('pointermove',e=>{
  $('edErC').value=c;
  t.firstChild.style.background=c;t.lastChild.textContent=c.toUpperCase();
  t.style.display='flex';t.style.left=(e.clientX+16)+'px';t.style.top=(e.clientY+16)+'px'});
-
 
 
 /* ---------- Text ---------- */
@@ -2919,12 +2913,10 @@ function drawItem(x,it){
      x.closePath();x.fill();
      {const tm=x.getTransform(),px=Math.hypot(tm.a,tm.b)||1;
       x.strokeStyle=x.fillStyle;x.lineJoin='miter';x.lineWidth=2/px;x.stroke()}
-
     }else x.fillRect(-it.w/2+r[0]*it.w,-it.h/2+r[1]*it.h,(r[2]-r[0])*it.w,(r[3]-r[1])*it.h);
    });
    x.restore();
   }
-
   x.restore();
 
  }else if(it.type==='text'){
@@ -2955,10 +2947,20 @@ function snapSoon(now){clearTimeout(sT);if(now)snapNow();else sT=setTimeout(snap
 function updUndo(){const E=E_();if(!E)return;$('edUndo').disabled=E.hi<=0;$('edRedo').disabled=E.hi>=E.hist.length-1}
 function touch(now){const E=E_();if(!E)return;E.items.forEach(it=>it.type==='text'&&layoutText(it));paintEd();syncInsp();commitSoon(now);snapSoon(now)}
 function undo(d){
- const E=E_();if(!E)return;clearTimeout(sT);snapNow();
- const n=E.hi+d;if(n<0||n>=E.hist.length)return;
- E.hi=n;E.items=JSON.parse(E.hist[n]);
- const have=new Set(E.items.map(i=>i.id));E.sel=new Set([...E.sel].filter(i=>have.has(i)));touch(true)}
+ const E=E_();if(!E)return;
+ clearTimeout(sT);snapNow();
+ const n=E.hi+d;
+ if(n<0||n>=E.hist.length)return;
+ E.hi=n;
+ E.items=JSON.parse(E.hist[n]);
+ const have=new Set(E.items.map(i=>i.id));
+ E.sel=new Set([...E.sel].filter(i=>have.has(i)));
+ E.items.forEach(it=>it.type==='text'&&layoutText(it));
+ /* actualizam snapshot-ul pe loc, ca sa nu se taie istoricul de refacere */
+ E.hist[n]=JSON.stringify(E.items);
+ paintEd();syncInsp();commitSoon(true);
+ updUndo()}
+
 
 /* ---------- Pornire / schimbare format ---------- */
 window.startDesign=function(t){
@@ -3050,7 +3052,6 @@ function paintEd(){
  ed.style.borderRadius=E.ci?'50%':(E.rad*cw/E.w)+'px';
  ed.style.cursor=(ERM||ERP)?'crosshair':'';
 
-
  paintSel()}
 const CUR={nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize',n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize'};
 const HS={nw:[-1,-1],n:[0,-1],ne:[1,-1],e:[1,0],se:[1,1],s:[0,1],sw:[-1,1],w:[-1,0]};
@@ -3113,13 +3114,10 @@ function bind(E){
    DR={k:hd==='rot'?'rot':'rs',h:hd,it,o:{...it}};return}
   const it0=one();
   if(ERM&&it0&&it0.type==='img'){
-   /* click pe imagine = ștergere; click în afară = trece la logica normală (deselectare) */
    const[c0x,c0y]=ctr(it0),p0=rp(mx,my,c0x,c0y,-it0.rot);
    if(Math.abs(p0[0]-c0x)<=it0.w/2&&Math.abs(p0[1]-c0y)<=it0.h/2){
     e.stopPropagation();e.preventDefault();
     DR={k:'er',it:it0,a:[mx,my],r:null,moved:false};return}}
-
-
   const it=pick(E,mx,my);
 
   if(it){
@@ -3173,7 +3171,6 @@ window.addEventListener('pointermove',e=>{
   d.r[5]=[[d.a[0],d.a[1]],[mx,d.a[1]],[mx,my],[d.a[0],my]].map(p=>loc(d.it,p[0],p[1]));
  }else if(d.k==='mq'){
 
-
   E.mq=[d.m0[0],d.m0[1],mx,my];
   const x0=Math.min(d.m0[0],mx),x1=Math.max(d.m0[0],mx),y0=Math.min(d.m0[1],my),y1=Math.max(d.m0[1],my);
   E.sel=new Set(d.base);
@@ -3183,7 +3180,7 @@ window.addEventListener('pointermove',e=>{
 const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();if(d.moved)touch(true)};
 window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
 
-/* click în afara etichetei = deselectare (excepție: panoul Editor, ferestrele deschise, pipeta) */
+/* click in afara etichetei = deselectare (exceptie: panoul Editor, ferestre, pipeta) */
 document.addEventListener('pointerdown',e=>{
  const E=E_();if(!E||!E.dom||!E.sel.size)return;
  const t=e.target;if(!t||!t.closest)return;
@@ -3302,9 +3299,29 @@ $('edErP').onclick=()=>{
  if(ERP){$('edErC').value=ERPold;setERP(false);return}
  ERPold=$('edErC').value;setERP(true)};
 
-
 $('btnNew').onclick=()=>openModal('new');
 $('edClose').onclick=()=>$('clr').click();
+
+/* Proprieta + Allinea&posiziona: vizibile doar cu selectie */
+{
+ const boxes=[...document.querySelectorAll('#edCard > details.ed-box')].filter(d=>!d.id);
+ const updBoxes=()=>{
+  const E=E_(),has=!!(E&&E.sel.size);
+  boxes.forEach(d=>{d.hidden=!has});
+ };
+ const updStart=()=>{
+  const E=E_();
+  $('startCard').hidden=!!(E&&!E.items.length);
+ };
+ const _si=syncInsp;
+ syncInsp=function(){_si();updBoxes();updStart()};
+ const _rn2=render;
+ render=function(){_rn2();updStart()};
+ updBoxes();
+ updStart();
+}
+
+
 
 
 /* ---------- Tastatură + clipboard ---------- */
@@ -3419,14 +3436,12 @@ async function dsvRestore(r){
  }catch(_){openModal('new')}
 }
 
-/* salvare periodica + la iesirea din editor (inainte sa se goleasca S) */
 setInterval(dsvSave,1500);
 window.addEventListener('pagehide',dsvSave);
 document.addEventListener('click',e=>{
  if(e.target.closest&&e.target.closest('#clr'))dsvSave();
 },true);
 
-/* Crea etichetta: daca exista un ultim design, il redeschide */
 function askLast(r){
  let ov=document.getElementById('lastAsk');
  if(!ov){
@@ -3469,8 +3484,7 @@ $('btnNew').onclick=async()=>{
  openModal('new');
 };
 
-
-/* buton "Nuova" in antetul editorului */
+/* buton "+" (Nuova) in antetul editorului */
 {
  const b=document.createElement('button');
  b.className='ib';b.type='button';b.title='Nuova etichetta';
