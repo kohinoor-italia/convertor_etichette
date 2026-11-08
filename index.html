@@ -445,6 +445,124 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .ldr-bar.det i{width:100%;animation:none;transform-origin:0 50%;transform:scaleX(var(--p,0));transition:transform .25s var(--ease)}
 .ldr-card em{font-style:normal;font-size:12px;font-weight:800;color:var(--a);font-variant-numeric:tabular-nums;min-height:1em}
 
+/* ===== Editor etichette ===== */
+#edCard{padding:12px;display:flex;flex-direction:column;gap:8px}
+#edCard small{color:var(--m2);font-weight:600;font-size:9.5px;margin-left:3px}
+
+/* Header */
+.ed-hd{display:flex;align-items:center;gap:9px;min-width:0}
+.ed-logo{width:26px;height:26px;border-radius:8px;background:var(--grad);color:#1a0f18;display:grid;place-items:center;flex:none;box-shadow:0 4px 14px rgba(56,189,248,.35),inset 0 1px 0 rgba(255,255,255,.45)}
+.ed-logo .i{width:14px;height:14px;stroke-width:2.4}
+.ed-hd h2{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:1.3px;color:var(--m);font-weight:800;flex:none}
+.ed-info{flex:1;min-width:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;font-weight:700;color:var(--a);letter-spacing:.1px}
+
+/* Adaugă */
+.ed-add{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.ed-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:48px;padding:0 2px;border-radius:11px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));color:var(--t);font-size:10px;font-weight:700;letter-spacing:.2px;box-shadow:var(--hi);transition:.15s var(--ease)}
+.ed-tile:hover{border-color:var(--a);background:rgba(45,212,191,.12);transform:translateY(-1px);box-shadow:0 6px 16px rgba(45,212,191,.15),var(--hi)}
+.ed-tile:active{transform:scale(.96)}
+.ed-tile .i{width:17px;height:17px;color:var(--a);stroke-width:1.9}
+.ed-tile .g{font:900 16px/17px Georgia,serif;color:var(--a);height:17px}
+
+/* Icon buttons */
+.ib{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 4px;border:0;border-radius:8px;background:transparent;color:var(--m);font-size:13px;font-weight:700;transition:background .15s,color .15s,transform .1s}
+.ib .i{width:16px;height:16px;stroke-width:1.8}
+.ib:hover{background:rgba(255,255,255,.1);color:var(--t)}
+.ib:active{transform:scale(.9)}
+.ib.dn:hover{background:rgba(255,92,92,.22);color:#ff8f8f}
+.ib:disabled{opacity:.25;pointer-events:none}
+
+/* Toolbar */
+.ed-tb{display:flex;align-items:center;justify-content:space-between;padding:3px 4px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:11px;box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.sep{width:1px;height:16px;background:var(--line2);flex:none}
+
+/* Casete */
+.ed-box{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:13px;padding:9px 10px 10px;box-shadow:inset 0 2px 6px rgba(0,0,0,.18)}
+.ed-sec{display:flex;align-items:center;gap:8px;font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--m);font-weight:800;margin-bottom:8px}
+.ed-sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.ed-sub{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px}
+.ed-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+
+/* Segment */
+.ed-seg{display:flex;align-items:stretch;gap:1px;padding:2px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:9px}
+.ed-seg .ib{height:24px;min-width:26px}
+.ed-seg .tg{position:relative;display:grid;place-items:center;min-width:28px;height:24px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--m);transition:.15s}
+.ed-seg .tg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.ed-seg .tg:hover{background:rgba(255,255,255,.1);color:var(--t)}
+.ed-seg .tg:has(input:checked){background:var(--grad);color:#1a0f18;box-shadow:0 2px 8px rgba(56,189,248,.35)}
+
+/* Toggle chip */
+.tgl{position:relative;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px 0 7px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--m);font:700 10.5px/1 inherit;font-family:inherit;cursor:pointer;user-select:none;white-space:nowrap;transition:.15s}
+.tgl input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.tgl::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid var(--m2);flex:none;transition:.15s}
+.tgl:hover{border-color:var(--line2);color:var(--t)}
+.tgl:has(input:checked){color:var(--a);border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.1)}
+.tgl:has(input:checked)::before{background:var(--a);border-color:var(--a);box-shadow:0 0 8px var(--a)}
+.tgl.btn-like::before{display:none}
+.tgl.btn-like{padding:0 10px;margin-left:auto}
+.tgl.btn-like:hover{background:rgba(255,255,255,.08)}
+
+/* Aliniere + poziționare */
+.ed-ap{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+.ed-apl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ed-al{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
+.ed-al .ib{height:26px;min-width:0}
+.ed-al2{display:flex;align-items:center;gap:4px}
+.ed-al2 .ib{background:rgba(0,0,0,.3);border:1px solid var(--line);flex:none;width:30px}
+.ed-al2 .tgl{margin-left:auto}
+.ed-apr{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.ed-pos{display:grid;grid-template-columns:repeat(3,28px);grid-auto-rows:24px;gap:3px;padding:3px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px}
+.ed-pos .ib{height:24px;min-width:0;padding:0;font-size:13px}
+.ed-pos .ib.c{color:var(--a);background:rgba(45,212,191,.14)}
+
+/* Câmpuri */
+.pf{display:flex;align-items:center;height:30px;border-radius:9px;border:1px solid var(--line2);background:rgba(0,0,0,.38);transition:.15s;min-width:0;overflow:hidden}
+.pf:focus-within{border-color:var(--a);box-shadow:0 0 0 3px rgba(45,212,191,.14)}
+.pf>span{flex:none;padding:0 0 0 8px;font-size:9.5px;font-weight:800;color:var(--m);text-transform:uppercase;letter-spacing:.5px;min-width:22px}
+.pf .ein{border:0;background:transparent;box-shadow:none!important;height:100%;padding:0 6px 0 4px;text-align:right}
+.pf.u{border:0;background:none;justify-content:flex-start;font-size:10px;color:var(--m2)}
+.pf.u>span{padding:0;text-transform:none;font-weight:600}
+.pf.mg{height:26px}
+.pf.mg>span{font-size:8.5px;min-width:0}
+.pf.mg .ein{width:46px}
+.pf.rg .ein{padding:0 8px 0 4px}
+.ed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.ed-g3{display:grid;grid-template-columns:.8fr 1.5fr .6fr;gap:5px;margin-top:6px}
+#gBar .ed-g3{grid-template-columns:1.2fr .9fr .6fr}
+.ein{width:100%;height:30px;padding:0 8px;border-radius:9px;border:1px solid var(--line2);background:rgba(0,0,0,.38);color:var(--t);outline:none;font-weight:700;font-size:12px;font-variant-numeric:tabular-nums;min-width:0;transition:.15s}
+.ein:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(45,212,191,.14)}
+textarea.ein{height:auto;min-height:44px;padding:6px 9px;resize:vertical;font-weight:600;line-height:1.35}
+.ein[type=color]{padding:2px;cursor:pointer}
+.ein[type=range]{padding:0;border:0;background:none;accent-color:var(--a2);box-shadow:none}
+.ein:disabled{opacity:.35}
+.ein[readonly]{opacity:.5}
+.pf:has(.ein:disabled){opacity:.45}
+
+/* Scorciatoie */
+.ed-keys{border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:11px;padding:6px 11px}
+.ed-keys summary{cursor:pointer;font-size:10.5px;font-weight:700;color:var(--m);list-style:none;user-select:none;text-transform:uppercase;letter-spacing:1px}
+.ed-keys summary::-webkit-details-marker{display:none}
+.ed-keys summary::before{content:"▸ ";display:inline-block;transition:transform .2s}
+.ed-keys[open] summary::before{transform:rotate(90deg)}
+.ed-keys ul{margin:8px 0 2px;padding:0;list-style:none;display:grid;gap:5px;font-size:10.5px;color:var(--m)}
+.ed-keys kbd{font:700 9.5px system-ui;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:var(--t)}
+
+
+
+.ed{position:absolute;inset:0;background:#fff;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 20px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08)}
+.ed-cv{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:inherit}
+.ed-ov{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.ed-sel{position:absolute;border:1.5px solid #14b8a6;box-sizing:border-box;pointer-events:none}
+.ed-sel.m{border-style:dashed;border-color:#0ea5e9}
+.ed-h{position:absolute;background:#fff;border:1.5px solid #0d9488;border-radius:2px;box-sizing:border-box;transform:translate(-50%,-50%);pointer-events:auto}
+.ed-h.rot{border-radius:50%;background:#2dd4bf}
+.ed-guide{position:absolute;background:#ff3d9a;pointer-events:none}
+.ed-mq{position:absolute;border:1px dashed #0ea5e9;background:rgba(14,165,233,.12);pointer-events:none}
+.ed-dim{position:absolute;transform-origin:50% 0;font:700 11px system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.75);padding:2px 7px;border-radius:6px;white-space:nowrap;pointer-events:none}
+.dsg .b1-hint{display:none!important}
+
+.dsg #pdfCard{display:none}
+
 
 </style>
 </head><body>
@@ -504,8 +622,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
   </div>
  </div>
 
- <section class="card">
+ <section class="card" id="pdfCard">
   <div class="ch"><span class="num">1</span><h2>File PDF Sorgente</h2></div>
+
   <div class="drop" id="drop"><div class="ic"><svg class="i"><use href="#i-file"/></svg></div><b>Carica il PDF con le etichette</b><span>clicca qui o trascina il file</span></div>
   <div class="file" id="fileCard" hidden>
    <div class="pi">PDF</div>
@@ -515,6 +634,148 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
   <input type="file" id="file" accept="application/pdf,.pdf" hidden>
   <input type="file" id="dir" webkitdirectory directory multiple hidden>
  </section>
+
+
+ <section class="card" id="edCard" hidden>
+  <input type="file" id="edFile" accept="image/*" multiple hidden>
+
+  <div class="ed-hd">
+   <span class="ed-logo"><svg class="i" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
+   <h2>Editor</h2>
+   <div class="ed-info" id="edInfo"></div>
+   <button class="ib dn" id="edClose" type="button" title="Chiudi editor"><svg class="i"><use href="#i-x"/></svg></button>
+
+    </div>
+
+  <div class="ed-add">
+   <button class="ed-tile" id="edAddT" type="button"><span class="g">T</span>Testo</button>
+   <button class="ed-tile" id="edAddI" type="button"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/></svg>Immagine</button>
+   <button class="ed-tile" id="edAddE" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20.5 5v14"/></svg>EAN-13</button>
+   <button class="ed-tile" id="edAddC" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M3.5 5v14M6 5v14M10 5v14M12.5 5v14M15 5v14M19 5v14M21 5v14"/></svg>Code 128</button>
+  </div>
+
+  <div class="ed-tb">
+   <button class="ib" id="edUndo" type="button" title="Annulla (Ctrl+Z)"><svg class="i" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+   <button class="ib" id="edRedo" type="button" title="Ripeti (Ctrl+Y)"><svg class="i" viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+   <i class="sep"></i>
+   <button class="ib" id="edDup" type="button" title="Duplica (Ctrl+D)"><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
+   <button class="ib dn" id="edDel" type="button" title="Elimina (Canc)"><svg class="i"><use href="#i-trash"/></svg></button>
+   <i class="sep"></i>
+   <button class="ib" id="edFront" type="button" title="Porta in primo piano"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2" fill="currentColor" fill-opacity=".4"/></svg></button>
+   <button class="ib" id="edBack" type="button" title="Manda sullo sfondo"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="11" height="11" rx="2" fill="currentColor" fill-opacity=".4"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg></button>
+   <i class="sep"></i>
+   <button class="ib" id="edFx" type="button" title="Specchia orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8 7L3 17h5z"/><path d="M16 7l5 10h-5z"/></svg></button>
+   <button class="ib" id="edFy" type="button" title="Specchia verticale"><svg class="i" viewBox="0 0 24 24" style="transform:rotate(90deg)"><path d="M12 3v18"/><path d="M8 7L3 17h5z"/><path d="M16 7l5 10h-5z"/></svg></button>
+  </div>
+
+  <div class="ed-box">
+   <div class="ed-sec">Allinea &amp; posiziona</div>
+   <div class="ed-ap">
+    <div class="ed-apl">
+     <div class="ed-al">
+      <button class="ib" data-al="l" type="button" title="Allinea a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="13" height="4" rx="1"/><rect x="7" y="14" width="8" height="4" rx="1"/></svg></button>
+      <button class="ib" data-al="ch" type="button" title="Centra orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/></svg></button>
+      <button class="ib" data-al="r" type="button" title="Allinea a destra"><svg class="i" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="4" y="6" width="13" height="4" rx="1"/><rect x="9" y="14" width="8" height="4" rx="1"/></svg></button>
+      <button class="ib" data-al="t" type="button" title="Allinea in alto"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="13" rx="1"/><rect x="14" y="7" width="4" height="8" rx="1"/></svg></button>
+      <button class="ib" data-al="cv" type="button" title="Centra verticale"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/></svg></button>
+      <button class="ib" data-al="b" type="button" title="Allinea in basso"><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="4" width="4" height="13" rx="1"/><rect x="14" y="9" width="4" height="8" rx="1"/></svg></button>
+     </div>
+     <div class="ed-al2">
+      <button class="ib" data-ds="h" type="button" title="Distribuisci orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4v16M20 4v16"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg></button>
+      <button class="ib" data-ds="v" type="button" title="Distribuisci verticale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16M4 20h16"/><rect x="7" y="9" width="10" height="6" rx="1"/></svg></button>
+      <label class="tgl" title="Allinea gli elementi selezionati tra loro"><input type="checkbox" id="edRel"><span>Tra loro</span></label>
+     </div>
+    </div>
+    <div class="ed-apr">
+     <div class="ed-pos">
+      <button class="ib" data-p="0,0" type="button" title="Angolo sup. sinistro">↖</button>
+      <button class="ib" data-p="1,0" type="button" title="Alto centro">↑</button>
+      <button class="ib" data-p="2,0" type="button" title="Angolo sup. destro">↗</button>
+      <button class="ib" data-p="0,1" type="button" title="Sinistra centro">←</button>
+      <button class="ib c" data-p="1,1" type="button" title="Centro">●</button>
+      <button class="ib" data-p="2,1" type="button" title="Destra centro">→</button>
+      <button class="ib" data-p="0,2" type="button" title="Angolo inf. sinistro">↙</button>
+      <button class="ib" data-p="1,2" type="button" title="Basso centro">↓</button>
+      <button class="ib" data-p="2,2" type="button" title="Angolo inf. destro">↘</button>
+     </div>
+     <div class="pf mg"><span>Marg. mm</span><input class="ein" id="edMg" type="number" step="0.1" value="0"></div>
+    </div>
+   </div>
+  </div>
+
+  <div class="ed-box">
+   <div class="ed-sec">Proprietà</div>
+   <div class="ed-grid">
+    <div class="pf"><span>X</span><input class="ein" id="edX" type="number" step="0.1"></div>
+    <div class="pf"><span>Y</span><input class="ein" id="edY" type="number" step="0.1"></div>
+    <div class="pf"><span>↻</span><input class="ein" id="edR" type="number" step="0.1" title="Rotazione (°)"></div>
+    <div class="pf"><span>L</span><input class="ein" id="edW" type="number" step="0.1" title="Larghezza (mm)"></div>
+    <div class="pf"><span>A</span><input class="ein" id="edH" type="number" step="0.1" title="Altezza (mm)"></div>
+    <div class="pf u"><span>mm</span></div>
+   </div>
+   <div class="ed-chips">
+    <label class="tgl"><input type="checkbox" id="edLock" checked><span>Blocca proporzioni</span></label>
+    <label class="tgl"><input type="checkbox" id="edSnap" checked><span>Calamita <small>Alt = off</small></span></label>
+   </div>
+  </div>
+
+  <div class="ed-box" id="gTxt" hidden>
+   <div class="ed-sec">Testo</div>
+   <textarea class="ein" id="edTxt" rows="2" placeholder="Scrivi il testo…"></textarea>
+   <div class="ed-g3">
+    <div class="pf"><span>pt</span><input class="ein" id="edSz" type="number" step="any" min="0.1" title="Dimensione (pt)"></div>
+    <select class="ein" id="edFont" title="Font"><option>Arial</option><option>Helvetica</option><option>Verdana</option><option>Tahoma</option><option>Trebuchet MS</option><option>Times New Roman</option><option>Georgia</option><option>Courier New</option><option>Impact</option></select>
+    <input class="ein" id="edCol" type="color" title="Colore">
+   </div>
+   <div class="ed-sub">
+    <div class="ed-seg">
+     <label class="tg" title="Grassetto"><input type="checkbox" id="edTb"><b>B</b></label>
+     <label class="tg" title="Corsivo"><input type="checkbox" id="edTi"><i>I</i></label>
+    </div>
+    <div class="ed-seg">
+     <button class="ib" data-ta="left" type="button" title="Testo a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></svg></button>
+     <button class="ib" data-ta="center" type="button" title="Testo centrato"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M5 18h14"/></svg></button>
+     <button class="ib" data-ta="right" type="button" title="Testo a destra"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M10 12h10M6 18h14"/></svg></button>
+    </div>
+    <button class="tgl btn-like" id="edAuto" type="button"><span>Largh. auto</span></button>
+   </div>
+  </div>
+
+  <div class="ed-box" id="gBar" hidden>
+   <div class="ed-sec">Codice a barre</div>
+   <input class="ein" id="edBv" type="text" placeholder="Codice (EAN-13: 12 cifre, la 13ª è automatica)">
+   <div class="ed-g3">
+    <select class="ein" id="edBk" title="Tipo"><option value="ean13">EAN-13</option><option value="code128">Code 128</option></select>
+    <div class="pf"><span>pt</span><input class="ein" id="edBs" type="number" step="any" min="0.1" title="Dimensione cifre (pt)"></div>
+    <input class="ein" id="edBc" type="color" title="Colore">
+   </div>
+   <div class="ed-chips">
+    <label class="tgl"><input type="checkbox" id="edBt"><span>Cifre</span></label>
+    <label class="tgl"><input type="checkbox" id="edBb"><span>Cifre bold</span></label>
+    <label class="tgl"><input type="checkbox" id="edBg"><span>Sfondo bianco</span></label>
+   </div>
+  </div>
+
+  <div class="ed-box" id="gImg" hidden>
+   <div class="ed-sec">Immagine</div>
+   <div class="pf rg"><span>Opacità</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
+  </div>
+
+  <details class="ed-keys">
+   <summary>Scorciatoie</summary>
+   <ul>
+    <li><kbd>Ctrl+V</kbd> incolla imagine / text</li>
+    <li><kbd>Ctrl+C</kbd> <kbd>X</kbd> <kbd>D</kbd> copiază / taie / duplică</li>
+    <li><kbd>Ctrl+Z</kbd> <kbd>Y</kbd> undo / redo · <kbd>Ctrl+A</kbd> tot</li>
+    <li><kbd>Canc</kbd> șterge · săgeți 0,1 mm · <kbd>Shift</kbd> 1 mm</li>
+    <li>Colț = proporțional · <kbd>Shift</kbd> = liber</li>
+    <li>Mâner rotund sus = rotire · <kbd>Shift</kbd> = 15°</li>
+   </ul>
+  </details>
+ </section>
+
+
+
 
  <section class="card" id="startCard">
   <div class="ch"><span class="num">2</span><h2>Parametri &amp; Quantità</h2></div>
@@ -614,7 +875,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
     </div>
     <button class="btn" id="btnPdf" type="button"><svg class="i"><use href="#i-file"/></svg>Scegli PDF</button>
     <button class="btn pri" id="btnFolder" type="button"><svg class="i"><use href="#i-folder"/></svg><span id="btnFolderTxt">Carica cartella</span></button>
-   </div>
+    <button class="btn" id="btnNew" type="button"><svg class="i"><use href="#i-edit"/></svg>Crea etichetta</button>
+
+
+     </div>
    <!-- Sincronizzazione sempre attiva (nascosta) -->
    <input type="checkbox" id="syncDel" checked hidden>
    <div class="lib-bar" id="libBar" hidden>
@@ -1435,7 +1699,8 @@ function listFade(){
 $('list').addEventListener('scroll',listFade,{passive:true});
 
 /* ---------- Previzualizare mare format (hover) ---------- */
-const hlCode=()=>pickMode==='src'?cur.code:TG().code;
+const hlCode=()=>pickMode==='new'?((S&&S.design)?TG().code:''):pickMode==='src'?cur.code:TG().code;
+
 
 /* Foaia formatului `t` umplută cu etichetele PDF-ului (imagine pentru panou) */
 let FMC={};
@@ -1465,7 +1730,8 @@ function fmFinish(c,t){
  return mipDown(c,tw,th).toDataURL('image/jpeg',.95)}
 
 function fmImg(t){
- if(!S)return null;
+ if(!S||pickMode==='new')return null;
+
  if(pickMode==='src'){
   const key='src|'+S.name+'|'+t.code;
   if(FMC[key])return FMC[key];
@@ -1544,13 +1810,18 @@ $('list').addEventListener('mouseleave',()=>{clearTimeout(fmT);fmShow(hlCode())}
 
 function buildList(){
  const q=txt.toLowerCase().replace(/\s+/g,'');
- const L=D.filter(d=>(fam==='*'||d.code[0]===fam)&&(!q||(d.code+d.W+'x'+d.H).toLowerCase().replace(/\s+/g,'').includes(q)));
+ const sz=(function(s){const m=String(s).trim().replace(/,/g,'.').match(/^(\d+(?:\.\d+)?)\s*(?:x|×|\*|-|\s)\s*(\d+(?:\.\d+)?)(?:\s*mm)?$/i);return m?[+m[1],+m[2]]:null})(txt);
+ let L=D.filter(d=>(fam==='*'||d.code[0]===fam)&&(!q||(d.code+d.W+'x'+d.H).toLowerCase().replace(/\s+/g,'').includes(q)));
+ if(sz)L=D.filter(d=>fam==='*'||d.code[0]===fam).map(d=>({d,s:Math.min(Math.abs(d.W-sz[0])+Math.abs(d.H-sz[1]),Math.abs(d.W-sz[1])+Math.abs(d.H-sz[0]))})).sort((a,b)=>a.s-b.s).slice(0,30).map(o=>o.d);
+
  $('list').innerHTML=L.map(d=>`<button class="it" type="button" data-c="${d.code}">${thumb(d)}<b>${d.code}</b><small>${nf(d.W)}×${nf(d.H)} · ${d.n}</small></button>`).join('')||'<div style="color:var(--m)">Nessun formato</div>';
  requestAnimationFrame(listFade);
 
  $('list').querySelectorAll('.it').forEach(b=>b.onclick=()=>{
   const x=D.find(d=>d.code===b.dataset.c);
+  if(pickMode==='new'){closeModal();if(S&&S.design)setDesignFmt(x);else startDesign(x);return}
   if(pickMode==='src'){
+
    if(S){
     cur=x;
     if(tgt===cur)tgt=null;
@@ -2112,9 +2383,14 @@ $('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(
 
 const modal = $('fmtModal');
 function openModal(mode){
- pickMode=mode==='src'?'src':'tgt';
- document.querySelector('#fmtModal h3').textContent=pickMode==='src'?'Formato originale del PDF':'Seleziona Nuovo Formato';
+ if(mode==='src'&&S&&S.design)return;
+ if(mode==='tgt'&&S&&S.design)mode='new';
+ pickMode=mode==='src'?'src':mode==='new'?'new':'tgt';
+ document.querySelector('#fmtModal h3').textContent=pickMode==='src'?'Formato originale del PDF':pickMode==='new'?'Scegli il formato dell\'etichetta':'Seleziona Nuovo Formato';
+ $('q').placeholder=pickMode==='new'?'Cerca: A455, C519… oppure misura 70x37':'Cerca formato: A455, C519, R305…';
+ if(pickMode==='new'){txt='';fam='*';$('q').value='';$('chips').querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0))}
  buildList();
+
  modal.classList.add('open');
  setTimeout(()=>{const q=$('q');q.focus();q.select()},60); }
 
@@ -2336,6 +2612,435 @@ function drawRes(){
  $('pv').disabled=pg<=0;$('nx').disabled=pg>=pages-1}
 
 </script>
+
+<script>
+/* ===== EDITOR ETICHETTE (Crea etichetta) ===== */
+(()=>{
+const R2D=Math.PI/180,MARK='[[SLS-ELEMENTS]]';
+const IMGS={};let UID=1,CLIP=null,PN=0,DR=null,cT=0,sT=0,rq=0;
+const MC=document.createElement('canvas').getContext('2d');
+const E_=()=>(S&&S.design)||null;
+const sel=E=>E.items.filter(i=>E.sel.has(i.id));
+const one=()=>{const E=E_();if(!E)return null;const s=sel(E);return s.length===1?s[0]:null};
+const num=(v,d)=>{const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:d};
+const rp=(px,py,cx,cy,deg)=>{const a=deg*R2D,c=Math.cos(a),s=Math.sin(a),dx=px-cx,dy=py-cy;return[cx+dx*c-dy*s,cy+dx*s+dy*c]};
+const ctr=it=>[it.x+it.w/2,it.y+it.h/2];
+function corners(it){const[cx,cy]=ctr(it),hw=it.w/2,hh=it.h/2;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([a,b])=>rp(cx+a,cy+b,cx,cy,it.rot))}
+function bbox(list){let a=1e9,b=1e9,c=-1e9,d=-1e9;list.forEach(it=>corners(it).forEach(([x,y])=>{a=Math.min(a,x);b=Math.min(b,y);c=Math.max(c,x);d=Math.max(d,y)}));return[a,b,c,d]}
+const mmOf=(E,e)=>{const r=E.dom.ed.getBoundingClientRect();return[(e.clientX-r.left)/r.width*E.w,(e.clientY-r.top)/r.height*E.h]};
+
+/* ---------- Text ---------- */
+const fontStr=it=>(it.italic?'italic ':'')+(it.bold?'bold ':'')+'100px "'+it.font+'"';
+function layoutText(it){
+ MC.font=fontStr(it);
+ const fm=it.size/MM,f=fm/100;let lines=[];
+ const paras=String(it.text).split('\n');
+ if(it.auto){lines=paras;let mw=0;lines.forEach(l=>{mw=Math.max(mw,MC.measureText(l).width*f)});it.w=Math.max(.5,mw)}
+ else{
+  const maxU=Math.max(1,it.w)/f;
+  paras.forEach(p=>{let c='';p.split(' ').forEach(wd=>{const t=c?c+' '+wd:wd;if(c&&MC.measureText(t).width>maxU){lines.push(c);c=wd}else c=t});lines.push(c)});
+ }
+ it.h=Math.max(fm*1.2,lines.length*fm*1.2);
+ return lines}
+
+/* ---------- Barcode ---------- */
+const L_=['0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
+const G_=['0100111','0110011','0011011','0100001','0011101','0111001','0000101','0010001','0001001','0010111'];
+const R_=['1110010','1100110','1101100','1000010','1011100','1001110','1010000','1000100','1001000','1110100'];
+const PAR=['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'];
+function ean13(v){
+ const d=String(v).replace(/\D/g,'').slice(0,12).padStart(12,'0').split('').map(Number);
+ let s=0;d.forEach((n,i)=>s+=n*(i%2?3:1));d.push((10-s%10)%10);
+ let b='101';const p=PAR[d[0]];
+ for(let i=1;i<=6;i++)b+=(p[i-1]==='L'?L_:G_)[d[i]];
+ b+='01010';for(let i=7;i<=12;i++)b+=R_[d[i]];
+ return{bits:b+'101',d}}
+const C128='212222 222122 222221 121223 121322 131222 122213 122312 132212 221213 221312 231212 112232 122132 122231 113222 123122 123221 223211 221132 221231 213212 223112 312131 311222 321122 321221 312212 322112 322211 212123 212321 232121 111323 131123 131321 112313 132113 132311 211313 231113 231311 112133 112331 132131 113123 113321 133121 313121 211331 231131 213113 213311 213131 311123 311321 331121 312113 312311 332111 314111 221411 431111 111224 111422 121124 121421 141122 141221 112214 112412 122114 122411 142112 142211 241211 221114 413111 241112 134111 111242 121142 121241 114212 124112 124211 411212 421112 421211 212141 214121 412121 111143 111341 131141 114113 114311 411113 411311 113141 114131 311141 411131 211412 211214 211232 2331112'.split(' ');
+function code128(v){
+ v=String(v).replace(/[^\x20-\x7e]/g,'');if(!v)v=' ';
+ const vals=[];let start;
+ if(/^\d+$/.test(v)&&v.length%2===0){start=105;for(let i=0;i<v.length;i+=2)vals.push(+v.slice(i,i+2))}
+ else{start=104;for(const ch of v)vals.push(ch.charCodeAt(0)-32)}
+ let sum=start;vals.forEach((c,i)=>sum+=c*(i+1));
+ const seq=[start,...vals,sum%103,106];let bits='';
+ seq.forEach(c=>{let bar=true;[...C128[c]].forEach(n=>{bits+=(bar?'1':'0').repeat(+n);bar=!bar})});
+ return{bits,txt:v}}
+function drawBar(x,it){
+ const ean=it.kind==='ean13',inf=ean?ean13(it.value):code128(it.value),hw=it.w/2,hh=it.h/2;
+ const ql=ean?11:10,qr=ean?7:10,b=inf.bits,mod=it.w/(ql+b.length+qr);
+ const tm=it.tsize/MM,th=it.showText?tm*1.3:0,bh=Math.max(.3,it.h-th),ext=(ean&&it.showText)?tm*.55:0;
+ if(it.bg){x.fillStyle='#fff';x.fillRect(-hw,-hh,it.w,it.h)}
+ x.fillStyle=it.color;
+ const gf=i=>ean&&(i<3||(i>=45&&i<50)||i>=92);
+ for(let i=0;i<b.length;){
+  if(b[i]!=='1'){i++;continue}
+  let j=i;while(j<b.length&&b[j]==='1'&&gf(j)===gf(i))j++;
+  x.fillRect(-hw+(ql+i)*mod,-hh,(j-i)*mod,bh+(gf(i)?ext:0));i=j}
+ if(it.showText){
+  const f=tm/100,X=u=>(-hw+u*mod)/f;
+  x.save();x.translate(0,-hh+bh+th/2);x.scale(f,f);
+  x.font=(it.tbold?'bold ':'')+'100px Arial';x.textBaseline='middle';x.textAlign='center';x.fillStyle=it.color;
+  if(ean){const d=inf.d;
+   x.fillText(String(d[0]),X(ql/2),0);
+   for(let j=0;j<6;j++){x.fillText(String(d[1+j]),X(ql+3+7*j+3.5),0);x.fillText(String(d[7+j]),X(ql+50+7*j+3.5),0)}
+  }else x.fillText(inf.txt,0,0,(it.w*.96)/f);
+  x.restore()}}
+
+/* ---------- Randare ---------- */
+function drawItem(x,it){
+ if(it.type==='img'){
+  const im=IMGS[it.imgId];if(!im)return;
+  x.save();x.globalAlpha=it.op==null?1:it.op;x.scale(it.fx?-1:1,it.fy?-1:1);
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  x.drawImage(im,-it.w/2,-it.h/2,it.w,it.h);x.restore();
+ }else if(it.type==='text'){
+  const fm=it.size/MM,f=fm/100,lh=fm*1.2;
+  x.save();x.fillStyle=it.color;x.font=fontStr(it);x.textBaseline='middle';x.textAlign=it.align;
+  const px=it.align==='left'?-it.w/2:it.align==='right'?it.w/2:0;
+  x.scale(f,f);
+  layoutText(it).forEach((l,i)=>x.fillText(l,px/f,(-it.h/2+lh*(i+.5))/f));
+  x.restore();
+ }else drawBar(x,it)}
+function paintItems(x,k,E){
+ E.items.forEach(it=>{
+  if(it.type==='text')layoutText(it);
+  x.save();x.translate((it.x+it.w/2)*k,(it.y+it.h/2)*k);x.rotate(it.rot*R2D);x.scale(k,k);
+  drawItem(x,it);x.restore()})}
+
+/* ---------- Sincronizare cu pipeline-ul existent ---------- */
+function sizeCv(){S.cv.width=Math.round(S.design.w*MM*P);S.cv.height=Math.round(S.design.h*MM*P)}
+function commit(){
+ const E=E_();if(!E)return;
+ const x=S.ctx;x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,S.cv.width,S.cv.height);
+ paintItems(x,S.cv.width/E.w,E);
+ S.bm=null;S.ink={};S.rc=null;S.tc=null;FMC={};
+ refreshRes()}
+function commitSoon(now){if(now){clearTimeout(cT);cT=0;commit()}else if(!cT)cT=setTimeout(()=>{cT=0;commit()},90)}
+function snapNow(){const E=E_();if(!E)return;const s=JSON.stringify(E.items);if(E.hist[E.hi]===s)return;E.hist=E.hist.slice(0,E.hi+1);E.hist.push(s);if(E.hist.length>100)E.hist.shift();E.hi=E.hist.length-1;updUndo()}
+function snapSoon(now){clearTimeout(sT);if(now)snapNow();else sT=setTimeout(snapNow,450)}
+function updUndo(){const E=E_();if(!E)return;$('edUndo').disabled=E.hi<=0;$('edRedo').disabled=E.hi>=E.hist.length-1}
+function touch(now){const E=E_();if(!E)return;E.items.forEach(it=>it.type==='text'&&layoutText(it));paintEd();syncInsp();commitSoon(now);snapSoon(now)}
+function undo(d){
+ const E=E_();if(!E)return;clearTimeout(sT);snapNow();
+ const n=E.hi+d;if(n<0||n>=E.hist.length)return;
+ E.hi=n;E.items=JSON.parse(E.hist[n]);
+ const have=new Set(E.items.map(i=>i.id));E.sel=new Set([...E.sel].filter(i=>have.has(i)));touch(true)}
+
+/* ---------- Pornire / schimbare format ---------- */
+window.startDesign=function(t){
+ P=P_MAX;
+ const E={w:t.W,h:t.H,ci:t.ci,rad:t.rad,items:[],sel:new Set(),hist:[],hi:-1,dom:null,guides:[],mq:null};
+ const v={code:'Design',W:t.W,H:t.H,fmt:'',SW:t.W,SH:t.H,c:1,r:1,ml:0,mt:0,gh:0,gv:0,rad:t.rad,ci:t.ci,n:1,mr:0,mb:0};
+ const cv=document.createElement('canvas'),ctx=cv.getContext('2d',{willReadFrequently:true});
+ S={name:'Etichetta '+t.code+'.pdf',base:'Etichetta',bytes:null,pages:1,W:t.W*MM,H:t.H*MM,cv,ctx,code:null,det:null,rot:0,start:1,rp:0,total:0,sheets:1,totAuto:true,exclusions:{},design:E,cells:[[0,0]],ink:{},emp:[false],cp:[1]};
+ sizeCv();cur=v;tgt=t;rot=0;resetMg();$('ox').value=0;$('oy').value=0;
+ resetStart();resetZ();snapNow();render();commit()};
+window.setDesignFmt=function(t){
+ const E=S.design;E.w=t.W;E.h=t.H;E.ci=t.ci;E.rad=t.rad;
+ Object.assign(cur,{W:t.W,H:t.H,SW:t.W,SH:t.H,rad:t.rad,ci:t.ci});
+ tgt=t;S.W=t.W*MM;S.H=t.H*MM;S.cells=[[0,0]];sizeCv();resetStart();resetZ();render();commit()};
+
+/* ---------- PDF (raster 600 dpi) ---------- */
+async function designPdf(){
+ const E=S.design,{PDFDocument}=PDFLib,k=Math.min(600/25.4,8000/Math.max(E.w,E.h));
+ const c=document.createElement('canvas');c.width=Math.round(E.w*k);c.height=Math.round(E.h*k);
+ const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);paintItems(x,c.width/E.w,E);
+ const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+ const doc=await PDFDocument.create(),pg=doc.addPage([E.w*MM,E.h*MM]);
+ const im=await doc.embedPng(new Uint8Array(await blob.arrayBuffer()));
+ pg.drawImage(im,{x:0,y:0,width:E.w*MM,height:E.h*MM});
+ return new Uint8Array(await doc.save())}
+const _br=buildResult;
+buildResult=async function(){if(S&&S.design)S.bytes=await designPdf();return _br()};
+
+/* ---------- Integrare cu aplicația ---------- */
+const _ds=drawSrc;drawSrc=function(){if(S&&S.design)return drawEd();return _ds()};
+const _geo=geo;geo=function(i,p,fb){return(S&&S.design)?null:_geo(i,p,fb)}; // fără micșorare automată pe zona neimprimabilă
+const _fs=fitSheets;fitSheets=function(){_fs();paintEd()};
+const _az=applyZ;applyZ=function(b){_az(b);if(b==='b1')paintEd()};
+const _rn=render;
+render=function(){
+ _rn();
+ const on=!!(S&&S.design);
+ $('edCard').hidden=!on;document.body.classList.toggle('dsg',on);
+ $('l1').parentNode.firstChild.nodeValue=on?'Banco di lavoro · ':'Prima · ';
+ document.querySelector('#topConvBar .fmt-badge .lb').textContent=on?'Etichetta':'Dal PDF';
+ if(on){$('fmeta').textContent=nf(S.design.w)+'×'+nf(S.design.h)+' mm · design';updUndo()}};
+const _clr=$('clr').onclick;
+$('clr').onclick=function(e){const E=E_();if(E&&E.items.length&&!confirm('Chiudere l\'editor? Il lavoro non salvato andrà perso.'))return;_clr.call(this,e)};
+
+/* ---------- Masa de lucru ---------- */
+function drawEd(){
+ const E=S.design,w=$('sh1');w.innerHTML='';
+ const ed=document.createElement('div');ed.className='ed';
+ const cv=document.createElement('canvas');cv.className='ed-cv';
+ const ov=document.createElement('div');ov.className='ed-ov';
+ ed.append(cv,ov);w.appendChild(ed);E.dom={ed,cv,ov};bind(E);paintEd();syncInsp()}
+function paintEd(){
+ const E=E_();if(!E||!E.dom||!E.dom.ed.isConnected)return;
+ const{ed,cv}=E.dom,z=Math.min(4,Math.max(1,ZM.b1.z||1)),dpr=window.devicePixelRatio||1,cw=ed.clientWidth||300;
+ const W=Math.min(8192,Math.round(E.w*cw*dpr*z/E.w)),H=Math.min(8192,Math.round(E.h*W/E.w)),kk=W/E.w;
+ if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+ const x=cv.getContext('2d');x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,W,H);
+ paintItems(x,kk,E);
+ ed.style.borderRadius=E.ci?'50%':(E.rad*cw/E.w)+'px';
+ paintSel()}
+const CUR={nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize',n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize'};
+const HS={nw:[-1,-1],n:[0,-1],ne:[1,-1],e:[1,0],se:[1,1],s:[0,1],sw:[-1,1],w:[-1,0]};
+function paintSel(){
+ const E=E_();if(!E||!E.dom)return;
+ const{ed,ov}=E.dom,sc=ed.clientWidth/E.w,z=ZM.b1.z||1,hs=10/z;
+ ov.innerHTML='';
+ const s=sel(E),single=s.length===1;
+ s.forEach(it=>{
+  const d=document.createElement('div');d.className='ed-sel'+(single?'':' m');
+  d.style.cssText=`left:${it.x*sc}px;top:${it.y*sc}px;width:${it.w*sc}px;height:${it.h*sc}px;transform:rotate(${it.rot}deg);border-width:${1.5/z}px`;
+  if(single){
+   [['nw',0,0],['n',.5,0],['ne',1,0],['e',1,.5],['se',1,1],['s',.5,1],['sw',0,1],['w',0,.5]].forEach(([h,a,b])=>{
+    const e=document.createElement('div');e.className='ed-h';e.dataset.h=h;
+    e.style.cssText=`left:${a*100}%;top:${b*100}%;width:${hs}px;height:${hs}px;cursor:${CUR[h]}`;d.appendChild(e)});
+   const r=document.createElement('div');r.className='ed-h rot';r.dataset.h='rot';
+   r.style.cssText=`left:50%;top:${-22/z}px;width:${hs}px;height:${hs}px;cursor:grab`;d.appendChild(r)}
+  ov.appendChild(d)});
+ if(s.length){
+  const b=bbox(s),d=document.createElement('div');d.className='ed-dim';
+  d.textContent=single?nf(s[0].w)+' × '+nf(s[0].h)+' mm':nf(b[2]-b[0])+' × '+nf(b[3]-b[1])+' mm';
+  d.style.cssText=`left:${(b[0]+b[2])/2*sc}px;top:${b[3]*sc+8/z}px;transform:translateX(-50%) scale(${1/z})`;ov.appendChild(d)}
+ (E.guides||[]).forEach(([t,p])=>{
+  const g=document.createElement('div');g.className='ed-guide';
+  g.style.cssText=t==='v'?`left:${p*sc}px;top:0;width:${1/z}px;height:100%`:`top:${p*sc}px;left:0;height:${1/z}px;width:100%`;ov.appendChild(g)});
+ if(E.mq){const[a,b,c,d]=E.mq,m=document.createElement('div');m.className='ed-mq';
+  m.style.cssText=`left:${Math.min(a,c)*sc}px;top:${Math.min(b,d)*sc}px;width:${Math.abs(c-a)*sc}px;height:${Math.abs(d-b)*sc}px`;ov.appendChild(m)}}
+
+function pick(E,mx,my){
+ for(let n=E.items.length-1;n>=0;n--){const it=E.items[n],[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);
+  if(Math.abs(p[0]-cx)<=it.w/2&&Math.abs(p[1]-cy)<=it.h/2)return it}
+ return null}
+function snapMove(E,mv,th){
+ const bb=bbox(mv),cx=[0,E.w/2,E.w],cy=[0,E.h/2,E.h];
+ E.items.forEach(i=>{if(E.sel.has(i.id))return;const b=bbox([i]);cx.push(b[0],(b[0]+b[2])/2,b[2]);cy.push(b[1],(b[1]+b[3])/2,b[3])});
+ const mx=[bb[0],(bb[0]+bb[2])/2,bb[2]],my=[bb[1],(bb[1]+bb[3])/2,bb[3]];
+ let bx=null,by=null;
+ mx.forEach(a=>cx.forEach(c=>{const d=c-a;if(Math.abs(d)<th&&(!bx||Math.abs(d)<Math.abs(bx.d)))bx={d,c}}));
+ my.forEach(a=>cy.forEach(c=>{const d=c-a;if(Math.abs(d)<th&&(!by||Math.abs(d)<Math.abs(by.d)))by={d,c}}));
+ const g=[];
+ if(bx){mv.forEach(i=>i.x+=bx.d);g.push(['v',bx.c])}
+ if(by){mv.forEach(i=>i.y+=by.d);g.push(['h',by.c])}
+ E.guides=g}
+function sched(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;const E=E_();if(!E)return;paintEd();syncInsp();commitSoon(false)})}
+
+function bind(E){
+ const ed=E.dom.ed;
+ ed.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;
+  const a=document.activeElement;if(a&&a!==document.body&&a.blur)a.blur();
+  const hd=e.target.dataset&&e.target.dataset.h,[mx,my]=mmOf(E,e);
+  if(hd){
+   e.stopPropagation();e.preventDefault();
+   const it=sel(E)[0];if(!it)return;
+   DR={k:hd==='rot'?'rot':'rs',h:hd,it,o:{...it}};return}
+  const it=pick(E,mx,my);
+  if(it){
+   e.stopPropagation();e.preventDefault();
+   if(e.shiftKey){if(E.sel.has(it.id))E.sel.delete(it.id);else E.sel.add(it.id)}
+   else if(!E.sel.has(it.id))E.sel=new Set([it.id]);
+   DR={k:'mv',m0:[mx,my],o:sel(E).map(i=>({i,x:i.x,y:i.y})),moved:false};
+   paintSel();syncInsp();
+  }else{
+   if(!e.shiftKey)E.sel=new Set();
+   paintSel();syncInsp();
+   if((ZM.b1.z||1)<=1){e.stopPropagation();e.preventDefault();DR={k:'mq',m0:[mx,my],base:new Set(E.sel)}}}});
+ ed.addEventListener('dblclick',e=>{
+  const it=pick(E,...mmOf(E,e));if(!it)return;
+  e.stopPropagation();E.sel=new Set([it.id]);paintSel();syncInsp();
+  const f=it.type==='text'?$('edTxt'):it.type==='bar'?$('edBv'):null;if(f){f.focus();f.select()}})}
+
+window.addEventListener('pointermove',e=>{
+ if(!DR)return;const E=E_();if(!E||!E.dom)return;
+ const[mx,my]=mmOf(E,e),sc=E.dom.ed.clientWidth/E.w,z=ZM.b1.z||1,d=DR;
+ if(d.k==='mv'){
+  let dx=mx-d.m0[0],dy=my-d.m0[1];
+  if(!d.moved&&Math.hypot(dx,dy)*sc*z<3)return;
+  d.moved=true;
+  if(e.shiftKey){if(Math.abs(dx)>Math.abs(dy))dy=0;else dx=0}
+  d.o.forEach(o=>{o.i.x=o.x+dx;o.i.y=o.y+dy});
+  if($('edSnap').checked&&!e.altKey)snapMove(E,d.o.map(o=>o.i),6/(sc*z));else E.guides=[];
+ }else if(d.k==='rs'){
+  d.moved=true;
+  const it=d.it,o=d.o,[sx,sy]=HS[d.h],cx0=o.x+o.w/2,cy0=o.y+o.h/2;
+  const A=rp(cx0-sx*o.w/2,cy0-sy*o.h/2,cx0,cy0,o.rot);
+  const v=rp(mx,my,A[0],A[1],-o.rot);v[0]-=A[0];v[1]-=A[1];
+  let nw=sx?Math.max(.2,v[0]*sx):o.w,nh=sy?Math.max(.2,v[1]*sy):o.h;
+  if(sx&&sy&&!e.shiftKey){const s=Math.max(nw/o.w,nh/o.h);nw=o.w*s;nh=o.h*s}
+  if(it.type==='text'){
+   if(sx&&!sy){it.auto=false;it.w=nw}
+   else{const s=sx?nw/o.w:nh/o.h;it.size=Math.max(.1,+(o.size*s).toFixed(2));if(!o.auto)it.w=o.w*s}
+   layoutText(it);
+  }else{it.w=nw;it.h=nh}
+  const off=rp(sx*it.w/2,sy*it.h/2,0,0,o.rot);
+  it.x=A[0]+off[0]-it.w/2;it.y=A[1]+off[1]-it.h/2;
+ }else if(d.k==='rot'){
+  d.moved=true;
+  const c=ctr(d.o);let a=Math.atan2(my-c[1],mx-c[0])/R2D+90;a=((a%360)+360)%360;
+  if(e.shiftKey)a=Math.round(a/15)*15;else{const q=Math.round(a/90)*90;if(Math.abs(a-q)<2)a=q}
+  d.it.rot=+(a%360).toFixed(1);
+ }else if(d.k==='mq'){
+  E.mq=[d.m0[0],d.m0[1],mx,my];
+  const x0=Math.min(d.m0[0],mx),x1=Math.max(d.m0[0],mx),y0=Math.min(d.m0[1],my),y1=Math.max(d.m0[1],my);
+  E.sel=new Set(d.base);
+  E.items.forEach(i=>{const b=bbox([i]);if(b[0]<x1&&b[2]>x0&&b[1]<y1&&b[3]>y0)E.sel.add(i.id)});
+ }
+ sched()});
+const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();if(d.moved)touch(true)};
+window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+
+/* ---------- Adăugare elemente ---------- */
+function addItem(it){const E=E_();it.id=UID++;E.items.push(it);E.sel=new Set([it.id]);touch(true);return it}
+function addText(txt){
+ const E=E_();if(!E)return;
+ const it={type:'text',text:txt||'Testo',size:Math.max(4,Math.min(24,+(E.h*.18*MM).toFixed(1))),font:'Arial',bold:false,italic:false,color:'#000000',align:'left',auto:true,x:0,y:0,w:10,h:5,rot:0};
+ layoutText(it);it.x=(E.w-it.w)/2;it.y=(E.h-it.h)/2;addItem(it)}
+function addBar(kind){
+ const E=E_();if(!E)return;
+ const w=Math.min(E.w*.9,37.3),it={type:'bar',kind,value:kind==='ean13'?'590123412345':'ABC-12345',showText:true,tsize:+Math.max(3,Math.min(8,w/37.3*8)).toFixed(1),tbold:false,color:'#000000',bg:true,w,h:Math.min(E.h*.9,w*.6),x:0,y:0,rot:0};
+ it.x=(E.w-it.w)/2;it.y=(E.h-it.h)/2;addItem(it)}
+function addImageFile(file){
+ const im=new Image();
+ im.onload=()=>{
+  const E=E_();if(!E)return;
+  const id='i'+(UID++);IMGS[id]=im;
+  let w=E.w*.8,h=w*im.naturalHeight/im.naturalWidth;
+  if(h>E.h*.8){h=E.h*.8;w=h*im.naturalWidth/im.naturalHeight}
+  addItem({type:'img',imgId:id,fx:false,fy:false,op:1,w,h,x:(E.w-w)/2,y:(E.h-h)/2,rot:0})};
+ im.src=URL.createObjectURL(file)}
+function delSel(){const E=E_();if(!E||!E.sel.size)return;E.items=E.items.filter(i=>!E.sel.has(i.id));E.sel=new Set();touch(true)}
+function dupSel(){
+ const E=E_();if(!E)return;const s=sel(E);if(!s.length)return;const ns=new Set();
+ s.forEach(i=>{const c=JSON.parse(JSON.stringify(i));c.id=UID++;c.x+=2;c.y+=2;E.items.push(c);ns.add(c.id)});E.sel=ns;touch(true)}
+function order(d){const E=E_();if(!E)return;const s=sel(E);if(!s.length)return;const r=E.items.filter(i=>!E.sel.has(i.id));E.items=d>0?r.concat(s):s.concat(r);touch(true)}
+function flip(k){const E=E_();if(!E)return;sel(E).forEach(i=>{if(i.type==='img')i[k]=!i[k]});touch(true)}
+function pasteItems(){
+ const E=E_();PN++;const ns=new Set();
+ JSON.parse(CLIP).forEach(it=>{it.id=UID++;it.x+=2*PN;it.y+=2*PN;E.items.push(it);ns.add(it.id)});E.sel=ns;touch(true)}
+
+/* ---------- Aliniere / poziționare ---------- */
+function align(m){
+ const E=E_(),s=E?sel(E):[];if(!s.length)return;
+ const rel=(s.length>1&&$('edRel').checked)?bbox(s):[0,0,E.w,E.h];
+ s.forEach(it=>{const b=bbox([it]);let dx=0,dy=0;
+  if(m==='l')dx=rel[0]-b[0];else if(m==='r')dx=rel[2]-b[2];else if(m==='ch')dx=(rel[0]+rel[2])/2-(b[0]+b[2])/2;
+  else if(m==='t')dy=rel[1]-b[1];else if(m==='b')dy=rel[3]-b[3];else if(m==='cv')dy=(rel[1]+rel[3])/2-(b[1]+b[3])/2;
+  it.x+=dx;it.y+=dy});
+ touch(true)}
+function place(h,v){
+ const E=E_(),s=E?sel(E):[];if(!s.length)return;
+ const m=num($('edMg').value,0),b=bbox(s),r=[m,m,E.w-m,E.h-m];
+ const dx=h===0?r[0]-b[0]:h===2?r[2]-b[2]:(r[0]+r[2])/2-(b[0]+b[2])/2;
+ const dy=v===0?r[1]-b[1]:v===2?r[3]-b[3]:(r[1]+r[3])/2-(b[1]+b[3])/2;
+ s.forEach(i=>{i.x+=dx;i.y+=dy});touch(true)}
+function distribute(ax){
+ const E=E_(),s=E?sel(E):[];if(s.length<3){toast('Seleziona almeno 3 elementi');return}
+ const i0=ax==='h'?0:1,i2=i0+2,arr=s.map(i=>({i,b:bbox([i])})).sort((p,q)=>p.b[i0]-q.b[i0]);
+ const tot=arr.reduce((a,o)=>a+(o.b[i2]-o.b[i0]),0),span=arr[arr.length-1].b[i2]-arr[0].b[i0],gap=(span-tot)/(arr.length-1);
+ let pos=arr[0].b[i0];
+ arr.forEach(o=>{const d=pos-o.b[i0];if(ax==='h')o.i.x+=d;else o.i.y+=d;pos+=o.b[i2]-o.b[i0]+gap});touch(true)}
+
+/* ---------- Inspector ---------- */
+function setv(id,v){const el=$(id);if(!el||document.activeElement===el)return;if(el.type==='checkbox')el.checked=!!v;else el.value=v}
+function syncInsp(){
+ const E=E_();if(!E)return;
+ const s=sel(E),it=s[0],o=s.length===1;
+ ['edX','edY','edW','edH','edR'].forEach(id=>$(id).disabled=!o);
+ $('gTxt').hidden=!(o&&it.type==='text');$('gBar').hidden=!(o&&it.type==='bar');$('gImg').hidden=!(o&&it.type==='img');
+ $('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':' elemento selezionato')):'Nessuna selezione · Ctrl+V incolla un\'immagine';
+ if(!o)return;
+ const r=v=>+(+v).toFixed(2);
+ setv('edX',r(it.x));setv('edY',r(it.y));setv('edW',r(it.w));setv('edH',r(it.h));setv('edR',r(it.rot));
+ $('edH').readOnly=it.type==='text';
+ if(it.type==='text'){setv('edTxt',it.text);setv('edSz',it.size);setv('edFont',it.font);setv('edCol',it.color);setv('edTb',it.bold);setv('edTi',it.italic)}
+ else if(it.type==='bar'){setv('edBv',it.value);setv('edBk',it.kind);setv('edBs',it.tsize);setv('edBc',it.color);setv('edBt',it.showText);setv('edBb',it.tbold);setv('edBg',it.bg)}
+ else setv('edOp',it.op==null?1:it.op)}
+const B=(id,fn,ev)=>$(id).addEventListener(ev||'input',e=>{const it=one();if(!it)return;fn(it,e.target);touch(false)});
+B('edX',(it,el)=>it.x=num(el.value,it.x));
+B('edY',(it,el)=>it.y=num(el.value,it.y));
+B('edW',(it,el)=>{const w=Math.max(.1,num(el.value,it.w)),r=it.h/it.w;if(it.type==='text'){it.auto=false;it.w=w}else{it.w=w;if(it.type==='img'&&$('edLock').checked)it.h=w*r}});
+B('edH',(it,el)=>{if(it.type==='text')return;const h=Math.max(.1,num(el.value,it.h)),r=it.w/it.h;it.h=h;if(it.type==='img'&&$('edLock').checked)it.w=h*r});
+B('edR',(it,el)=>it.rot=num(el.value,it.rot));
+B('edTxt',(it,el)=>it.text=el.value);
+B('edSz',(it,el)=>it.size=Math.max(.1,num(el.value,it.size)));
+B('edFont',(it,el)=>it.font=el.value,'change');
+B('edCol',(it,el)=>it.color=el.value);
+B('edTb',(it,el)=>it.bold=el.checked,'change');
+B('edTi',(it,el)=>it.italic=el.checked,'change');
+B('edBv',(it,el)=>it.value=el.value);
+B('edBk',(it,el)=>it.kind=el.value,'change');
+B('edBs',(it,el)=>it.tsize=Math.max(.1,num(el.value,it.tsize)));
+B('edBc',(it,el)=>it.color=el.value);
+B('edBt',(it,el)=>it.showText=el.checked,'change');
+B('edBb',(it,el)=>it.tbold=el.checked,'change');
+B('edBg',(it,el)=>it.bg=el.checked,'change');
+B('edOp',(it,el)=>it.op=num(el.value,1));
+$('edAuto').onclick=()=>{const it=one();if(it&&it.type==='text'){it.auto=true;touch(true)}};
+document.querySelectorAll('#edCard [data-al]').forEach(b=>b.onclick=()=>align(b.dataset.al));
+document.querySelectorAll('#edCard [data-p]').forEach(b=>b.onclick=()=>{const[h,v]=b.dataset.p.split(',').map(Number);place(h,v)});
+document.querySelectorAll('#edCard [data-ds]').forEach(b=>b.onclick=()=>distribute(b.dataset.ds));
+document.querySelectorAll('#edCard [data-ta]').forEach(b=>b.onclick=()=>{const it=one();if(it&&it.type==='text'){it.align=b.dataset.ta;touch(true)}});
+$('edAddT').onclick=()=>addText('');
+$('edAddE').onclick=()=>addBar('ean13');
+$('edAddC').onclick=()=>addBar('code128');
+$('edAddI').onclick=()=>$('edFile').click();
+$('edFile').onchange=e=>{[...e.target.files].forEach(addImageFile);e.target.value=''};
+$('edUndo').onclick=()=>undo(-1);$('edRedo').onclick=()=>undo(1);
+$('edDup').onclick=dupSel;$('edDel').onclick=delSel;
+$('edFront').onclick=()=>order(1);$('edBack').onclick=()=>order(-1);
+$('edFx').onclick=()=>flip('fx');$('edFy').onclick=()=>flip('fy');
+$('btnNew').onclick=()=>openModal('new');
+$('edClose').onclick=()=>$('clr').click();
+
+
+/* ---------- Tastatură + clipboard ---------- */
+window.addEventListener('keydown',e=>{
+ const E=E_();if(!E)return;
+ if(document.querySelector('.modal-overlay.open,.dlg-overlay.open'))return;
+ const a=document.activeElement,tg=a&&a.tagName;
+ if(a&&(tg==='TEXTAREA'||tg==='SELECT'||a.isContentEditable||(tg==='INPUT'&&!['checkbox','range','button','file','color'].includes(a.type))))return;
+ const k=e.key,ctrl=e.ctrlKey||e.metaKey,lk=k.toLowerCase();let used=true;
+ if(ctrl){
+  if(lk==='z')undo(e.shiftKey?1:-1);
+  else if(lk==='y')undo(1);
+  else if(lk==='a'){E.sel=new Set(E.items.map(i=>i.id));paintSel();syncInsp()}
+  else if(lk==='d')dupSel();
+  else used=false;
+ }else if(k==='Delete'||k==='Backspace')delSel();
+ else if(k==='Escape'){E.sel=new Set();paintSel();syncInsp()}
+ else if(k.startsWith('Arrow')){
+  const st=e.shiftKey?1:.1,s=sel(E);
+  s.forEach(i=>{if(k==='ArrowLeft')i.x-=st;if(k==='ArrowRight')i.x+=st;if(k==='ArrowUp')i.y-=st;if(k==='ArrowDown')i.y+=st});
+  if(s.length)touch(false);
+ }else if(k===' '||k.length===1){/* înghite: nu deschide căutarea PDF */}
+ else used=false;
+ if(used){e.preventDefault();e.stopImmediatePropagation()}},true);
+const typing=t=>t&&((t.tagName==='INPUT'&&!['checkbox','range','button','color'].includes(t.type))||t.tagName==='TEXTAREA'||t.isContentEditable);
+function cp(e,cut){
+ const E=E_();if(!E||typing(e.target)||!E.sel.size)return;
+ CLIP=JSON.stringify(sel(E));PN=0;e.clipboardData.setData('text/plain',MARK);e.preventDefault();if(cut)delSel()}
+document.addEventListener('copy',e=>cp(e,false));
+document.addEventListener('cut',e=>cp(e,true));
+document.addEventListener('paste',e=>{
+ const E=E_();if(!E||typing(e.target))return;
+ const cd=e.clipboardData;if(!cd)return;
+ const files=[...cd.items].filter(i=>i.kind==='file'&&i.type.startsWith('image/')).map(i=>i.getAsFile()).filter(Boolean);
+ if(files.length){e.preventDefault();files.forEach(addImageFile);return}
+ const t=cd.getData('text/plain');
+ if(t===MARK&&CLIP){e.preventDefault();pasteItems();return}
+ if(t&&t.trim()){e.preventDefault();addText(t)}});
+window.addEventListener('drop',e=>{
+ if(!E_())return;
+ const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])].filter(f=>f.type.startsWith('image/'));
+ if(fs.length){e.stopImmediatePropagation();e.preventDefault();fs.forEach(addImageFile)}},true);
+})();
+</script>
+
 
 <script>
   if ('serviceWorker' in navigator) {
