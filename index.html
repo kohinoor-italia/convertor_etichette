@@ -508,6 +508,19 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .tgl.btn-like::before{display:none}
 .tgl.btn-like{padding:0 10px;margin-left:auto}
 .tgl.btn-like:hover{background:rgba(255,255,255,.08)}
+.tgl.on{color:var(--a);border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.1)}
+.tgl.on::before{background:var(--a);border-color:var(--a)}
+.er-grp{display:flex;flex-direction:column;gap:5px;padding-top:7px;margin-top:1px;border-top:1px solid var(--line)}
+.er-r2{display:grid;grid-template-columns:42px 1fr;gap:5px}
+.er-r3{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.er-b{height:28px;width:100%;justify-content:center;margin-left:0!important;padding:0 8px;border-radius:9px;gap:6px}
+.er-b::before{display:none}
+.er-b .i{width:14px;height:14px;stroke-width:1.9}
+.er-r2 .ein[type=color]{height:28px;padding:2px}
+.er-main{height:32px;font-size:11px;font-weight:800;letter-spacing:.3px}
+.er-hint{margin:0!important;font-size:9.5px!important;line-height:1.4;color:var(--m2);text-align:center}
+
+
 .tgl.sq{height:30px;width:100%;justify-content:center;padding:0;border-radius:9px}
 .tgl.sq::before{display:none}
 .tgl.sq .i{width:15px;height:15px}
@@ -733,8 +746,24 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
    <summary class="ed-sec">Immagine</summary>
    <div class="ed-bd">
     <div class="pf rg"><span>Opacità</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
+
+    <div class="er-grp">
+     <div class="ed-cap" style="margin:0 0 1px 2px">Cancella area</div>
+     <button class="tgl btn-like er-b er-main" id="edEr" type="button" title="Trascina sull'immagine per coprire un'area"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>Cancella area</span></button>
+     <div class="er-r2">
+      <input class="ein" id="edErC" type="color" value="#ffffff" title="Colore di riempimento">
+      <button class="tgl btn-like er-b" id="edErP" type="button" title="Passa il mouse sull'immagine e clicca sul colore"><svg class="i" viewBox="0 0 24 24"><path d="M2 22l1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="M15 6l3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3z"/></svg><span>Contagocce</span></button>
+     </div>
+     <div class="er-r3">
+      <button class="tgl btn-like er-b" id="edErU" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Annulla ultima</span></button>
+      <button class="tgl btn-like er-b" id="edErR" type="button"><svg class="i"><use href="#i-reset"/></svg><span>Ripristina</span></button>
+     </div>
+     <small class="er-hint">Attiva «Cancella area» e trascina sull'immagine. Zoom con la rotella per più precisione.</small>
+    </div>
    </div>
   </details>
+
+
 
 
   <details class="ed-box" open>
@@ -2664,7 +2693,112 @@ function drawRes(){
 </script>
 
 <script>
+/* ===== ULTIMA ETICHETA IN MEMORIE ===== */
+(()=>{
+const KEY='lastpdf',CFG='sls_last_cfg';
+
+async function lastSave(f){
+ try{
+  const db=await idb();
+  const tx=db.transaction('h','readwrite');
+  tx.objectStore('h').put({blob:f,name:f.name},KEY);
+  await txDone(tx);
+ }catch(_){}
+}
+async function lastDrop(){
+ try{localStorage.removeItem(CFG)}catch(_){}
+ try{
+  const db=await idb();
+  const tx=db.transaction('h','readwrite');
+  tx.objectStore('h').delete(KEY);
+  await txDone(tx);
+ }catch(_){}
+}
+function cfgSave(){
+ if(!S||S.design)return;
+ try{
+  localStorage.setItem(CFG,JSON.stringify({
+   name:S.name,
+   cur:cur.code,
+   tgt:tgt?tgt.code:null,
+   rot:rot,
+   mg:$('mg').value,
+   ox:$('ox').value,
+   oy:$('oy').value,
+   oc:$('oc').checked,
+   mode:qtyMode,
+   start:S.start,
+   sheets:S.sheets,
+   total:S.total,
+   totAuto:S.totAuto,
+   ex:S.exclusions||{},
+   rp:S.rp||0
+  }));
+ }catch(_){}
+}
+
+/* dupa fiecare PDF incarcat cu succes, il salvam */
+const _lp3=loadPDF;
+loadPDF=async function(f){
+ await _lp3(f);
+ if(S&&!S.design&&f&&S.name===f.name)lastSave(f);
+};
+
+/* setarile se salveaza periodic si la inchiderea paginii */
+setInterval(cfgSave,1500);
+window.addEventListener('pagehide',cfgSave);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cfgSave()});
+
+/* iesire completa din eticheta -> stergem din memorie */
+$('clr').addEventListener('click',()=>{if(!S)lastDrop()});
+
+async function lastRestore(){
+ if(S)return;
+ let cfg=null;
+ try{cfg=JSON.parse(localStorage.getItem(CFG))}catch(_){}
+ try{
+  const db=await idb();
+  const rec=await reqP(db.transaction('h').objectStore('h').get(KEY));
+  if(!rec||!rec.blob||S)return;
+  await loadPDF(new File([rec.blob],rec.name||'etichetta.pdf',{type:'application/pdf'}));
+  if(!S||S.design)return;
+  if(!cfg||cfg.name!==S.name){render();return}
+
+  const c=D.find(x=>x.code===cfg.cur);
+  if(c&&c!==cur){cur=c;if(tgt===cur)tgt=null;setupCells()}
+  const t=cfg.tgt?D.find(x=>x.code===cfg.tgt):null;
+  tgt=(t&&t!==cur)?t:null;
+  rot=cfg.rot||0;
+  $('mg').value=cfg.mg||0;
+  $('mgv').textContent=nf(mval());
+  $('ox').value=cfg.ox||0;
+  $('oy').value=cfg.oy||0;
+  $('oc').checked=!!cfg.oc;
+
+  const n=TG().n;
+  S.start=clamp(parseInt(cfg.start)||1,1,n);
+  $('sstart').value=S.start;
+  $('sstart').max=n;
+  S.exclusions=cfg.ex||{};
+
+  if(cfg.mode==='tag'){
+   $('btnModeTag').click();
+   if(cfg.totAuto===false){$('tot').value=cfg.total||1;$('tot').oninput()}
+  }else{
+   $('btnModeSheet').click();
+   $('tot').value=cfg.sheets||1;
+   $('tot').oninput();
+  }
+  S.rp=cfg.rp||0;
+  render();
+ }catch(_){}
+}
+setTimeout(lastRestore,0);
+})();
+</script>
+<script>
 /* ===== EDITOR ETICHETTE (Crea etichetta) ===== */
+
 (()=>{
 const R2D=Math.PI/180,MARK='[[SLS-ELEMENTS]]';
 const IMGS={};let UID=1,CLIP=null,PN=0,DR=null,cT=0,sT=0,rq=0;
@@ -2678,6 +2812,38 @@ const ctr=it=>[it.x+it.w/2,it.y+it.h/2];
 function corners(it){const[cx,cy]=ctr(it),hw=it.w/2,hh=it.h/2;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([a,b])=>rp(cx+a,cy+b,cx,cy,it.rot))}
 function bbox(list){let a=1e9,b=1e9,c=-1e9,d=-1e9;list.forEach(it=>corners(it).forEach(([x,y])=>{a=Math.min(a,x);b=Math.min(b,y);c=Math.max(c,x);d=Math.max(d,y)}));return[a,b,c,d]}
 const mmOf=(E,e)=>{const r=E.dom.ed.getBoundingClientRect();return[(e.clientX-r.left)/r.width*E.w,(e.clientY-r.top)/r.height*E.h]};
+/* punct (mm) -> coordonate normalizate 0..1 în interiorul imaginii (ține cont de rotație și oglindire) */
+const loc=(it,mx,my)=>{const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);let u=(p[0]-(cx-it.w/2))/it.w,v=(p[1]-(cy-it.h/2))/it.h;if(it.fx)u=1-u;if(it.fy)v=1-v;return[u,v]};
+
+let ERM=false; /* modul „Cancella area" */
+let ERP=false,ERPold='#ffffff'; /* modul pipetă */
+function setER(v){ERM=!!v;if(!ERM&&ERP)setERP(false);$('edEr').classList.toggle('on',ERM);paintEd()}
+function setERP(v){
+ ERP=!!v;$('edErP').classList.toggle('on',ERP);
+ const t=document.getElementById('edTip');if(t&&!ERP)t.style.display='none';
+ paintEd()}
+function sampleAt(E,e){
+ const cv=E.dom.cv,r=cv.getBoundingClientRect();
+ const X=Math.floor((e.clientX-r.left)/r.width*cv.width),Y=Math.floor((e.clientY-r.top)/r.height*cv.height);
+ if(X<0||Y<0||X>=cv.width||Y>=cv.height)return null;
+ const d=cv.getContext('2d').getImageData(X,Y,1,1).data,h=n=>n.toString(16).padStart(2,'0');
+ return '#'+h(d[0])+h(d[1])+h(d[2])}
+window.addEventListener('pointermove',e=>{
+ if(!ERP)return;
+ const E=E_();if(!E||!E.dom)return;
+ let t=document.getElementById('edTip');
+ if(!t){
+  t=document.createElement('div');t.id='edTip';
+  t.style.cssText='position:fixed;z-index:130;pointer-events:none;display:none;align-items:center;gap:8px;padding:5px 10px 5px 6px;border-radius:10px;background:rgba(18,20,38,.95);border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 24px rgba(0,0,0,.5);font:700 11px system-ui,sans-serif;color:#fff';
+  t.innerHTML='<i style="width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.5);display:block"></i><span></span>';
+  document.body.appendChild(t)}
+ if(!E.dom.ed.contains(e.target)){t.style.display='none';return}
+ const c=sampleAt(E,e);if(!c){t.style.display='none';return}
+ $('edErC').value=c;
+ t.firstChild.style.background=c;t.lastChild.textContent=c.toUpperCase();
+ t.style.display='flex';t.style.left=(e.clientX+16)+'px';t.style.top=(e.clientY+16)+'px'});
+
+
 
 /* ---------- Text ---------- */
 const fontStr=it=>(it.italic?'italic ':'')+(it.bold?'bold ':'')+'100px "'+it.font+'"';
@@ -2742,7 +2908,25 @@ function drawItem(x,it){
   const im=IMGS[it.imgId];if(!im)return;
   x.save();x.globalAlpha=it.op==null?1:it.op;x.scale(it.fx?-1:1,it.fy?-1:1);
   x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
-  x.drawImage(im,-it.w/2,-it.h/2,it.w,it.h);x.restore();
+  x.drawImage(im,-it.w/2,-it.h/2,it.w,it.h);
+  if(it.er&&it.er.length){
+   x.save();x.globalAlpha=1;x.beginPath();x.rect(-it.w/2,-it.h/2,it.w,it.h);x.clip();
+   it.er.forEach(r=>{
+    x.fillStyle=r[4]||'#ffffff';
+    if(r[5]){
+     x.beginPath();
+     r[5].forEach((p,i)=>{const X=-it.w/2+p[0]*it.w,Y=-it.h/2+p[1]*it.h;if(i)x.lineTo(X,Y);else x.moveTo(X,Y)});
+     x.closePath();x.fill();
+     {const tm=x.getTransform(),px=Math.hypot(tm.a,tm.b)||1;
+      x.strokeStyle=x.fillStyle;x.lineJoin='miter';x.lineWidth=2/px;x.stroke()}
+
+    }else x.fillRect(-it.w/2+r[0]*it.w,-it.h/2+r[1]*it.h,(r[2]-r[0])*it.w,(r[3]-r[1])*it.h);
+   });
+   x.restore();
+  }
+
+  x.restore();
+
  }else if(it.type==='text'){
   const fm=it.size/MM,f=fm/100,lh=fm*1.2;
   x.save();x.fillStyle=it.color;x.font=fontStr(it);x.textBaseline='middle';x.textAlign=it.align;
@@ -2864,6 +3048,9 @@ function paintEd(){
  const x=cv.getContext('2d');x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,W,H);
  paintItems(x,kk,E);
  ed.style.borderRadius=E.ci?'50%':(E.rad*cw/E.w)+'px';
+ ed.style.cursor=(ERM||ERP)?'crosshair':'';
+
+
  paintSel()}
 const CUR={nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize',n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize'};
 const HS={nw:[-1,-1],n:[0,-1],ne:[1,-1],e:[1,0],se:[1,1],s:[0,1],sw:[-1,1],w:[-1,0]};
@@ -2914,12 +3101,27 @@ function bind(E){
  ed.addEventListener('pointerdown',e=>{
   if(e.button!==0)return;
   const a=document.activeElement;if(a&&a!==document.body&&a.blur)a.blur();
+  if(ERP){
+   e.stopPropagation();e.preventDefault();
+   const c=sampleAt(E,e);if(c)$('edErC').value=c;
+   setERP(false);return}
   const hd=e.target.dataset&&e.target.dataset.h,[mx,my]=mmOf(E,e);
+
   if(hd){
    e.stopPropagation();e.preventDefault();
    const it=sel(E)[0];if(!it)return;
    DR={k:hd==='rot'?'rot':'rs',h:hd,it,o:{...it}};return}
+  const it0=one();
+  if(ERM&&it0&&it0.type==='img'){
+   /* click pe imagine = ștergere; click în afară = trece la logica normală (deselectare) */
+   const[c0x,c0y]=ctr(it0),p0=rp(mx,my,c0x,c0y,-it0.rot);
+   if(Math.abs(p0[0]-c0x)<=it0.w/2&&Math.abs(p0[1]-c0y)<=it0.h/2){
+    e.stopPropagation();e.preventDefault();
+    DR={k:'er',it:it0,a:[mx,my],r:null,moved:false};return}}
+
+
   const it=pick(E,mx,my);
+
   if(it){
    e.stopPropagation();e.preventDefault();
    if(e.shiftKey){if(E.sel.has(it.id))E.sel.delete(it.id);else E.sel.add(it.id)}
@@ -2964,7 +3166,14 @@ window.addEventListener('pointermove',e=>{
   const c=ctr(d.o);let a=Math.atan2(my-c[1],mx-c[0])/R2D+90;a=((a%360)+360)%360;
   if(e.shiftKey)a=Math.round(a/15)*15;else{const q=Math.round(a/90)*90;if(Math.abs(a-q)<2)a=q}
   d.it.rot=+(a%360).toFixed(1);
+ }else if(d.k==='er'){
+  if(!d.r){
+   if(Math.hypot(mx-d.a[0],my-d.a[1])*sc*z<3)return;
+   d.r=[0,0,0,0,$('edErC').value,null];(d.it.er=d.it.er||[]).push(d.r);d.moved=true}
+  d.r[5]=[[d.a[0],d.a[1]],[mx,d.a[1]],[mx,my],[d.a[0],my]].map(p=>loc(d.it,p[0],p[1]));
  }else if(d.k==='mq'){
+
+
   E.mq=[d.m0[0],d.m0[1],mx,my];
   const x0=Math.min(d.m0[0],mx),x1=Math.max(d.m0[0],mx),y0=Math.min(d.m0[1],my),y1=Math.max(d.m0[1],my);
   E.sel=new Set(d.base);
@@ -2973,6 +3182,15 @@ window.addEventListener('pointermove',e=>{
  sched()});
 const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();if(d.moved)touch(true)};
 window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+
+/* click în afara etichetei = deselectare (excepție: panoul Editor, ferestrele deschise, pipeta) */
+document.addEventListener('pointerdown',e=>{
+ const E=E_();if(!E||!E.dom||!E.sel.size)return;
+ const t=e.target;if(!t||!t.closest)return;
+ if(E.dom.ed.contains(t))return;
+ if(t.closest('#edCard,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
+ E.sel=new Set();paintSel();syncInsp()},true);
+
 
 /* ---------- Adăugare elemente ---------- */
 function addItem(it){const E=E_();it.id=UID++;E.items.push(it);E.sel=new Set([it.id]);touch(true);return it}
@@ -3030,6 +3248,8 @@ function setv(id,v){const el=$(id);if(!el||document.activeElement===el)return;if
 function syncInsp(){
  const E=E_();if(!E)return;
  const s=sel(E),it=s[0],o=s.length===1;
+ if(ERM&&!(o&&it.type==='img'))setER(false);
+
  ['edX','edY','edW','edH','edR'].forEach(id=>$(id).disabled=!o);
  $('gTxt').hidden=!(o&&it.type==='text');$('gBar').hidden=!(o&&it.type==='bar');$('gImg').hidden=!(o&&it.type==='img');
 $('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':' elemento selezionato')):'';
@@ -3075,6 +3295,14 @@ $('edUndo').onclick=()=>undo(-1);$('edRedo').onclick=()=>undo(1);
 $('edDup').onclick=dupSel;$('edDel').onclick=delSel;
 $('edFront').onclick=()=>order(1);$('edBack').onclick=()=>order(-1);
 $('edFx').onclick=()=>flip('fx');$('edFy').onclick=()=>flip('fy');
+$('edEr').onclick=()=>{const it=one();if(it&&it.type==='img')setER(!ERM)};
+$('edErU').onclick=()=>{const it=one();if(it&&it.er&&it.er.length){it.er.pop();touch(true)}};
+$('edErR').onclick=()=>{const it=one();if(it&&it.er&&it.er.length){it.er=[];touch(true)}};
+$('edErP').onclick=()=>{
+ if(ERP){$('edErC').value=ERPold;setERP(false);return}
+ ERPold=$('edErC').value;setERP(true)};
+
+
 $('btnNew').onclick=()=>openModal('new');
 $('edClose').onclick=()=>$('clr').click();
 
@@ -3119,6 +3347,146 @@ window.addEventListener('drop',e=>{
  if(!E_())return;
  const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])].filter(f=>f.type.startsWith('image/'));
  if(fs.length){e.stopImmediatePropagation();e.preventDefault();fs.forEach(addImageFile)}},true);
+
+/* ---------- Ultimul design in memorie ---------- */
+const BL={};
+let lastKey='',saving=false;
+
+function imgBlob(id){
+ if(BL[id])return Promise.resolve(BL[id]);
+ const im=IMGS[id];
+ if(!im)return Promise.resolve(null);
+ return new Promise(res=>{
+  const c=document.createElement('canvas');
+  c.width=im.naturalWidth;c.height=im.naturalHeight;
+  c.getContext('2d').drawImage(im,0,0);
+  c.toBlob(b=>{if(b)BL[id]=b;res(b||null)},'image/png');
+ });
+}
+
+async function dsvSave(){
+ const E=E_();
+ if(!E||!E.items.length||saving)return;
+ const items=JSON.parse(JSON.stringify(E.items));
+ const snap={tc:TG().code,fr:E.fr||null,ow:E.ow||null,oh:E.oh||null,oci:!!E.oci};
+ const key=JSON.stringify([snap,items]);
+ if(key===lastKey)return;
+ saving=true;
+ try{
+  const imgs={};
+  for(const it of items){
+   if(it.type==='img'&&!imgs[it.imgId]){
+    const b=await imgBlob(it.imgId);
+    if(b)imgs[it.imgId]=b;
+   }
+  }
+  const rec={tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,items,imgs};
+  const db=await idb();
+  const tx=db.transaction('h','readwrite');
+  tx.objectStore('h').put(rec,'lastdesign');
+  await txDone(tx);
+  lastKey=key;
+ }catch(_){}
+ saving=false;
+}
+
+async function dsvRestore(r){
+ try{
+  for(const id in r.imgs){
+   BL[id]=r.imgs[id];
+   if(IMGS[id])continue;
+   await new Promise(res=>{
+    const im=new Image();
+    im.onload=()=>{IMGS[id]=im;res()};
+    im.onerror=res;
+    im.src=URL.createObjectURL(r.imgs[id]);
+   });
+  }
+  let mx=0;
+  r.items.forEach(it=>{
+   mx=Math.max(mx,it.id||0);
+   if(it.imgId)mx=Math.max(mx,parseInt(String(it.imgId).slice(1))||0);
+  });
+  UID=Math.max(UID,mx+1);
+  const t=D.find(x=>x.code===r.tc);
+  if(!t){openModal('new');return}
+  startDesign(t);
+  const E=E_();
+  E.items=r.items;
+  if(r.fr){E.fr=r.fr;E.ow=r.ow;E.oh=r.oh;E.oci=r.oci}
+  E.hist=[];E.hi=-1;
+  touch(true);
+ }catch(_){openModal('new')}
+}
+
+/* salvare periodica + la iesirea din editor (inainte sa se goleasca S) */
+setInterval(dsvSave,1500);
+window.addEventListener('pagehide',dsvSave);
+document.addEventListener('click',e=>{
+ if(e.target.closest&&e.target.closest('#clr'))dsvSave();
+},true);
+
+/* Crea etichetta: daca exista un ultim design, il redeschide */
+function askLast(r){
+ let ov=document.getElementById('lastAsk');
+ if(!ov){
+  ov=document.createElement('div');
+  ov.id='lastAsk';
+  ov.className='dlg-overlay';
+  ov.innerHTML='<div class="dlg-card clr-card">'
+   +'<div class="clr-ic"><svg class="i"><use href="#i-edit"/></svg></div>'
+   +'<h3>Ultima etichetta salvata</h3>'
+   +'<p id="lastAskP"></p>'
+   +'<div class="clr-actions" style="flex-direction:column">'
+   +'<button class="btn pri" id="lastAskYes" type="button">Recupera ultima</button>'
+   +'<button class="btn" id="lastAskNew" type="button">Nuova etichetta</button>'
+   +'<button class="btn" id="lastAskNo" type="button">Annulla</button>'
+   +'</div></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('mousedown',e=>{if(e.target===ov)ov.classList.remove('open')});
+  $('lastAskNo').onclick=()=>ov.classList.remove('open');
+  window.addEventListener('keydown',e=>{
+   if(!ov.classList.contains('open'))return;
+   e.stopImmediatePropagation();
+   if(e.key==='Escape'){e.preventDefault();ov.classList.remove('open')}
+  },true);
+ }
+ const n=r.items.length;
+ $('lastAskP').textContent='Formato '+r.tc+' - '+n+(n===1?' elemento':' elementi')+'. Vuoi recuperarla o iniziare una nuova?';
+ $('lastAskYes').onclick=()=>{ov.classList.remove('open');dsvRestore(r)};
+ $('lastAskNew').onclick=()=>{ov.classList.remove('open');openModal('new')};
+ ov.classList.add('open');
+ setTimeout(()=>$('lastAskYes').focus(),30);
+}
+
+$('btnNew').onclick=async()=>{
+ let r=null;
+ try{
+  const db=await idb();
+  r=await reqP(db.transaction('h').objectStore('h').get('lastdesign'));
+ }catch(_){}
+ if(r&&r.items&&r.items.length){askLast(r);return}
+ openModal('new');
+};
+
+
+/* buton "Nuova" in antetul editorului */
+{
+ const b=document.createElement('button');
+ b.className='ib';b.type='button';b.title='Nuova etichetta';
+ b.innerHTML='<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+ b.onclick=()=>{
+  if(!confirm('Iniziare una nuova etichetta? L\'ultima resta salvata finche non ne crei una nuova.'))return;
+  dsvSave();
+  const oc=window.confirm;
+  window.confirm=()=>true;
+  $('clr').click();
+  window.confirm=oc;
+  openModal('new');
+ };
+ $('edClose').before(b);
+}
+
 })();
 </script>
 
