@@ -289,13 +289,44 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .steps span{font-size:11.5px;color:var(--m);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:5px 13px;border-radius:99px;font-weight:500}
 
 .lib{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
-.lib-top{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lib-top{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.lib-acts{display:flex;gap:8px;flex:none}
+.lib-acts .btn{height:44px;padding:0 16px 0 8px;gap:10px;border-radius:14px;border:1px solid var(--line2);
+ background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:var(--t);font-weight:700;box-shadow:var(--hi)}
+.lib-acts .btn .i{width:28px;height:28px;padding:6px;border-radius:9px;color:var(--a);
+ background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);vertical-align:0;transition:.15s var(--ease)}
+.lib-acts .btn:hover{border-color:var(--a);background:linear-gradient(180deg,rgba(45,212,191,.14),rgba(45,212,191,.05));
+ box-shadow:0 8px 22px rgba(45,212,191,.14),var(--hi);transform:translateY(-1px)}
+.lib-acts .btn:hover .i{background:var(--grad);color:#1a0f18;border-color:transparent}
+.lib-acts .btn:active{transform:translateY(0) scale(.97)}
+
+/* Crea etichetta: evidențiat prin accent, fără fundal plin */
+.lib-acts #btnNew{border-color:rgba(45,212,191,.55);background:linear-gradient(180deg,rgba(45,212,191,.22),rgba(45,212,191,.08));color:#e8fffb;font-weight:800;
+ box-shadow:0 0 0 3px rgba(45,212,191,.08),0 8px 24px rgba(45,212,191,.18),var(--hi)}
+.lib-acts #btnNew .i{color:#06231f;background:var(--a);border-color:transparent}
+.lib-acts #btnNew:hover{border-color:var(--a);background:linear-gradient(180deg,rgba(45,212,191,.3),rgba(45,212,191,.12));
+ box-shadow:0 0 0 3px rgba(45,212,191,.14),0 12px 30px rgba(45,212,191,.28),var(--hi)}
+.lib-acts #btnNew:hover .i{background:var(--a);color:#06231f;border-color:transparent}
+
+
+
+
 .srch{position:relative;flex:1;min-width:220px;display:flex;align-items:center}
 .srch .i{position:absolute;left:14px;color:var(--m);pointer-events:none}
 .srch .inp{padding-left:40px;height:44px;font-size:14.5px}
 .srch .inp:disabled{opacity:.5}
-.lib-bar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.lib-status{color:var(--m);font-size:12px;font-variant-numeric:tabular-nums}
+.lib-wrap{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.lib-wrap:has(#libTree[hidden]){display:none}
+.lib-wrap .lib-tree{padding-bottom:62px}
+.lib-bar{position:absolute;left:12px;right:20px;bottom:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;pointer-events:none;z-index:3}
+.lib-bar>*{pointer-events:auto}
+.lib-status{color:var(--m);font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;padding:7px 14px;border-radius:99px;
+ background:rgba(18,20,38,.92);border:1px solid var(--line2);box-shadow:0 8px 24px rgba(0,0,0,.4),var(--hi);
+ backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.lib-bar .btn{border-radius:99px;padding:7px 14px;background:rgba(18,20,38,.92);box-shadow:0 8px 24px rgba(0,0,0,.4),var(--hi);
+ backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);flex:none}
+.lib-bar .btn:hover{border-color:rgba(255,92,92,.6);background:rgba(255,92,92,.14);color:#ffb3b3}
+
 .lib-tree{flex:1;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.22);padding:8px;box-shadow:inset 0 4px 24px rgba(0,0,0,.3)}
 .lib-none{color:var(--m);text-align:center;padding:40px 10px;font-size:13px}
 .fd{margin:2px 0}
@@ -457,7 +488,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .ed-info{flex:1;min-width:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:700;color:var(--a);letter-spacing:.1px}
 
 /* Adaugă */
-.ed-add{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.ed-add{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+
 
 .ed-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:42px;padding:0 2px;border-radius:10px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));color:var(--t);font-size:9.5px;font-weight:700;letter-spacing:.2px;box-shadow:var(--hi);transition:.15s var(--ease)}
 .ed-tile:hover{border-color:var(--a);background:rgba(45,212,191,.12);transform:translateY(-1px);box-shadow:0 6px 16px rgba(45,212,191,.15),var(--hi)}
@@ -606,6 +638,46 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 .dsg .b1-hint{display:none!important}
 
 .dsg #pdfCard{display:none}
+/* Bara proprietăți + aliniere: un singur rând */
+.eb{flex:none;display:flex;flex-wrap:nowrap;align-items:center;gap:5px;margin:0 0 12px;padding:6px 10px;background:rgba(0,0,0,.24);border:1px solid var(--line);border-radius:14px;box-shadow:inset 0 2px 6px rgba(0,0,0,.2);overflow-x:auto;transition:opacity .2s}
+.eb.off{opacity:.38;pointer-events:none}
+.eb .pf{width:88px;flex:none}
+.eb .pf>span{padding-left:7px;min-width:14px}
+.eb .pf .ein{padding:0 7px 0 3px;-moz-appearance:textfield;appearance:textfield}
+.eb .pf .ein::-webkit-inner-spin-button,.eb .pf .ein::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+
+.eb .tgl{height:28px;border-radius:9px;flex:none}
+.eb .tgl.sq{width:30px;flex:none}
+.eb .sep{height:20px;margin:0 5px;flex:none}
+.eb-box{display:flex;flex:none;align-items:center;gap:1px;padding:2px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:9px}
+.eb-box .ib{height:24px;min-width:26px}
+.eb-box .sep{height:14px;margin:0 3px}
+
+
+/* Antet previzualizări: pastile compacte, în stilul barei de instrumente */
+.pl{height:28px;margin-bottom:6px}
+.pl .nav,.pager{display:flex;align-items:center;gap:1px;padding:2px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:9px;box-shadow:inset 0 2px 6px rgba(0,0,0,.2)}
+.pl .nav .btn,.pager .btn{padding:0 !important;min-width:26px;height:22px;border:0;border-radius:7px;background:transparent;box-shadow:none;color:var(--m);font-weight:700}
+.pl .nav .btn:hover,.pager .btn:hover{background:rgba(255,255,255,.1);color:var(--t);transform:none}
+.pl .nav .btn:active,.pager .btn:active{transform:scale(.92)}
+.pl .nav .btn .i,.pager .btn .i{width:15px;height:15px;stroke-width:1.8}
+.pl .nav .btn:disabled,.pager .btn:disabled{opacity:.25}
+
+/* paginator: centrat exact între cele două previzualizări */
+.panes{position:relative}
+.pager{position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:3;height:28px;background:rgba(18,20,38,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.pager #pn{min-width:78px;text-align:center;font-size:11px;font-weight:700;color:var(--m);letter-spacing:.2px;cursor:ns-resize;user-select:none;white-space:nowrap}
+
+/* modul design: textele duplicate dispar; rotire vedere în stânga, rotire conținut în dreapta */
+.dsg .pl>span:first-child{display:none}
+.dsg .pane:first-child .pl{justify-content:flex-start}
+.dsg .pane:last-child .pl{justify-content:flex-end}
+
+@media(max-width:1000px){
+ .pager{position:static;transform:none;margin:0 auto 8px;flex:none}
+}
+
+
 
 
 </style>
@@ -682,6 +754,8 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
  <section class="card" id="edCard" hidden>
   <input type="file" id="edFile" accept="image/*" multiple hidden>
+  <input type="file" id="edPdf" accept="application/pdf,.pdf" multiple hidden>
+
 
   <div class="ed-hd">
    <span class="ed-logo"><svg class="i" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
@@ -694,6 +768,9 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
    <button class="ed-tile" id="edAddT" type="button"><span class="g">T</span>Testo</button>
    <button class="ed-tile" id="edAddI" type="button"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/></svg>Immagine</button>
    <button class="ed-tile" id="edAddB" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20.5 5v14"/></svg>Barcode</button>
+   <button class="ed-tile" id="edAddP" type="button"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="10" height="10" rx="1"/><circle cx="15" cy="15" r="6"/></svg>Forme</button>
+
+
 
   </div>
 
@@ -756,98 +833,41 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
   </details>
 
 
+  <details class="ed-box" id="gShp" open hidden>
+   <summary class="ed-sec">Forma</summary>
+   <div class="ed-bd">
+    <div class="ed-g3" style="grid-template-columns:1fr 34px">
+     <div class="pf"><span>Spess.</span><input class="ein" id="edShW" type="number" step="0.1" min="0.05" title="Spessore contorno (mm)"></div>
+     <input class="ein" id="edShC" type="color" title="Colore">
+    </div>
+    <label class="tgl" style="width:100%;justify-content:center"><input type="checkbox" id="edShF"><span>Riempita</span></label>
+   </div>
+  </details>
+
   <details class="ed-box" id="gImg" open hidden>
+
    <summary class="ed-sec">Immagine</summary>
    <div class="ed-bd">
     <div class="pf rg"><span>Opacità</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
 
     <div class="er-grp">
-     <div class="ed-cap" style="margin:0 0 1px 2px">Cancella area</div>
-     <button class="tgl btn-like er-b er-main" id="edEr" type="button" title="Trascina sull'immagine per coprire un'area"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>Cancella area</span></button>
+     <div class="ed-cap" style="margin:0 0 1px 2px">Muovi una parte</div>
+     <button class="tgl btn-like er-b er-main" id="edCut" type="button" title="Trascina sull'immagine: la zona diventa un elemento mobile"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>Taglia zona (sposta)</span></button>
      <div class="er-r2">
-      <input class="ein" id="edErC" type="color" value="#ffffff" title="Colore di riempimento">
-      <button class="tgl btn-like er-b" id="edErP" type="button" title="Passa il mouse sull'immagine e clicca sul colore"><svg class="i" viewBox="0 0 24 24"><path d="M2 22l1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="M15 6l3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3z"/></svg><span>Contagocce</span></button>
+      <input class="ein" id="edErC" type="color" value="#ffffff" title="Colore di riempimento del punto originale">
+      <small class="er-hint" style="align-self:center;text-align:left">colore con cui si riempie il punto originale</small>
      </div>
-     <div class="er-r3">
-      <button class="tgl btn-like er-b" id="edErU" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Annulla ultima</span></button>
-      <button class="tgl btn-like er-b" id="edErR" type="button"><svg class="i"><use href="#i-reset"/></svg><span>Ripristina</span></button>
-     </div>
-     <small class="er-hint">Attiva "Cancella area" e trascina sull'immagine. Zoom con la rotella per piu precisione.</small>
+     <small class="er-hint">Trascina su una zona: diventa un elemento separato da spostare o eliminare.</small>
     </div>
+
+
+ 
 
    </div>
   </details>
 
 
-  <details class="ed-box" open>
-   <summary class="ed-sec">Proprietà <small>mm</small></summary>
-   <div class="ed-bd">
-    <div class="ed-grid">
-     <div class="pf"><span>X</span><input class="ein" id="edX" type="number" step="0.1"></div>
-     <div class="pf"><span>Y</span><input class="ein" id="edY" type="number" step="0.1"></div>
-     <div class="pf"><span>↻</span><input class="ein" id="edR" type="number" step="0.1" title="Rotazione (°)"></div>
-     <div class="pf"><span>L</span><input class="ein" id="edW" type="number" step="0.1" title="Larghezza (mm)"></div>
-     <div class="pf"><span>A</span><input class="ein" id="edH" type="number" step="0.1" title="Altezza (mm)"></div>
-     <label class="tgl sq" title="Blocca proporzioni"><input type="checkbox" id="edLock" checked><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></label>
-     <label class="tgl sq" title="Calamita (Alt = off)"><input type="checkbox" id="edSnap" checked><svg class="i" viewBox="0 0 24 24"><path d="M6 3v8a6 6 0 0 0 12 0V3h-4v8a2 2 0 0 1-4 0V3z"/><path d="M6 7h4M14 7h4"/></svg></label>
-    </div>
-   </div>
-  </details>
 
-  <details class="ed-box" open>
-   <summary class="ed-sec">Allinea &amp; posiziona</summary>
-
-   <div class="ed-bd">
-    <div class="ed-ap">
-
-     <div>
-      <div class="ed-cap">Allinea</div>
-      <div class="ed-al">
-       <button class="ib" data-al="l" type="button" title="Allinea a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="13" height="4" rx="1"/><rect x="7" y="14" width="8" height="4" rx="1"/></svg></button>
-       <button class="ib" data-al="ch" type="button" title="Centra orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/></svg></button>
-       <button class="ib" data-al="r" type="button" title="Allinea a destra"><svg class="i" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="4" y="6" width="13" height="4" rx="1"/><rect x="9" y="14" width="8" height="4" rx="1"/></svg></button>
-       <button class="ib" data-al="t" type="button" title="Allinea in alto"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="13" rx="1"/><rect x="14" y="7" width="4" height="8" rx="1"/></svg></button>
-       <button class="ib" data-al="cv" type="button" title="Centra verticale"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/></svg></button>
-       <button class="ib" data-al="b" type="button" title="Allinea in basso"><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="4" width="4" height="13" rx="1"/><rect x="14" y="9" width="4" height="8" rx="1"/></svg></button>
-      </div>
-     </div>
-
-     <div>
-      <div class="ed-cap">Distribuisci</div>
-      <div class="ed-al2">
-       <button class="ib" data-ds="h" type="button" title="Distribuisci orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4v16M20 4v16"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg></button>
-       <button class="ib" data-ds="v" type="button" title="Distribuisci verticale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16M4 20h16"/><rect x="7" y="9" width="10" height="6" rx="1"/></svg></button>
-       <label class="tgl" title="Allinea gli elementi selezionati tra loro"><input type="checkbox" id="edRel"><span>Tra loro</span></label>
-      </div>
-     </div>
-
-     <div class="ed-pr">
-      <div>
-       <div class="ed-cap">Posizione</div>
-       <div class="ed-pos">
-        <button class="ib" data-p="0,0" type="button" title="Angolo sup. sinistro">↖</button>
-        <button class="ib" data-p="1,0" type="button" title="Alto centro">↑</button>
-        <button class="ib" data-p="2,0" type="button" title="Angolo sup. destro">↗</button>
-        <button class="ib" data-p="0,1" type="button" title="Sinistra centro">←</button>
-        <button class="ib c" data-p="1,1" type="button" title="Centro">●</button>
-        <button class="ib" data-p="2,1" type="button" title="Destra centro">→</button>
-        <button class="ib" data-p="0,2" type="button" title="Angolo inf. sinistro">↙</button>
-        <button class="ib" data-p="1,2" type="button" title="Basso centro">↓</button>
-        <button class="ib" data-p="2,2" type="button" title="Angolo inf. destro">↘</button>
-       </div>
-      </div>
-      <div>
-       <div class="ed-cap">Margine</div>
-       <div class="ed-pm">
-        <div class="pf mg"><span>mm</span><input class="ein" id="edMg" type="number" step="0.1" value="0"></div>
-        <small>distanza dal bordo etichetta</small>
-       </div>
-      </div>
-     </div>
-
-    </div>
-   </div>
-  </details>
 
 
   <details class="ed-keys">
@@ -948,7 +968,7 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
    </div>
   </div>
 
-  <button class="btn sm" id="aaBtn" type="button" title="Activează/dezactivează anti-aliasing la previzualizare">Anti-alias: ON</button>
+
 
   <div class="clock" id="clock" aria-live="off">
 
@@ -965,19 +985,25 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
      <svg class="i"><use href="#i-search"/></svg>
      <input type="search" class="inp" id="libq" placeholder="Cerca nella libreria: nome, formato, cartella…" autocomplete="off" disabled>
     </div>
-    <button class="btn" id="btnPdf" type="button"><svg class="i"><use href="#i-file"/></svg>Scegli PDF</button>
-    <button class="btn pri" id="btnFolder" type="button"><svg class="i"><use href="#i-folder"/></svg><span id="btnFolderTxt">Carica cartella</span></button>
-    <button class="btn" id="btnNew" type="button"><svg class="i"><use href="#i-edit"/></svg>Crea etichetta</button>
+    <div class="lib-acts">
+     <button class="btn" id="btnPdf" type="button"><svg class="i"><use href="#i-file"/></svg>Scegli PDF</button>
+     <button class="btn" id="btnFolder" type="button"><svg class="i"><use href="#i-folder"/></svg><span id="btnFolderTxt">Carica cartella</span></button>
+     <button class="btn" id="btnNew" type="button"><svg class="i"><use href="#i-edit"/></svg>Crea etichetta</button>
+    </div>
+
 
 
      </div>
    <!-- Sincronizzazione sempre attiva (nascosta) -->
    <input type="checkbox" id="syncDel" checked hidden>
-   <div class="lib-bar" id="libBar" hidden>
-    <div class="lib-status" id="libStatus"></div>
-    <button class="btn sm" id="btnClearLib" type="button" hidden><svg class="i"><use href="#i-trash"/></svg><span id="clrTxt">Svuota</span></button>
+   <div class="lib-wrap">
+    <div class="lib-tree" id="libTree" hidden></div>
+    <div class="lib-bar" id="libBar" hidden>
+     <div class="lib-status" id="libStatus"></div>
+     <button class="btn sm" id="btnClearLib" type="button" hidden><svg class="i"><use href="#i-trash"/></svg><span id="clrTxt">Svuota</span></button>
+    </div>
    </div>
-   <div class="lib-tree" id="libTree" hidden></div>
+
 
    <div class="box" id="drop2">
     <div class="em"><svg class="i"><use href="#i-tag"/></svg></div>
@@ -994,9 +1020,54 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
  <div id="stbar" class="pv" hidden>
   <div class="panes-wrapper">
-   <div class="panes">
+
+ <div class="eb off" id="edBar" hidden>
+  <div class="eb-box" title="Allinea">
+   <button class="ib" data-al="l" type="button" title="Allinea a sinistra"><svg class="i" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="13" height="4" rx="1"/><rect x="7" y="14" width="8" height="4" rx="1"/></svg></button>
+   <button class="ib" data-al="ch" type="button" title="Centra orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/></svg></button>
+   <button class="ib" data-al="r" type="button" title="Allinea a destra"><svg class="i" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="4" y="6" width="13" height="4" rx="1"/><rect x="9" y="14" width="8" height="4" rx="1"/></svg></button>
+   <i class="sep"></i>
+   <button class="ib" data-al="t" type="button" title="Allinea in alto"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="13" rx="1"/><rect x="14" y="7" width="4" height="8" rx="1"/></svg></button>
+   <button class="ib" data-al="cv" type="button" title="Centra verticale"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/></svg></button>
+   <button class="ib" data-al="b" type="button" title="Allinea in basso"><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="4" width="4" height="13" rx="1"/><rect x="14" y="9" width="4" height="8" rx="1"/></svg></button>
+  </div>
+  <i class="sep"></i>
+
+  <div class="pf" title="Posizione X (mm)"><span>X</span><input class="ein" id="edX" type="number" step="0.1"></div>
+
+  <div class="pf" title="Posizione Y (mm)"><span>Y</span><input class="ein" id="edY" type="number" step="0.1"></div>
+  <div class="pf" title="Rotazione (°)"><span>↻</span><input class="ein" id="edR" type="number" step="0.1"></div>
+  <div class="pf" title="Larghezza (mm)"><span>L</span><input class="ein" id="edW" type="number" step="0.1"></div>
+  <div class="pf" title="Altezza (mm)"><span>A</span><input class="ein" id="edH" type="number" step="0.1"></div>
+  <label class="tgl sq" title="Blocca proporzioni"><input type="checkbox" id="edLock" checked><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></label>
+  <label class="tgl sq" title="Calamita (Alt = off)"><input type="checkbox" id="edSnap" checked><svg class="i" viewBox="0 0 24 24"><path d="M6 3v8a6 6 0 0 0 12 0V3h-4v8a2 2 0 0 1-4 0V3z"/><path d="M6 7h4M14 7h4"/></svg></label>
+
+  <i class="sep"></i>
+
+  <div class="eb-box" title="Distribuisci">
+   <button class="ib" data-ds="h" type="button" title="Distribuisci orizzontale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4v16M20 4v16"/><rect x="9" y="7" width="6" height="10" rx="1"/></svg></button>
+   <button class="ib" data-ds="v" type="button" title="Distribuisci verticale"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16M4 20h16"/><rect x="7" y="9" width="10" height="6" rx="1"/></svg></button>
+  </div>
+ </div>
+
+
+
+ <div class="panes">
+  <div class="pager">
+   <button class="btn sm" id="pv" type="button" title="Foglio precedente"><svg class="i"><use href="#i-left"/></svg></button>
+   <span id="pn">foglio 1 / 1</span>
+   <button class="btn sm" id="nx" type="button" title="Foglio successivo"><svg class="i"><use href="#i-right"/></svg></button>
+  </div>
+
+
     <div class="pane">
-     <div class="pl"><span>Prima &middot; <b id="l1"></b></span></div>
+     <div class="pl"><span>Prima &middot; <b id="l1"></b></span>
+      <span class="nav" id="vrNav" hidden>
+       <button class="btn sm" id="vrL" type="button" title="Ruota vista a sinistra (Shift+R)" style="padding:3px 9px"><svg class="i" style="transform:scaleX(-1)"><use href="#i-rot"/></svg></button>
+       <button class="btn sm" id="vrR" type="button" title="Ruota vista a destra (R)" style="padding:3px 9px"><svg class="i"><use href="#i-rot"/></svg></button>
+      </span>
+     </div>
+
      <div class="pbox" id="b1"><div class="sheet" id="sh1"></div>
       <div class="b1-hint" aria-hidden="true">
        <div class="b1-card">
@@ -1011,14 +1082,13 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
     <div class="pane">
      <div class="pl">
       <span>Dopo &middot; <b id="l2"></b></span>
-<span class="nav">
-       <button class="btn sm" id="rotBtn" type="button" title="Ruota contenuto" style="padding:3px 9px"><svg class="i"><use href="#i-rot"/></svg></button>
-
-       <button class="btn sm" id="pv" type="button" style="padding:3px 8px"><svg class="i"><use href="#i-left"/></svg></button>
-       <span id="pn">foglio 1 / 1</span>
-       <button class="btn sm" id="nx" type="button" style="padding:3px 8px"><svg class="i"><use href="#i-right"/></svg></button>
+      <span class="nav">
+       <button class="btn sm" id="rotBtnL" type="button" title="Ruota contenuto a sinistra"><svg class="i" style="transform:scaleX(-1)"><use href="#i-rot"/></svg></button>
+       <button class="btn sm" id="rotBtn" type="button" title="Ruota contenuto a destra"><svg class="i"><use href="#i-rot"/></svg></button>
       </span>
      </div>
+
+
      <div class="pbox" id="b2"><div class="sheet" id="sh2"></div></div>
     </div>
    </div>
@@ -1053,9 +1123,11 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
    <input type="search" class="inp" id="pq" placeholder="Scrivi il nome del PDF…" autocomplete="off" spellcheck="false">
   </div>
   <div class="pdfm-list" id="pdfList"></div>
+  <button class="btn sm" id="pdfPc" type="button" style="width:100%;margin-top:12px"><svg class="i"><use href="#i-up"/></svg>Scegli PDF dal computer…</button>
   <div class="pdfm-hint"><span><kbd>↑</kbd> <kbd>↓</kbd> naviga</span><span><kbd>Invio</kbd> apri</span><span><kbd>Esc</kbd> chiudi</span></div>
  </div>
 </div>
+
 
 <!-- Conferma svuota libreria (5 passaggi) -->
 <div class="dlg-overlay" id="clrDlg">
@@ -1384,7 +1456,7 @@ async function loadPDF(file){
 /* Dimensionează foile și setează --bk (scara bulinelor) în funcție de mărimea reală a etichetei pe ecran */
 /* ---------- Anti-aliasing previzualizare (mipmap: reducere în trepte ÷2) ---------- */
 let AA=true;
-try{AA=localStorage.getItem('sls_aa')!=='0'}catch(_){}
+
 function aaCanvas(src,box){
  const dpr=window.devicePixelRatio||1;
  const tw=Math.round(box.clientWidth*dpr),th=Math.round(box.clientHeight*dpr);
@@ -1419,12 +1491,7 @@ function swapQ(b){
  if(nx!==cv)w.replaceChild(nx,cv)}
 
 function repaintAA(){if(S){swapQ('b1');swapQ('b2')}}
-function updAA(){$('aaBtn').textContent='Anti-alias: '+(AA?'ON':'OFF')}
-$('aaBtn').onclick=()=>{
- AA=!AA;
- try{localStorage.setItem('sls_aa',AA?'1':'0')}catch(_){}
- updAA();repaintAA()};
-updAA();
+
 
 function fitSheets(){
  if(!S)return;
@@ -1507,60 +1574,7 @@ drawRot(x,S.cv, s[0]*sxm*P,
 
  const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy&&ZM.b2.z<=1?aaCanvas(c,w):c);
 
-/* ===== Loading overlay la încărcarea PDF ===== */
-{
- const st=document.querySelector('.stage');
- const ov=document.createElement('div');
- ov.className='ldr';
- ov.innerHTML='<div class="ldr-card"><div class="ldr-ring"></div><b>Caricamento etichette…</b><span></span><div class="ldr-bar"><i></i></div></div>';
- st.appendChild(ov);
- const nm=ov.querySelector('span'),_lp2=loadPDF;
- loadPDF=async function(f){
-  nm.textContent=(f&&f.name)||'';
-  const t0=performance.now();
-  ov.classList.add('on');
-  /* lasă browserul să deseneze overlay-ul înainte de munca grea */
-  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-  try{return await _lp2(f)}
-  finally{
-   setTimeout(()=>ov.classList.remove('on'),Math.max(0,350-(performance.now()-t0)));
-  }};
-}
 
-/* ===== Loading overlay la importul cartelei ===== */
-{
- const st=document.querySelector('.stage'),ls=$('libStatus');
- const ov=document.createElement('div');
- ov.className='ldr';
- ov.innerHTML='<div class="ldr-card"><div class="ldr-ring"></div><b>Scansione cartella…</b><em></em><div class="ldr-bar"><i></i></div></div>';
- st.appendChild(ov);
- const tt=ov.querySelector('b'),em=ov.querySelector('em'),bar=ov.querySelector('.ldr-bar');
- const on=()=>ov.classList.contains('on'),hide=()=>ov.classList.remove('on');
-
- new MutationObserver(()=>{
-  const s=ls.textContent,m=s.match(/^Importazione (\d+) \/ (\d+)/);
-  if(m){
-   if(S)return; /* scanarea automată în fundal nu blochează un PDF deschis */
-   const a=+m[1],b=+m[2];
-   ov.classList.add('on');
-   tt.textContent='Importazione PDF…';
-   em.textContent=a+' / '+b+' · '+Math.round(a/b*100)+'%';
-   bar.classList.add('det');bar.style.setProperty('--p',(a/b).toFixed(3));
-  }else if(/^Scansione/.test(s)){
-   if(S)return;
-   ov.classList.add('on');
-   tt.textContent='Scansione cartella…';em.textContent='';bar.classList.remove('det');
-  }else if(/^Controllo/.test(s)){
-   if(on()){tt.textContent='Controllo file…';em.textContent=s.replace(/^Controllo /,'').replace('…','');bar.classList.remove('det')}
-  }else hide();
- }).observe(ls,{childList:true,characterData:true,subtree:true});
-
- /* siguranță: erorile și „Nessun PDF trovato" închid overlay-ul */
- const _t=toast;
- toast=function(m,ok){
-  if(!/^Importazione già/.test(m||''))hide();
-  return _t(m,ok)};
-}
 
 
  // bordi anteprima: tracciati SVG sottili, uno per tipo (attive / escluse / vuote)
@@ -1951,6 +1965,8 @@ $('q').addEventListener('keydown',e=>{
 ['ox','oy'].forEach(i=>$(i).oninput=()=>{if(S)drawRes()});
 $('oc').onchange=()=>{if(S)drawRes()};
 $('rotBtn').onclick=()=>{rot=(rot+1)%4;resetMg();if(S)drawRes()};
+$('rotBtnL').onclick=()=>{rot=(rot+3)%4;resetMg();if(S)drawRes()};
+
 
 
 
@@ -2106,8 +2122,10 @@ async function openLib(path){
   const blob=await reqP(db.transaction('data').objectStore('data').get(path));
   const m=LIB.find(x=>x.path===path);
   if(!blob||!m){toast('File non trovato nella libreria');return}
-  loadPDF(new File([blob],m.name,{type:'application/pdf'}));
+  const fl=new File([blob],m.name,{type:'application/pdf'});
+  if(S&&S.design&&window.edAddPdf)window.edAddPdf(fl);else loadPDF(fl);
  }catch(e){toast('Errore apertura: '+(e.message||e))}}
+
 
 /* Import veloce: confronta path + dimensione + data di modifica con quanto già
    salvato e salta subito i file invariati (nessuna scrittura su IndexedDB). */
@@ -2235,8 +2253,54 @@ $('libTree').addEventListener('toggle',e=>{
 
 $('btnPdf').onclick=pickFile;
 $('btnPdf2').onclick=e=>{e.stopPropagation();pickFile()};
-$('btnFolder').onclick=()=>window.showDirectoryPicker?updFolder():$('dir').click();
-$('btnFolder2').onclick=e=>{e.stopPropagation();window.showDirectoryPicker?updFolder():$('dir').click()};
+/* ---------- Aggiorna cartella: chiede se aggiornare o aggiungere ---------- */
+async function addFolder(){
+ try{
+  const h=await showDirectoryPicker({mode:'read'});
+  $('libBar').hidden=false;
+  $('libStatus').textContent='Scansione cartella…';
+  const out=[];
+  await walkHandle(h,h.name+'/',out);
+  importItems(out);
+ }catch(e){
+  if(e&&e.name!=='AbortError')toast('Errore cartella: '+(e.message||e));
+ }
+}
+function askFolder(){
+ if(!window.showDirectoryPicker){$('dir').click();return}
+ if(!LIB.length){updFolder();return}
+ let ov=$('folderAsk');
+ if(!ov){
+  ov=document.createElement('div');
+  ov.id='folderAsk';
+  ov.className='dlg-overlay';
+  ov.innerHTML='<div class="dlg-card clr-card">'
+   +'<div class="clr-ic"><svg class="i"><use href="#i-folder"/></svg></div>'
+   +'<h3>Cosa vuoi fare?</h3>'
+   +'<p>Aggiorna la cartella già caricata oppure aggiungi un\'altra cartella alla libreria.</p>'
+   +'<div class="clr-actions" style="flex-direction:column">'
+   +'<button class="btn" id="fAskUpd" type="button">Aggiorna cartella</button>'
+   +'<button class="btn" id="fAskAdd" type="button">Aggiungi un\'altra cartella</button>'
+   +'<button class="btn" id="fAskNo" type="button">Annulla</button>'
+   +'</div></div>';
+  document.body.appendChild(ov);
+  const close=()=>ov.classList.remove('open');
+  ov.addEventListener('mousedown',e=>{if(e.target===ov)close()});
+  $('fAskNo').onclick=close;
+  $('fAskUpd').onclick=()=>{close();updFolder()};
+  $('fAskAdd').onclick=()=>{close();addFolder()};
+  window.addEventListener('keydown',e=>{
+   if(!ov.classList.contains('open'))return;
+   if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close()}
+   else if(e.key.length===1||e.key===' ')e.stopImmediatePropagation();
+  },true);
+ }
+ ov.classList.add('open');
+ setTimeout(()=>$('fAskUpd').focus(),30);
+}
+$('btnFolder').onclick=askFolder;
+$('btnFolder2').onclick=e=>{e.stopPropagation();askFolder()};
+
 
 $('dir').onchange=e=>{
  const fl=[...e.target.files];e.target.value='';
@@ -2350,6 +2414,8 @@ $('pq').addEventListener('keydown',e=>{
 $('pdfList').addEventListener('click',e=>{const b=e.target.closest('.lf');if(b)pickFromModal(+b.dataset.i)});
 $('pdfList').addEventListener('mousemove',e=>{const b=e.target.closest('.lf');if(b&&+b.dataset.i!==pSel)pdfSelect(+b.dataset.i,false)});
 pdfModal.addEventListener('mousedown',e=>{if(e.target===pdfModal)closePdfModal()});
+$('pdfPc').onclick=()=>{closePdfModal();if(S&&S.design)$('edPdf').click();else pickFile()};
+
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&clrDlg.classList.contains('open')){e.preventDefault();clrClose()}
 });
@@ -2452,7 +2518,8 @@ $('nx').onclick=()=>{if(S){S.rp++;drawRes()}};
 
 /* Scroll pe "foglio X / Y": spre tine = pagina urmatoare, dinspre tine = anterioara */
 {
- const nav=document.querySelector('.pl .nav');
+ const nav=$('pn').parentNode;
+
  let wAcc=0,wT=0;
  nav.addEventListener('wheel',e=>{
   if(!S)return;
@@ -2527,13 +2594,20 @@ function resetZ(){['b1','b2'].forEach(b=>{ZM[b].z=1;ZM[b].x=0;ZM[b].y=0;applyZ(b
  el.addEventListener('wheel',e=>{
   if(!S)return;
   e.preventDefault();
+  /* oprire la original: după ce ajunge la 100%, ignoră scroll-ul continuu până la o pauză */
+  const now=performance.now(),gap=now-(q.lw||0);q.lw=now;
+  if(q.sn){if(gap<300)return;q.sn=false}
   const r=el.getBoundingClientRect(),cx=e.clientX-r.left-r.width/2,cy=e.clientY-r.top-r.height/2;
-  const z2=clamp(q.z*Math.exp(-e.deltaY*0.0015),1,8);
+  const mn=(b==='b1'&&S.design)?0.2:1;
+  let z2=clamp(q.z*Math.exp(-e.deltaY*0.0015),mn,8);
+  if((q.z>1&&z2<1)||(q.z<1&&z2>1))z2=1;
   if(z2===q.z)return;
+  q.sn=(z2===1);
   const f=z2/q.z;
   q.x=cx-(cx-q.x)*f;q.y=cy-(cy-q.y)*f;q.z=z2;
-  if(z2<=1){q.x=0;q.y=0;q.z=1}
+  if(z2<=1){q.x=0;q.y=0}
   applyZ(b)},{passive:false});
+
  el.addEventListener('dblclick',()=>{q.z=1;q.x=0;q.y=0;applyZ(b)});
  el.addEventListener('pointerdown',e=>{if(q.z>1)pd={x:e.clientX,y:e.clientY,qx:q.x,qy:q.y,m:false}});
  window.addEventListener('pointermove',e=>{
@@ -2705,7 +2779,62 @@ function drawRes(){
  $('pn').textContent='foglio '+(pg+1)+' / '+pages;
  $('pv').disabled=pg<=0;$('nx').disabled=pg>=pages-1}
 
+/* ===== Loading overlay la încărcarea PDF ===== */
+{
+ const st=document.querySelector('.stage');
+ const ov=document.createElement('div');
+ ov.className='ldr';
+ ov.innerHTML='<div class="ldr-card"><div class="ldr-ring"></div><b>Caricamento etichette…</b><span></span><div class="ldr-bar"><i></i></div></div>';
+ st.appendChild(ov);
+ const nm=ov.querySelector('span'),_lp2=loadPDF;
+ loadPDF=async function(f){
+  nm.textContent=(f&&f.name)||'';
+  const t0=performance.now();
+  ov.classList.add('on');
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  try{return await _lp2(f)}
+  finally{
+   setTimeout(()=>ov.classList.remove('on'),Math.max(0,350-(performance.now()-t0)));
+  }};
+}
+
+/* ===== Loading overlay la importul cartelei ===== */
+{
+ const st=document.querySelector('.stage'),ls=$('libStatus');
+ const ov=document.createElement('div');
+ ov.className='ldr';
+ ov.innerHTML='<div class="ldr-card"><div class="ldr-ring"></div><b>Scansione cartella…</b><em></em><div class="ldr-bar"><i></i></div></div>';
+ st.appendChild(ov);
+ const tt=ov.querySelector('b'),em=ov.querySelector('em'),bar=ov.querySelector('.ldr-bar');
+ const on=()=>ov.classList.contains('on'),hide=()=>ov.classList.remove('on');
+
+ new MutationObserver(()=>{
+  const s=ls.textContent,m=s.match(/^Importazione (\d+) \/ (\d+)/);
+  if(m){
+   if(S)return;
+   const a=+m[1],b=+m[2];
+   ov.classList.add('on');
+   tt.textContent='Importazione PDF…';
+   em.textContent=a+' / '+b+' · '+Math.round(a/b*100)+'%';
+   bar.classList.add('det');bar.style.setProperty('--p',(a/b).toFixed(3));
+  }else if(/^Scansione/.test(s)){
+   if(S)return;
+   ov.classList.add('on');
+   tt.textContent='Scansione cartella…';em.textContent='';bar.classList.remove('det');
+  }else if(/^Controllo/.test(s)){
+   if(on()){tt.textContent='Controllo file…';em.textContent=s.replace(/^Controllo /,'').replace('…','');bar.classList.remove('det')}
+  }else hide();
+ }).observe(ls,{childList:true,characterData:true,subtree:true});
+
+ const _t=toast;
+ toast=function(m,ok){
+  if(!/^Importazione già/.test(m||''))hide();
+  return _t(m,ok)};
+}
+
 </script>
+
+
 
 <script>
 /* ===== ULTIMA ETICHETA IN MEMORIE ===== */
@@ -2823,20 +2952,29 @@ const rp=(px,py,cx,cy,deg)=>{const a=deg*R2D,c=Math.cos(a),s=Math.sin(a),dx=px-c
 const ctr=it=>[it.x+it.w/2,it.y+it.h/2];
 function corners(it){const[cx,cy]=ctr(it),hw=it.w/2,hh=it.h/2;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([a,b])=>rp(cx+a,cy+b,cx,cy,it.rot))}
 function bbox(list){let a=1e9,b=1e9,c=-1e9,d=-1e9;list.forEach(it=>corners(it).forEach(([x,y])=>{a=Math.min(a,x);b=Math.min(b,y);c=Math.max(c,x);d=Math.max(d,y)}));return[a,b,c,d]}
-const mmOf=(E,e)=>{const r=E.dom.ed.getBoundingClientRect();return[(e.clientX-r.left)/r.width*E.w,(e.clientY-r.top)/r.height*E.h]};
+const uvOf=(E,e)=>{const r=E.dom.ed.getBoundingClientRect(),a=(e.clientX-r.left)/r.width,b=(e.clientY-r.top)/r.height,v=((E.vr||0)%4+4)%4;
+ return v===0?[a,b]:v===1?[b,1-a]:v===2?[1-a,1-b]:[1-b,a]};
+const mmOf=(E,e)=>{const[u,v]=uvOf(E,e);return[u*E.w,v*E.h]};
+
 /* punct (mm) -> coordonate 0..1 in interiorul imaginii (cu rotatie si oglindire) */
 const loc=(it,mx,my)=>{const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);let u=(p[0]-(cx-it.w/2))/it.w,v=(p[1]-(cy-it.h/2))/it.h;if(it.fx)u=1-u;if(it.fy)v=1-v;return[u,v]};
 
-let ERM=false;
+let ERM=false,CUTM=false;
+
 let ERP=false,ERPold='#ffffff';
-function setER(v){ERM=!!v;if(!ERM&&ERP)setERP(false);$('edEr').classList.toggle('on',ERM);paintEd()}
+function setER(v){ERM=!!v;if(ERM&&CUTM)setCUT(false);if(!ERM&&ERP)setERP(false);const b=$('edEr');if(b)b.classList.toggle('on',ERM);paintEd()}
+
+function setCUT(v){CUTM=!!v;if(CUTM&&ERM)setER(false);$('edCut').classList.toggle('on',CUTM);paintEd()}
+
 function setERP(v){
- ERP=!!v;$('edErP').classList.toggle('on',ERP);
+ ERP=!!v;const b=$('edErP');if(b)b.classList.toggle('on',ERP);
  const t=document.getElementById('edTip');if(t&&!ERP)t.style.display='none';
  paintEd()}
+
 function sampleAt(E,e){
- const cv=E.dom.cv,r=cv.getBoundingClientRect();
- const X=Math.floor((e.clientX-r.left)/r.width*cv.width),Y=Math.floor((e.clientY-r.top)/r.height*cv.height);
+ const cv=E.dom.cv,[u,v]=uvOf(E,e);
+ const X=Math.floor(u*cv.width),Y=Math.floor(v*cv.height);
+
  if(X<0||Y<0||X>=cv.width||Y>=cv.height)return null;
  const d=cv.getContext('2d').getImageData(X,Y,1,1).data,h=n=>n.toString(16).padStart(2,'0');
  return '#'+h(d[0])+h(d[1])+h(d[2])}
@@ -2971,8 +3109,16 @@ function drawItem(x,it){
   }
   x.restore();
 
+ }else if(it.type==='shape'){
+  const sw=Math.max(.05,it.sw||.5),hw=it.w/2,hh=it.h/2,k=it.fill?0:sw/2;
+  x.save();x.fillStyle=it.color;x.strokeStyle=it.color;x.lineWidth=sw;x.beginPath();
+  if(it.kind==='ellipse')x.ellipse(0,0,Math.max(.01,hw-k),Math.max(.01,hh-k),0,0,Math.PI*2);
+  else x.rect(-hw+k,-hh+k,Math.max(.01,it.w-2*k),Math.max(.01,it.h-2*k));
+  if(it.fill)x.fill();else x.stroke();
+  x.restore();
  }else if(it.type==='text'){
   const fm=it.size/MM,f=fm/100,lh=fm*1.2;
+
   x.save();x.fillStyle=it.color;x.font=fontStr(it);x.textBaseline='middle';x.textAlign=it.align;
   const px=it.align==='left'?-it.w/2:it.align==='right'?it.w/2:0;
   x.scale(f,f);
@@ -3035,8 +3181,10 @@ window.setDesignFmt=function(t){
  E.items.forEach(it=>{
   it.x=nx+(it.x-fr.x)*s;it.y=ny+(it.y-fr.y)*s;it.w*=s;it.h*=s;
   if(it.type==='text')it.size=+(it.size*s).toFixed(3);
-  if(it.type==='bar')it.tsize=+(it.tsize*s).toFixed(3)});
+  if(it.type==='bar')it.tsize=+(it.tsize*s).toFixed(3);
+  if(it.type==='shape')it.sw=+((it.sw||.5)*s).toFixed(3)});
  /* siguranță: niciun element nu rămâne în afara etichetei noi */
+
  E.items.forEach(it=>{
   let b=bbox([it]),bw=b[2]-b[0],bh=b[3]-b[1];
   if(bw>t.W||bh>t.H){
@@ -3080,7 +3228,7 @@ const _rn=render;
 render=function(){
  _rn();
  const on=!!(S&&S.design);
- $('edCard').hidden=!on;document.body.classList.toggle('dsg',on);
+ $('edCard').hidden=!on;document.body.classList.toggle('dsg',on);$('vrNav').hidden=!on;
  $('l1').parentNode.firstChild.nodeValue=on?'Banco di lavoro · ':'Prima · ';
  document.querySelector('#topConvBar .fmt-badge .lb').textContent=on?'Etichetta':'Dal PDF';
  if(on){$('fmeta').textContent=nf(S.design.w)+'×'+nf(S.design.h)+' mm · design';updUndo()}};
@@ -3094,15 +3242,33 @@ function drawEd(){
  const cv=document.createElement('canvas');cv.className='ed-cv';
  const ov=document.createElement('div');ov.className='ed-ov';
  ed.append(cv,ov);w.appendChild(ed);E.dom={ed,cv,ov};bind(E);paintEd();syncInsp()}
+function viewFit(E){
+ const ed=E.dom.ed,sh=$('sh1'),B=$('b1'),vr=((E.vr||0)%4+4)%4;
+ const w=B.clientWidth-16,h=B.clientHeight-16,r=vr%2?E.h/E.w:E.w/E.h;
+ const W=Math.max(10,Math.min(w,h*r)),H=W/r;
+ sh.style.width=W+'px';sh.style.height=H+'px';
+ if(vr%2){
+  ed.style.inset='auto';ed.style.width=H+'px';ed.style.height=W+'px';
+  ed.style.left=(W-H)/2+'px';ed.style.top=(H-W)/2+'px';
+ }else{
+  ed.style.inset='';ed.style.width='';ed.style.height='';ed.style.left='';ed.style.top='';
+ }
+ ed.style.transformOrigin='50% 50%';
+ ed.style.transform=vr?'rotate('+vr*90+'deg)':'';
+}
 function paintEd(){
+
  const E=E_();if(!E||!E.dom||!E.dom.ed.isConnected)return;
+ viewFit(E);
  const{ed,cv}=E.dom,z=Math.min(4,Math.max(1,ZM.b1.z||1)),dpr=window.devicePixelRatio||1,cw=ed.clientWidth||300;
+
  const W=Math.min(8192,Math.round(E.w*cw*dpr*z/E.w)),H=Math.min(8192,Math.round(E.h*W/E.w)),kk=W/E.w;
  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
  const x=cv.getContext('2d');x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,W,H);
  paintItems(x,kk,E);
  ed.style.borderRadius=E.ci?'50%':(E.rad*cw/E.w)+'px';
- ed.style.cursor=(ERM||ERP)?'crosshair':'';
+ ed.style.cursor=(ERM||ERP||CUTM)?'crosshair':'';
+
 
  paintSel()}
 const CUR={nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize',n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize'};
@@ -3113,14 +3279,18 @@ function paintSel(){
  ov.innerHTML='';
  const s=sel(E),single=s.length===1;
  E.items.forEach(it=>{
-  const b=bbox([it]),t=.05;
-  if(b[0]>=-t&&b[1]>=-t&&b[2]<=E.w+t&&b[3]<=E.h+t)return;
+  const b=bbox([it]);
+  /* roșu doar dacă elementul e complet în afara etichetei */
+  if(b[2]>0&&b[3]>0&&b[0]<E.w&&b[1]<E.h)return;
+
   const d=document.createElement('div');
   d.style.cssText=`position:absolute;left:${it.x*sc}px;top:${it.y*sc}px;width:${it.w*sc}px;height:${it.h*sc}px;transform:rotate(${it.rot}deg);box-sizing:border-box;border:${1.5/z}px dashed #ef4444;background:rgba(239,68,68,.12);pointer-events:auto;cursor:move;display:flex;align-items:center;justify-content:center;overflow:hidden`;
-  const N={text:'Testo',img:'Immagine',qr:'QR Code',ean13:'EAN-13',ean8:'EAN-8',code128:'Code 128',code39:'Code 39'};
+  const N={text:'Testo',shape:'Forma',img:'Immagine',qr:'QR Code',ean13:'EAN-13',ean8:'EAN-8',code128:'Code 128',code39:'Code 39'};
   const l=document.createElement('span');
   const IC={
    text:'<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
+   shape:'<rect x="4" y="4" width="16" height="16" rx="2"/>',
+
    img:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/>',
    bar:'<path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20.5 5v14"/>',
    qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM17 20h4M20 17v3"/>'};
@@ -3142,10 +3312,18 @@ function paintSel(){
    const r=document.createElement('div');r.className='ed-h rot';r.dataset.h='rot';
    r.style.cssText=`left:50%;top:${-22/z}px;width:${hs}px;height:${hs}px;cursor:grab`;d.appendChild(r)}
   ov.appendChild(d)});
+ if(s.length>1){
+  const gb=bbox(s),g=document.createElement('div');g.className='ed-sel';
+  g.style.cssText=`left:${gb[0]*sc}px;top:${gb[1]*sc}px;width:${(gb[2]-gb[0])*sc}px;height:${(gb[3]-gb[1])*sc}px;border-width:${1.5/z}px`;
+  [['nw',0,0],['n',.5,0],['ne',1,0],['e',1,.5],['se',1,1],['s',.5,1],['sw',0,1],['w',0,.5]].forEach(([h,a,b2])=>{
+   const e=document.createElement('div');e.className='ed-h';e.dataset.h=h;
+   e.style.cssText=`left:${a*100}%;top:${b2*100}%;width:${hs}px;height:${hs}px;cursor:${CUR[h]}`;g.appendChild(e)});
+  ov.appendChild(g)}
  if(s.length){
   const b=bbox(s),d=document.createElement('div');d.className='ed-dim';
+
   d.textContent=single?nf(s[0].w)+' × '+nf(s[0].h)+' mm':nf(b[2]-b[0])+' × '+nf(b[3]-b[1])+' mm';
-  d.style.cssText=`left:${(b[0]+b[2])/2*sc}px;top:${b[3]*sc+8/z}px;transform:translateX(-50%) scale(${1/z})`;ov.appendChild(d)}
+  d.style.cssText=`left:${(b[0]+b[2])/2*sc}px;top:${b[3]*sc+8/z}px;transform:translateX(-50%) rotate(${-(E.vr||0)*90}deg) scale(${1/z})`;ov.appendChild(d)}
  (E.guides||[]).forEach(([t,p])=>{
   const g=document.createElement('div');g.className='ed-guide';
   g.style.cssText=t==='v'?`left:${p*sc}px;top:0;width:${1/z}px;height:100%`:`top:${p*sc}px;left:0;height:${1/z}px;width:100%`;ov.appendChild(g)});
@@ -3182,14 +3360,19 @@ function bind(E){
 
   if(hd){
    e.stopPropagation();e.preventDefault();
-   const it=sel(E)[0];if(!it)return;
+   const ss=sel(E),it=ss[0];if(!it)return;
+   if(ss.length>1){
+    DR={k:'gs',h:hd,b:bbox(ss),o:ss.map(i=>({i,o:{...i}}))};return}
    DR={k:hd==='rot'?'rot':'rs',h:hd,it,o:{...it}};return}
+
   const it0=one();
-  if(ERM&&it0&&it0.type==='img'){
+  if((ERM||CUTM)&&it0&&it0.type==='img'){
+
    const[c0x,c0y]=ctr(it0),p0=rp(mx,my,c0x,c0y,-it0.rot);
    if(Math.abs(p0[0]-c0x)<=it0.w/2&&Math.abs(p0[1]-c0y)<=it0.h/2){
     e.stopPropagation();e.preventDefault();
-    DR={k:'er',it:it0,a:[mx,my],r:null,moved:false};return}}
+    DR={k:ERM?'er':'cut',it:it0,a:[mx,my],r:null,moved:false};return}}
+
   const it=pick(E,mx,my);
 
   if(it){
@@ -3236,12 +3419,35 @@ window.addEventListener('pointermove',e=>{
   const c=ctr(d.o);let a=Math.atan2(my-c[1],mx-c[0])/R2D+90;a=((a%360)+360)%360;
   if(e.shiftKey)a=Math.round(a/15)*15;else{const q=Math.round(a/90)*90;if(Math.abs(a-q)<2)a=q}
   d.it.rot=+(a%360).toFixed(1);
+ }else if(d.k==='gs'){
+  d.moved=true;
+  const b=d.b,[sx,sy]=HS[d.h],ow=b[2]-b[0],oh=b[3]-b[1];
+  const ax=sx>0?b[0]:sx<0?b[2]:(b[0]+b[2])/2,ay=sy>0?b[1]:sy<0?b[3]:(b[1]+b[3])/2;
+  let s=0;
+  if(sx)s=Math.max(s,(mx-ax)*sx/ow);
+  if(sy)s=Math.max(s,(my-ay)*sy/oh);
+  s=Math.max(.02,s);
+  d.o.forEach(({i,o})=>{
+   const cx=ax+(o.x+o.w/2-ax)*s,cy=ay+(o.y+o.h/2-ay)*s;
+   i.rot=o.rot;i.w=o.w*s;i.h=o.h*s;
+   if(i.type==='text'){i.size=Math.max(.1,o.size*s);i.auto=o.auto;layoutText(i)}
+   else if(i.type==='bar')i.tsize=Math.max(.1,o.tsize*s);
+   else if(i.type==='shape')i.sw=Math.max(.05,(o.sw||.5)*s);
+   i.x=cx-i.w/2;i.y=cy-i.h/2});
  }else if(d.k==='er'){
+
   if(!d.r){
    if(Math.hypot(mx-d.a[0],my-d.a[1])*sc*z<3)return;
    d.r=[0,0,0,0,$('edErC').value,null];(d.it.er=d.it.er||[]).push(d.r);d.moved=true}
   d.r[5]=[[d.a[0],d.a[1]],[mx,d.a[1]],[mx,my],[d.a[0],my]].map(p=>loc(d.it,p[0],p[1]));
+ }else if(d.k==='cut'){
+  if(!d.r){
+   if(Math.hypot(mx-d.a[0],my-d.a[1])*sc*z<3)return;
+   d.r=true;d.moved=true}
+  E.mq=[d.a[0],d.a[1],mx,my];
+  d.pts=[[d.a[0],d.a[1]],[mx,d.a[1]],[mx,my],[d.a[0],my]].map(p=>loc(d.it,p[0],p[1]));
  }else if(d.k==='mq'){
+
 
   E.mq=[d.m0[0],d.m0[1],mx,my];
   const x0=Math.min(d.m0[0],mx),x1=Math.max(d.m0[0],mx),y0=Math.min(d.m0[1],my),y1=Math.max(d.m0[1],my);
@@ -3249,15 +3455,77 @@ window.addEventListener('pointermove',e=>{
   E.items.forEach(i=>{const b=bbox([i]);if(b[0]<x1&&b[2]>x0&&b[1]<y1&&b[3]>y0)E.sel.add(i.id)});
  }
  sched()});
-const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();if(d.moved)touch(true)};
+const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();
+ if(d.k==='cut'){if(d.r&&d.pts){setCUT(false);cutRegion(d.it,d.pts)}return}
+ if(d.moved)touch(true)};
+
 window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+
+/* ---------- Meniu click dreapta pe masa de lucru ---------- */
+{
+ const m=document.createElement('div');
+ m.id='edCtx';
+ m.style.cssText='position:fixed;z-index:150;display:none;flex-direction:column;gap:1px;padding:5px;min-width:220px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
+ document.body.appendChild(m);
+ const hide=()=>{m.style.display='none'};
+ const copySel=cut=>{
+  const E=E_();if(!E||!E.sel.size)return;
+  CLIP=JSON.stringify(sel(E));PN=0;
+  try{navigator.clipboard&&navigator.clipboard.writeText(MARK).catch(()=>{})}catch(_){}
+  if(cut)delSel()};
+ function build(items){
+  m.innerHTML='';
+  items.forEach(it=>{
+   if(it==='-'){const s=document.createElement('div');s.style.cssText='height:1px;margin:4px 6px;background:rgba(255,255,255,.12)';m.appendChild(s);return}
+   const[n,k,fn,off]=it,b=document.createElement('button');
+   b.type='button';b.className='btn sm';
+   b.style.cssText='justify-content:space-between;gap:18px;border-color:transparent;background:transparent;box-shadow:none';
+   b.innerHTML='<span>'+n+'</span><small style="color:var(--m2);font-weight:600">'+k+'</small>';
+   b.disabled=!!off;
+   b.onclick=()=>{hide();fn()};
+   m.appendChild(b)})}
+ document.addEventListener('contextmenu',e=>{
+  const E=E_();
+  if(!E||!E.dom||!E.dom.ed.contains(e.target)){hide();return}
+  e.preventDefault();
+  const[mx,my]=mmOf(E,e),it=pick(E,mx,my);
+  if(it&&!E.sel.has(it.id)){E.sel=new Set([it.id]);paintSel();syncInsp()}
+  if(!it&&E.sel.size){E.sel=new Set();paintSel();syncInsp()}
+  const has=E.sel.size>0,o=one(),img=!!(o&&o.type==='img');
+  const L=[
+   ['Taglia','Ctrl+X',()=>copySel(true),!has],
+   ['Copia','Ctrl+C',()=>copySel(false),!has],
+   ['Incolla','Ctrl+V',()=>{if(CLIP)pasteItems()},!CLIP],
+   ['Duplica','Ctrl+D',dupSel,!has],
+   ['Elimina','Canc',delSel,!has],
+   '-',
+   ['Porta in primo piano','',()=>order(1),!has],
+   ['Manda sullo sfondo','',()=>order(-1),!has],
+   '-',
+   ['Centra in orizzontale','',()=>align('ch'),!has],
+   ['Centra in verticale','',()=>align('cv'),!has]];
+  if(img)L.push('-',['Specchia orizzontale','',()=>flip('fx')],['Specchia verticale','',()=>flip('fy')]);
+  build(L);
+  m.style.display='flex';
+  const w=m.offsetWidth,h=m.offsetHeight;
+  m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-w-8))+'px';
+  m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-h-8))+'px'});
+ /* click în meniu: nu lăsa handlerul de deselectare să ruleze; în afara lui: închide */
+ document.addEventListener('pointerdown',e=>{
+  if(m.contains(e.target)){e.stopImmediatePropagation();return}
+  hide()},true);
+ window.addEventListener('keydown',e=>{if(e.key==='Escape')hide()},true);
+ window.addEventListener('resize',hide);
+ window.addEventListener('blur',hide);
+}
 
 /* click in afara etichetei = deselectare (exceptie: panoul Editor, ferestre, pipeta) */
 document.addEventListener('pointerdown',e=>{
  const E=E_();if(!E||!E.dom||!E.sel.size)return;
  const t=e.target;if(!t||!t.closest)return;
  if(E.dom.ed.contains(t))return;
- if(t.closest('#edCard,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
+if(t.closest('#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
+
  E.sel=new Set();paintSel();syncInsp()},true);
 
 
@@ -3283,8 +3551,79 @@ function addImageFile(file){
   if(h>E.h*.8){h=E.h*.8;w=h*im.naturalWidth/im.naturalHeight}
   addItem({type:'img',imgId:id,fx:false,fy:false,op:1,w,h,x:(E.w-w)/2,y:(E.h-h)/2,rot:0})};
  im.src=URL.createObjectURL(file)}
+function cutRegion(it,pts){
+ const im=IMGS[it.imgId];if(!im)return;
+ let u0=1,v0=1,u1=0,v1=0;
+ pts.forEach(p=>{u0=Math.min(u0,p[0]);u1=Math.max(u1,p[0]);v0=Math.min(v0,p[1]);v1=Math.max(v1,p[1])});
+ u0=clamp(u0,0,1);u1=clamp(u1,0,1);v0=clamp(v0,0,1);v1=clamp(v1,0,1);
+ const nw=im.naturalWidth,nh=im.naturalHeight;
+ const sx=Math.round(u0*nw),sy=Math.round(v0*nh),cw=Math.round(u1*nw)-sx,ch=Math.round(v1*nh)-sy;
+ if(cw<2||ch<2)return;
+ /* imaginea cu ștergerile deja aplicate */
+ const f=document.createElement('canvas');f.width=nw;f.height=nh;
+ const fx=f.getContext('2d');fx.drawImage(im,0,0);
+ (it.er||[]).forEach(r=>{
+  fx.fillStyle=r[4]||'#ffffff';
+  if(r[5]){fx.beginPath();r[5].forEach((p,i)=>{if(i)fx.lineTo(p[0]*nw,p[1]*nh);else fx.moveTo(p[0]*nw,p[1]*nh)});fx.closePath();fx.fill()}
+  else fx.fillRect(r[0]*nw,r[1]*nh,(r[2]-r[0])*nw,(r[3]-r[1])*nh)});
+ const c=document.createElement('canvas');c.width=cw;c.height=ch;
+ c.getContext('2d').drawImage(f,sx,sy,cw,ch,0,0,cw,ch);
+ /* poziția noului element (ține cont de rotație și oglindire) */
+ const uc=(sx+cw/2)/nw,vc=(sy+ch/2)/nh,[cx,cy]=ctr(it);
+ const du=((it.fx?1-uc:uc)-.5)*it.w,dv=((it.fy?1-vc:vc)-.5)*it.h;
+ const[px,py]=rp(cx+du,cy+dv,cx,cy,it.rot);
+ const w=cw/nw*it.w,h=ch/nh*it.h,col=$('edErC').value;
+ c.toBlob(b=>{
+  if(!b)return;
+  const ni=new Image();
+  ni.onload=()=>{
+   const E=E_();if(!E)return;
+   const id='i'+(UID++);IMGS[id]=ni;
+   /* zona originală se umple cu culoarea aleasă */
+   (it.er=it.er||[]).push([0,0,0,0,col,[[sx/nw,sy/nh],[(sx+cw)/nw,sy/nh],[(sx+cw)/nw,(sy+ch)/nh],[sx/nw,(sy+ch)/nh]]]);
+   addItem({type:'img',imgId:id,fx:it.fx,fy:it.fy,op:it.op==null?1:it.op,w,h,x:px-w/2,y:py-h/2,rot:it.rot})};
+  ni.src=URL.createObjectURL(b)},'image/png')}
+
+async function addPdfFile(file){
+ if(!window.pdfjsLib){toast('La libreria pdf.js non è stata caricata.');return}
+ try{
+  const bytes=new Uint8Array(await file.arrayBuffer());
+  const doc=await pdfjsLib.getDocument({data:bytes}).promise;
+  const pg=await doc.getPage(1),v1=pg.getViewport({scale:1});
+  const k=clamp(CAN_MAX/Math.max(v1.width,v1.height),2,8),vp=pg.getViewport({scale:k});
+  const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+  const ctx=cv.getContext('2d',{willReadFrequently:true});
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+  await pg.render({canvasContext:ctx,viewport:vp}).promise;
+  /* dacă formatul e recunoscut: se ia prima etichetă cu conținut */
+  let src=cv;
+  const code=detect(file.name),fc=code?refine(code,v1.width,v1.height):null,d=fc&&D.find(x=>x.code===fc);
+  if(d&&Math.abs(d.SW*MM-v1.width)<6&&Math.abs(d.SH*MM-v1.height)<6){
+   const kx=cv.width/d.SW,ky=cv.height/d.SH;
+   for(const c of cells(d)){
+    const x=Math.floor(c[0]*kx),y=Math.floor(c[1]*ky),w=Math.min(Math.floor(d.W*kx),cv.width-x),h=Math.min(Math.floor(d.H*ky),cv.height-y);
+    if(w<2||h<2)continue;
+    const px=ctx.getImageData(x,y,w,h).data;let n=0;
+    for(let p=0;p<px.length;p+=16){if(px[p]<160&&++n>6)break}
+    if(n>6){const c2=document.createElement('canvas');c2.width=w;c2.height=h;c2.getContext('2d').drawImage(cv,x,y,w,h,0,0,w,h);src=c2;break}
+   }
+  }
+  src.toBlob(b=>{
+   if(!b)return;
+   const im=new Image();
+   im.onload=()=>{
+    const E=E_();if(!E)return;
+    const id='i'+(UID++);IMGS[id]=im;
+    let w=E.w,h=w*im.naturalHeight/im.naturalWidth;
+    if(h>E.h){h=E.h;w=h*im.naturalWidth/im.naturalHeight}
+    addItem({type:'img',imgId:id,fx:false,fy:false,op:1,w,h,x:(E.w-w)/2,y:(E.h-h)/2,rot:0})};
+   im.src=URL.createObjectURL(b)},'image/png');
+ }catch(e){toast('Impossibile leggere il PDF: '+(e.message||e))}}
+
 function delSel(){const E=E_();if(!E||!E.sel.size)return;E.items=E.items.filter(i=>!E.sel.has(i.id));E.sel=new Set();touch(true)}
+
 function dupSel(){
+
  const E=E_();if(!E)return;const s=sel(E);if(!s.length)return;const ns=new Set();
  s.forEach(i=>{const c=JSON.parse(JSON.stringify(i));c.id=UID++;c.x+=2;c.y+=2;E.items.push(c);ns.add(c.id)});E.sel=ns;touch(true)}
 function order(d){const E=E_();if(!E)return;const s=sel(E);if(!s.length)return;const r=E.items.filter(i=>!E.sel.has(i.id));E.items=d>0?r.concat(s):s.concat(r);touch(true)}
@@ -3296,12 +3635,14 @@ function pasteItems(){
 /* ---------- Aliniere / poziționare ---------- */
 function align(m){
  const E=E_(),s=E?sel(E):[];if(!s.length)return;
- const rel=(s.length>1&&$('edRel').checked)?bbox(s):[0,0,E.w,E.h];
+ const rel=[0,0,E.w,E.h];
  s.forEach(it=>{const b=bbox([it]);let dx=0,dy=0;
   if(m==='l')dx=rel[0]-b[0];else if(m==='r')dx=rel[2]-b[2];else if(m==='ch')dx=(rel[0]+rel[2])/2-(b[0]+b[2])/2;
   else if(m==='t')dy=rel[1]-b[1];else if(m==='b')dy=rel[3]-b[3];else if(m==='cv')dy=(rel[1]+rel[3])/2-(b[1]+b[3])/2;
   it.x+=dx;it.y+=dy});
  touch(true)}
+
+
 function place(h,v){
  const E=E_(),s=E?sel(E):[];if(!s.length)return;
  const m=num($('edMg').value,0),b=bbox(s),r=[m,m,E.w-m,E.h-m];
@@ -3321,9 +3662,11 @@ function syncInsp(){
  const E=E_();if(!E)return;
  const s=sel(E),it=s[0],o=s.length===1;
  if(ERM&&!(o&&it.type==='img'))setER(false);
+ if(CUTM&&!(o&&it.type==='img'))setCUT(false);
+
 
  ['edX','edY','edW','edH','edR'].forEach(id=>$(id).disabled=!o);
- $('gTxt').hidden=!(o&&it.type==='text');$('gBar').hidden=!(o&&it.type==='bar');$('gImg').hidden=!(o&&it.type==='img');
+ $('gTxt').hidden=!(o&&it.type==='text');$('gBar').hidden=!(o&&it.type==='bar');$('gImg').hidden=!(o&&it.type==='img');$('gShp').hidden=!(o&&it.type==='shape');
 $('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':' elemento selezionato')):'';
 
  if(!o)return;
@@ -3332,7 +3675,9 @@ $('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':'
  $('edH').readOnly=it.type==='text';
  if(it.type==='text'){setv('edTxt',it.text);setv('edSz',it.size);setv('edFont',it.font);setv('edCol',it.color);setv('edTb',it.bold);setv('edTi',it.italic)}
  else if(it.type==='bar'){setv('edBv',it.value);setv('edBk',it.kind);setv('edBs',it.tsize);setv('edBc',it.color);setv('edBt',it.showText);setv('edBb',it.tbold);setv('edBg',it.bg)}
+ else if(it.type==='shape'){setv('edShW',it.sw||.5);setv('edShC',it.color);setv('edShF',it.fill);$('edShW').disabled=!!it.fill}
  else setv('edOp',it.op==null?1:it.op)}
+
 const B=(id,fn,ev)=>$(id).addEventListener(ev||'input',e=>{const it=one();if(!it)return;fn(it,e.target);touch(false)});
 B('edX',(it,el)=>it.x=num(el.value,it.x));
 B('edY',(it,el)=>it.y=num(el.value,it.y));
@@ -3353,10 +3698,15 @@ B('edBt',(it,el)=>it.showText=el.checked,'change');
 B('edBb',(it,el)=>it.tbold=el.checked,'change');
 B('edBg',(it,el)=>it.bg=el.checked,'change');
 B('edOp',(it,el)=>it.op=num(el.value,1));
+B('edShW',(it,el)=>it.sw=Math.max(.05,num(el.value,it.sw||.5)));
+B('edShC',(it,el)=>it.color=el.value);
+B('edShF',(it,el)=>it.fill=el.checked,'change');
+
 $('edAuto').onclick=()=>{const it=one();if(it&&it.type==='text'){it.auto=true;touch(true)}};
-document.querySelectorAll('#edCard [data-al]').forEach(b=>b.onclick=()=>align(b.dataset.al));
-document.querySelectorAll('#edCard [data-p]').forEach(b=>b.onclick=()=>{const[h,v]=b.dataset.p.split(',').map(Number);place(h,v)});
-document.querySelectorAll('#edCard [data-ds]').forEach(b=>b.onclick=()=>distribute(b.dataset.ds));
+document.querySelectorAll('#edBar [data-al]').forEach(b=>b.onclick=()=>align(b.dataset.al));
+document.querySelectorAll('#edBar [data-p]').forEach(b=>b.onclick=()=>{const[h,v]=b.dataset.p.split(',').map(Number);place(h,v)});
+document.querySelectorAll('#edBar [data-ds]').forEach(b=>b.onclick=()=>distribute(b.dataset.ds));
+
 document.querySelectorAll('#edCard [data-ta]').forEach(b=>b.onclick=()=>{const it=one();if(it&&it.type==='text'){it.align=b.dataset.ta;touch(true)}});
 $('edAddT').onclick=()=>addText('');
 {
@@ -3369,21 +3719,44 @@ $('edAddT').onclick=()=>addText('');
  document.addEventListener('pointerdown',e=>{if(!m.contains(e.target)&&!(e.target.closest&&e.target.closest('#edAddB')))m.style.display='none'},true);
 }
 
-$('edAddI').onclick=()=>$('edFile').click();
+
 $('edFile').onchange=e=>{[...e.target.files].forEach(addImageFile);e.target.value=''};
+window.edAddPdf=addPdfFile;
+function addShape(kind,fill){
+ const E=E_();if(!E)return;
+ const s=Math.min(E.w,E.h)*.5;
+ addItem({type:'shape',kind,fill,color:'#000000',sw:.5,w:s,h:s,x:(E.w-s)/2,y:(E.h-s)/2,rot:0})}
+function mkMenu(btnId,items){
+ const m=document.createElement('div');
+ m.style.cssText='position:fixed;z-index:140;display:none;flex-direction:column;gap:2px;padding:5px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
+ items.forEach(([n,fn])=>{const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.cssText='justify-content:flex-start;min-width:170px';b.textContent=n;b.onclick=()=>{m.style.display='none';fn()};m.appendChild(b)});
+ document.body.appendChild(m);
+ $(btnId).onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();m.style.left=Math.min(r.left,innerWidth-190)+'px';m.style.top=(r.bottom+6)+'px';m.style.display=m.style.display==='flex'?'none':'flex'};
+ document.addEventListener('pointerdown',e=>{if(!m.contains(e.target)&&!(e.target.closest&&e.target.closest('#'+btnId)))m.style.display='none'},true)}
+mkMenu('edAddI',[
+ ['Immagine dal computer',()=>$('edFile').click()],
+ ['PDF dal computer',()=>$('edPdf').click()],
+ ['PDF dalla libreria',()=>{if(LIB.length)openPdfModal('');else $('edPdf').click()}]]);
+mkMenu('edAddP',[
+ ['Quadrato',()=>addShape('rect',false)],
+ ['Cerchio',()=>addShape('ellipse',false)]]);
+
+
+
+$('edPdf').onchange=e=>{[...e.target.files].forEach(addPdfFile);e.target.value=''};
+
 $('edUndo').onclick=()=>undo(-1);$('edRedo').onclick=()=>undo(1);
 $('edDup').onclick=dupSel;$('edDel').onclick=delSel;
 $('edFront').onclick=()=>order(1);$('edBack').onclick=()=>order(-1);
 $('edFx').onclick=()=>flip('fx');$('edFy').onclick=()=>flip('fy');
-$('edEr').onclick=()=>{const it=one();if(it&&it.type==='img')setER(!ERM)};
-$('edErU').onclick=()=>{const it=one();if(it&&it.er&&it.er.length){it.er.pop();touch(true)}};
-$('edErR').onclick=()=>{const it=one();if(it&&it.er&&it.er.length){it.er=[];touch(true)}};
-$('edErP').onclick=()=>{
- if(ERP){$('edErC').value=ERPold;setERP(false);return}
- ERPold=$('edErC').value;setERP(true)};
+$('edCut').onclick=()=>{const it=one();if(it&&it.type==='img')setCUT(!CUTM)};
+
 
 $('btnNew').onclick=()=>openModal('new');
 $('edClose').onclick=()=>$('clr').click();
+function rotView(d){const E=E_();if(!E)return;E.vr=((E.vr||0)+d+4)%4;resetZ();fitSheets()}
+$('vrL').onclick=()=>rotView(-1);$('vrR').onclick=()=>rotView(1);
+
 
 /* Scroll pe campurile numerice din editor (click pe valoare, apoi rotita) */
 {
@@ -3409,22 +3782,20 @@ $('edClose').onclick=()=>$('clr').click();
 
 /* Proprieta + Allinea&posiziona: vizibile doar cu selectie */
 {
- const boxes=[...document.querySelectorAll('#edCard > details.ed-box')].filter(d=>!d.id);
- const updBoxes=()=>{
-  const E=E_(),has=!!(E&&E.sel.size);
-  boxes.forEach(d=>{d.hidden=!has});
- };
- const updStart=()=>{
-  const E=E_();
-  $('startCard').hidden=!!(E&&!E.items.length);
- };
+ const bar=$('edBar');
+ const updBoxes=()=>{const E=E_();bar.classList.toggle('off',!(E&&E.sel.size))};
+ const updStart=()=>{const E=E_();$('startCard').hidden=!!(E&&!E.items.length)};
  const _si=syncInsp;
  syncInsp=function(){_si();updBoxes();updStart()};
  const _rn2=render;
- render=function(){_rn2();updStart()};
- updBoxes();
- updStart();
+ render=function(){
+  _rn2();updStart();
+  bar.hidden=!(S&&S.design);
+  requestAnimationFrame(()=>{if(S)fitSheets()});
+ };
+ updBoxes();updStart();
 }
+
 
 
 
@@ -3448,7 +3819,10 @@ window.addEventListener('keydown',e=>{
   const st=e.shiftKey?1:.1,s=sel(E);
   s.forEach(i=>{if(k==='ArrowLeft')i.x-=st;if(k==='ArrowRight')i.x+=st;if(k==='ArrowUp')i.y-=st;if(k==='ArrowDown')i.y+=st});
   if(s.length)touch(false);
- }else if(k===' '||k.length===1){/* înghite: nu deschide căutarea PDF */}
+ }else if(lk==='r'){rotView(e.shiftKey?-1:1)}
+ else if(k===' '||k.length===1){/* înghite: nu deschide căutarea PDF */}
+
+
  else used=false;
  if(used){e.preventDefault();e.stopImmediatePropagation()}},true);
 const typing=t=>t&&((t.tagName==='INPUT'&&!['checkbox','range','button','color'].includes(t.type))||t.tagName==='TEXTAREA'||t.isContentEditable);
@@ -3467,8 +3841,10 @@ document.addEventListener('paste',e=>{
  if(t&&t.trim()){e.preventDefault();addText(t)}});
 window.addEventListener('drop',e=>{
  if(!E_())return;
- const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])].filter(f=>f.type.startsWith('image/'));
- if(fs.length){e.stopImmediatePropagation();e.preventDefault();fs.forEach(addImageFile)}},true);
+ const all=[...((e.dataTransfer&&e.dataTransfer.files)||[])];
+ const fs=all.filter(f=>f.type.startsWith('image/')),ps=all.filter(f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name));
+ if(fs.length||ps.length){e.stopImmediatePropagation();e.preventDefault();fs.forEach(addImageFile);ps.forEach(addPdfFile)}},true);
+
 
 /* ---------- Ultimul design in memorie ---------- */
 const BL={};
