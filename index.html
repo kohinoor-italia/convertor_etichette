@@ -339,8 +339,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.25}
 .fd>summary .fn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fd>summary em{margin-left:auto;font-style:normal;font-size:10.5px;color:var(--m);background:var(--panel2);border:1px solid var(--line);padding:1px 8px;border-radius:99px;font-weight:700;flex:none}
 .fc{margin-left:14px;padding-left:10px;border-left:1px solid var(--line)}
-.lf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 10px;margin:2px 0;border-radius:10px;border:1px solid transparent;background:transparent;font-size:13px;transition:.15s var(--ease)}
-.lf:hover,.lf.sel{background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.35);transform:translateX(2px)}
+.lf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 10px;margin:2px 0;border-radius:10px;border:1px solid transparent;background:transparent;font-size:13px;transition:background-color .1s,border-color .1s;content-visibility:auto;contain-intrinsic-size:auto 38px}
+.lf:hover,.lf.sel{background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.35)}
+
 .lf .pi2{width:26px;height:20px;border-radius:5px;background:linear-gradient(160deg,#fff,#d4d8ea);color:#d93025;font-weight:900;font-size:8px;display:grid;place-items:center;flex:none}
 .lf .ln{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px!important}
 
@@ -3345,7 +3346,8 @@ function snapMove(E,mv,th){
  if(bx){mv.forEach(i=>i.x+=bx.d);g.push(['v',bx.c])}
  if(by){mv.forEach(i=>i.y+=by.d);g.push(['h',by.c])}
  E.guides=g}
-function sched(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;const E=E_();if(!E)return;paintEd();syncInsp();commitSoon(false)})}
+function sched(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;const E=E_();if(!E)return;paintEd();syncInsp()})}
+
 
 function bind(E){
  const ed=E.dom.ed;
