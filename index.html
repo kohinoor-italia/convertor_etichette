@@ -2550,7 +2550,28 @@ $('nx').onclick=()=>{if(S){S.rp++;drawRes()}};
 }
 
 
-$('dl').onclick=async()=>{if(!S)return;try{save(await buildResult(),outName())}catch(e){toast(e.message||e)}};
+$('dl').onclick=async()=>{
+ if(!S)return;
+ const name=outName();
+ let fh=null;
+ if(window.showSaveFilePicker){
+  try{
+   fh=await showSaveFilePicker({suggestedName:name,types:[{description:'PDF',accept:{'application/pdf':['.pdf']}}]});
+  }catch(e){
+   if(e&&e.name==='AbortError')return; // utilizatorul a anulat
+  }
+ }
+ try{
+  const blob=await buildResult();
+  if(fh){
+   const w=await fh.createWritable();
+   await w.write(blob);
+   await w.close();
+   toast('PDF salvato',true);
+  }else save(blob,name);
+ }catch(e){toast(e.message||e)}
+};
+
 $('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(e){toast(e.message||e)}};
 
 const modal = $('fmtModal');
