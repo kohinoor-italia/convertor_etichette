@@ -670,9 +670,11 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 .pager #pn{min-width:78px;text-align:center;font-size:11px;font-weight:700;color:var(--m);letter-spacing:.2px;cursor:ns-resize;user-select:none;white-space:nowrap}
 
 /* modul design: textele duplicate dispar; rotire vedere în stânga, rotire conținut în dreapta */
-.dsg .pl>span:first-child{display:none}
-.dsg .pane:first-child .pl{justify-content:flex-start}
-.dsg .pane:last-child .pl{justify-content:flex-end}
+.pl>span:first-child{display:none}
+.pane:first-child .pl{justify-content:flex-start}
+.pane:last-child .pl{justify-content:flex-end}
+.rotw>canvas{display:block;width:100%;height:100%;background:#fff;border-radius:6px!important;box-shadow:0 20px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08)}
+
 
 @media(max-width:1000px){
  .pager{position:static;transform:none;margin:0 auto 8px;flex:none}
@@ -1063,7 +1065,8 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
     <div class="pane">
      <div class="pl"><span>Prima &middot; <b id="l1"></b></span>
-      <span class="nav" id="vrNav" hidden>
+<span class="nav" id="vrNav">
+
        <button class="btn sm" id="vrL" type="button" title="Ruota vista a sinistra (Shift+R)" style="padding:3px 9px"><svg class="i" style="transform:scaleX(-1)"><use href="#i-rot"/></svg></button>
        <button class="btn sm" id="vrR" type="button" title="Ruota vista a destra (R)" style="padding:3px 9px"><svg class="i"><use href="#i-rot"/></svg></button>
       </span>
@@ -3229,7 +3232,8 @@ const _rn=render;
 render=function(){
  _rn();
  const on=!!(S&&S.design);
- $('edCard').hidden=!on;document.body.classList.toggle('dsg',on);$('vrNav').hidden=!on;
+ $('edCard').hidden=!on;document.body.classList.toggle('dsg',on);
+
  $('l1').parentNode.firstChild.nodeValue=on?'Banco di lavoro · ':'Prima · ';
  document.querySelector('#topConvBar .fmt-badge .lb').textContent=on?'Etichetta':'Dal PDF';
  if(on){$('fmeta').textContent=nf(S.design.w)+'×'+nf(S.design.h)+' mm · design';updUndo()}};
@@ -3779,7 +3783,39 @@ $('edCut').onclick=()=>{const it=one();if(it&&it.type==='img')setCUT(!CUTM)};
 
 $('btnNew').onclick=()=>openModal('new');
 $('edClose').onclick=()=>$('clr').click();
-function rotView(d){const E=E_();if(!E)return;E.vr=((E.vr||0)+d+4)%4;resetZ();fitSheets()}
+function rotView(d){
+ const E=E_();
+ if(E){E.vr=((E.vr||0)+d+4)%4;resetZ();fitSheets();return}
+ if(!S)return;
+ S.vr=((S.vr||0)+d+4)%4;resetZ();drawSrc();fitSheets()}
+
+/* PDF încărcat: rotirea vederii foii originale (stânga) */
+function pdfViewFit(){
+ if(!S||S.design)return;
+ const w=$('sh1'),rw=w.querySelector(':scope>.rotw');
+ if(!rw)return;
+ const vr=((S.vr||0)%4+4)%4,B=$('b1');
+ const aw=B.clientWidth-16,ah=B.clientHeight-16,r=vr%2?S.H/S.W:S.W/S.H;
+ const W=Math.max(10,Math.min(aw,ah*r)),H=W/r;
+ w.style.width=W+'px';w.style.height=H+'px';
+ if(vr%2){rw.style.width=H+'px';rw.style.height=W+'px';rw.style.left=(W-H)/2+'px';rw.style.top=(H-W)/2+'px'}
+ else{rw.style.width='100%';rw.style.height='100%';rw.style.left='0';rw.style.top='0'}
+ rw.style.transform='rotate('+vr*90+'deg)'}
+function pdfWrap(){
+ if(!S||S.design)return;
+ const vr=((S.vr||0)%4+4)%4,w=$('sh1');
+ if(!vr)return;
+ const rw=document.createElement('div');
+ rw.className='rotw';
+ rw.style.cssText='position:absolute;transform-origin:50% 50%';
+ while(w.firstChild)rw.appendChild(w.firstChild);
+ w.appendChild(rw);
+ pdfViewFit()}
+{
+ const _fs2=fitSheets;fitSheets=function(){_fs2();pdfViewFit()};
+ const _ds2=drawSrc;drawSrc=function(){_ds2();pdfWrap()};
+}
+
 $('vrL').onclick=()=>rotView(-1);$('vrR').onclick=()=>rotView(1);
 
 
