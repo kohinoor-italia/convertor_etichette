@@ -752,7 +752,10 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
   <div class="file" id="fileCard" hidden>
    <div class="pi">PDF</div>
    <div class="nm"><b id="fname"></b><span id="fmeta"></span></div>
+   <button class="btn sm" id="pdfEdit" type="button" title="Modifica nell'editor di etichette" aria-label="Modifica"><svg class="i"><use href="#i-edit"/></svg></button>
+
    <button class="btn sm" id="clr" title="Rimuovi PDF"><svg class="i"><use href="#i-x"/></svg></button>
+
   </div>
   <input type="file" id="file" accept="application/pdf,.pdf" hidden>
   <input type="file" id="dir" webkitdirectory directory multiple hidden>
@@ -2902,6 +2905,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)cfgSave()})
 $('clr').addEventListener('click',()=>{if(!S)lastDrop()});
 
 async function lastRestore(){
+ try{if(localStorage.getItem('sls_mode')==='design')return}catch(_){}
  if(S)return;
  let cfg=null;
  try{cfg=JSON.parse(localStorage.getItem(CFG))}catch(_){}
@@ -3786,6 +3790,16 @@ $('edCut').onclick=()=>{const it=one();if(it&&it.type==='img')setCUT(!CUTM)};
 
 
 $('btnNew').onclick=()=>openModal('new');
+
+/* Buton „Modifica" pe PDF-ul încărcat: deschide editorul cu acel PDF */
+$('pdfEdit').onclick=e=>{
+ e.stopPropagation(); // nu declanșa „înlocuiește PDF" de pe card
+ if(!S||S.design||!S.bytes)return;
+ const f=new File([S.bytes.slice()],S.name,{type:'application/pdf'});
+ const t=cur; // formatul etichetei originale
+ window.startDesign(t);
+ window.edAddPdf(f)};
+
 $('edClose').onclick=()=>$('clr').click();
 function rotView(d){
  const E=E_();
@@ -3929,7 +3943,9 @@ function imgBlob(id){
 
 async function dsvSave(){
  const E=E_();
+ if(E&&E.items.length){try{localStorage.setItem('sls_mode','design')}catch(_){}}
  if(!E||!E.items.length||saving)return;
+
  const items=JSON.parse(JSON.stringify(E.items));
  const snap={tc:TG().code,fr:E.fr||null,ow:E.ow||null,oh:E.oh||null,oci:!!E.oci,vr:E.vr||0};
 
@@ -4034,7 +4050,26 @@ $('btnNew').onclick=async()=>{
  openModal('new');
 };
 
+/* la ieșirea din editor (X, Acasă, Nuova) se șterge flagul de refresh */
+$('clr').addEventListener('click',()=>{
+ if(!E_()){try{localStorage.removeItem('sls_mode')}catch(_){}}
+});
+
+/* la refresh: dacă ai fost în editor, redeschide ultima etichetă */
+if((()=>{try{return localStorage.getItem('sls_mode')==='design'}catch(_){return false}})()){
+ (async()=>{
+  try{
+   const db=await idb();
+   const r=await reqP(db.transaction('h').objectStore('h').get('lastdesign'));
+   if(S)return;
+   if(r&&r.items&&r.items.length)dsvRestore(r);
+   else localStorage.removeItem('sls_mode');
+  }catch(_){}
+ })();
+}
+
 /* buton "+" (Nuova) in antetul editorului */
+
 {
  const b=document.createElement('button');
  b.className='ib';b.type='button';b.title='Nuova etichetta';
