@@ -3524,7 +3524,10 @@ window.addEventListener('pointerup',up);window.addEventListener('pointercancel',
    ['Manda sullo sfondo','',()=>order(-1),!has],
    '-',
    ['Centra in orizzontale','',()=>align('ch'),!has],
-   ['Centra in verticale','',()=>align('cv'),!has]];
+   ['Centra in verticale','',()=>align('cv'),!has],
+   '-',
+   ['Ruota 90° a destra','',()=>rot90(1),!has],
+   ['Ruota 90° a sinistra','',()=>rot90(-1),!has]];
   if(img)L.push('-',['Specchia orizzontale','',()=>flip('fx')],['Specchia verticale','',()=>flip('fy')]);
   build(L);
   m.style.display='flex';
@@ -3676,6 +3679,17 @@ function dupSel(){
  s.forEach(i=>{const c=JSON.parse(JSON.stringify(i));c.id=UID++;c.x+=2;c.y+=2;E.items.push(c);ns.add(c.id)});E.sel=ns;touch(true)}
 function order(d){const E=E_();if(!E)return;const s=sel(E);if(!s.length)return;const r=E.items.filter(i=>!E.sel.has(i.id));E.items=d>0?r.concat(s):s.concat(r);touch(true)}
 function flip(k){const E=E_();if(!E)return;sel(E).forEach(i=>{if(i.type==='img')i[k]=!i[k]});touch(true)}
+
+function rot90(d){
+ const E=E_(),s=E?sel(E):[];if(!s.length)return;
+ const b=bbox(s),cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2;
+ s.forEach(it=>{
+  const[ix,iy]=ctr(it),[nx,ny]=rp(ix,iy,cx,cy,90*d);
+  it.x=nx-it.w/2;it.y=ny-it.h/2;
+  it.rot=(((it.rot+90*d)%360)+360)%360});
+ touch(true)}
+
+
 function pasteItems(){
  const E=E_();PN++;const ns=new Set();
  JSON.parse(CLIP).forEach(it=>{it.id=UID++;it.x+=2*PN;it.y+=2*PN;E.items.push(it);ns.add(it.id)});E.sel=ns;touch(true)}
