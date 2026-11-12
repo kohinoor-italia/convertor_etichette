@@ -3363,8 +3363,10 @@ function sched(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;const E=E_();if
 
 function bind(E){
  const ed=E.dom.ed;
- ed.addEventListener('pointerdown',e=>{
+ const onDown=e=>{
+  if(e.__sd)return;e.__sd=true;
   if(e.button!==0)return;
+
   const a=document.activeElement;if(a&&a!==document.body&&a.blur)a.blur();
   if(ERP){
    e.stopPropagation();e.preventDefault();
@@ -3400,7 +3402,10 @@ function bind(E){
   }else{
    if(!e.shiftKey)E.sel=new Set();
    paintSel();syncInsp();
-   if((ZM.b1.z||1)<=1){e.stopPropagation();e.preventDefault();DR={k:'mq',m0:[mx,my],base:new Set(E.sel)}}}});
+   if((ZM.b1.z||1)<=1){e.stopPropagation();e.preventDefault();DR={k:'mq',m0:[mx,my],base:new Set(E.sel)}}}};
+ ed.addEventListener('pointerdown',onDown);
+ E.onDown=onDown;
+
  ed.addEventListener('dblclick',e=>{
   const it=pick(E,...mmOf(E,e));if(!it)return;
   e.stopPropagation();E.sel=new Set([it.id]);paintSel();syncInsp();
@@ -3540,9 +3545,15 @@ document.addEventListener('pointerdown',e=>{
  const E=E_();if(!E||!E.dom||!E.sel.size)return;
  const t=e.target;if(!t||!t.closest)return;
  if(E.dom.ed.contains(t))return;
-if(t.closest('#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
+if(t.closest('#b1,#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
+
 
  E.sel=new Set();paintSel();syncInsp()},true);
+
+/* selectare și în afara etichetei (zoom out): click/marquee pe tot panoul din stânga */
+$('b1').addEventListener('pointerdown',e=>{
+ const E=E_();
+ if(E&&E.onDown)E.onDown(e)});
 
 
 /* ---------- Adăugare elemente ---------- */
