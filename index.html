@@ -3369,11 +3369,13 @@ function bind(E){
 
   const it0=one();
   if((ERM||CUTM)&&it0&&it0.type==='img'){
-
    const[c0x,c0y]=ctr(it0),p0=rp(mx,my,c0x,c0y,-it0.rot);
-   if(Math.abs(p0[0]-c0x)<=it0.w/2&&Math.abs(p0[1]-c0y)<=it0.h/2){
+   const inside=Math.abs(p0[0]-c0x)<=it0.w/2&&Math.abs(p0[1]-c0y)<=it0.h/2;
+   /* la „Taglia" se poate începe și în afara imaginii; se taie doar partea care intersectează imaginea */
+   if(CUTM||inside){
     e.stopPropagation();e.preventDefault();
     DR={k:ERM?'er':'cut',it:it0,a:[mx,my],r:null,moved:false};return}}
+
 
   const it=pick(E,mx,my);
 
@@ -3532,7 +3534,27 @@ if(t.closest('#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
 
 
 /* ---------- Adăugare elemente ---------- */
-function addItem(it){const E=E_();it.id=UID++;E.items.push(it);E.sel=new Set([it.id]);touch(true);return it}
+function addItem(it){
+ const E=E_();it.id=UID++;
+ if(it.keep){delete it.keep}
+ else{
+  const vr=((E.vr||0)%4+4)%4;
+  if(vr){
+   /* masa e rotită: contra-rotim elementul nou ca să apară drept pe ecran */
+   it.rot=(360-vr*90)%360;
+   if(it.type==='text')layoutText(it);
+   const b=bbox([it]),f=Math.min(1,E.w*.9/(b[2]-b[0]),E.h*.9/(b[3]-b[1]));
+   if(f<1){
+    it.w*=f;it.h*=f;
+    if(it.type==='text'){it.size=Math.max(.1,+(it.size*f).toFixed(2));layoutText(it)}
+    else if(it.type==='bar')it.tsize=Math.max(.1,+(it.tsize*f).toFixed(2));
+    else if(it.type==='shape')it.sw=Math.max(.05,+((it.sw||.5)*f).toFixed(3));
+   }
+   it.x=(E.w-it.w)/2;it.y=(E.h-it.h)/2;
+  }
+ }
+ E.items.push(it);E.sel=new Set([it.id]);touch(true);return it}
+
 function addText(txt){
  const E=E_();if(!E)return;
  const it={type:'text',text:txt||'Testo',size:Math.max(4,Math.min(24,+(E.h*.18*MM).toFixed(1))),font:'Arial',bold:false,italic:false,color:'#000000',align:'left',auto:true,x:0,y:0,w:10,h:5,rot:0};
@@ -3583,7 +3605,8 @@ function cutRegion(it,pts){
    const id='i'+(UID++);IMGS[id]=ni;
    /* zona originală se umple cu culoarea aleasă */
    (it.er=it.er||[]).push([0,0,0,0,col,[[sx/nw,sy/nh],[(sx+cw)/nw,sy/nh],[(sx+cw)/nw,(sy+ch)/nh],[sx/nw,(sy+ch)/nh]]]);
-   addItem({type:'img',imgId:id,fx:it.fx,fy:it.fy,op:it.op==null?1:it.op,w,h,x:px-w/2,y:py-h/2,rot:it.rot})};
+   addItem({keep:true,type:'img',imgId:id,fx:it.fx,fy:it.fy,op:it.op==null?1:it.op,w,h,x:px-w/2,y:py-h/2,rot:it.rot})};
+
   ni.src=URL.createObjectURL(b)},'image/png')}
 
 async function addPdfFile(file){
@@ -3868,7 +3891,8 @@ async function dsvSave(){
  const E=E_();
  if(!E||!E.items.length||saving)return;
  const items=JSON.parse(JSON.stringify(E.items));
- const snap={tc:TG().code,fr:E.fr||null,ow:E.ow||null,oh:E.oh||null,oci:!!E.oci};
+ const snap={tc:TG().code,fr:E.fr||null,ow:E.ow||null,oh:E.oh||null,oci:!!E.oci,vr:E.vr||0};
+
  const key=JSON.stringify([snap,items]);
  if(key===lastKey)return;
  saving=true;
@@ -3880,7 +3904,7 @@ async function dsvSave(){
     if(b)imgs[it.imgId]=b;
    }
   }
-  const rec={tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,items,imgs};
+  const rec={tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs};
   const db=await idb();
   const tx=db.transaction('h','readwrite');
   tx.objectStore('h').put(rec,'lastdesign');
@@ -3914,8 +3938,11 @@ async function dsvRestore(r){
   const E=E_();
   E.items=r.items;
   if(r.fr){E.fr=r.fr;E.ow=r.ow;E.oh=r.oh;E.oci=r.oci}
+  E.vr=r.vr||0;
   E.hist=[];E.hi=-1;
   touch(true);
+  fitSheets();
+
  }catch(_){openModal('new')}
 }
 
