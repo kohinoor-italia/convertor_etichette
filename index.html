@@ -662,7 +662,32 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 /* Scroll fără bară vizibilă (funcționează în continuare) */
 .side,.eb{scrollbar-width:none;-ms-overflow-style:none}
 .side::-webkit-scrollbar,.eb::-webkit-scrollbar{display:none;width:0;height:0}
+
+/* Buline elemente (între previzualizări) */
+.lyr{flex:none;width:30px;display:none;flex-direction:column;align-items:center;gap:7px;padding-top:44px;overflow-y:auto;scrollbar-width:none}
+.lyr::-webkit-scrollbar{display:none}
+.dsg .lyr{display:flex}
+.dot{position:relative;flex:none;width:24px;height:24px;padding:0;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line2);background:rgba(18,20,38,.92);color:var(--m);transition:.15s var(--ease)}
+.dot .i{width:13px;height:13px;stroke-width:1.9}
+.dot:hover{border-color:var(--a);color:var(--a);transform:scale(1.15)}
+.dot.on{background:var(--grad);color:#1a0f18;border-color:transparent;box-shadow:0 3px 10px rgba(56,189,248,.35)}
+.dot.hid{opacity:.45;border-style:dashed;background:transparent}
+.dot.hid::after{content:"";position:absolute;left:3px;right:3px;top:50%;height:2px;background:var(--bad);border-radius:2px;transform:rotate(-45deg)}
+.dot{touch-action:none;cursor:grab}
+.lyr.drg,.lyr.drg .dot{cursor:grabbing}
+.dot.dragging{opacity:.35;transform:scale(.9)}
+.dot.ins-b::before,.dot.ins-a::before{content:"";position:absolute;left:-3px;right:-3px;height:3px;border-radius:3px;background:var(--a);box-shadow:0 0 8px var(--a)}
+.dot.ins-b::before{top:-5px}
+.dot.ins-a::before{bottom:-5px}
+@media(max-width:1000px){
+ .dot.ins-b::before,.dot.ins-a::before{top:-3px;bottom:-3px;left:auto;right:auto;width:3px;height:auto}
+ .dot.ins-b::before{left:-5px}
+ .dot.ins-a::before{right:-5px}
+}
+
+@media(max-width:1000px){.lyr{width:auto;flex-direction:row;flex-wrap:wrap;justify-content:center;padding:0 0 8px}}
 </style>
+
 
 </head><body>
 
@@ -1071,9 +1096,11 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
      </div>
 
     </div>
+    <div class="lyr" id="lyr"></div>
     <div class="pane">
      <div class="pl">
       <span>Dopo &middot; <b id="l2"></b></span>
+
       <span class="nav">
        <button class="btn sm" id="rotBtnL" type="button" title="Ruota contenuto a sinistra"><svg class="i" style="transform:scaleX(-1)"><use href="#i-rot"/></svg></button>
        <button class="btn sm" id="rotBtn" type="button" title="Ruota contenuto a destra"><svg class="i"><use href="#i-rot"/></svg></button>
@@ -2963,11 +2990,11 @@ function drawBar(x,it){
 function drawItem(x,it){
  if(it.type==='img'){
   const im=IMGS[it.imgId];if(!im)return;
-  x.save();x.globalAlpha=it.op==null?1:it.op;x.scale(it.fx?-1:1,it.fy?-1:1);
+  x.save();x.globalAlpha*=(it.op==null?1:it.op);x.scale(it.fx?-1:1,it.fy?-1:1);
   x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
   x.drawImage(im,-it.w/2,-it.h/2,it.w,it.h);
   if(it.er&&it.er.length){
-   x.save();x.globalAlpha=1;x.beginPath();x.rect(-it.w/2,-it.h/2,it.w,it.h);x.clip();
+   x.save();x.globalAlpha=DIM;x.beginPath();x.rect(-it.w/2,-it.h/2,it.w,it.h);x.clip();
    it.er.forEach(r=>{
     x.fillStyle=r[4]||'#ffffff';
     if(r[5]){
@@ -3002,11 +3029,16 @@ function drawItem(x,it){
   layoutText(it).forEach((l,i)=>x.fillText(l,px/f,(-it.h/2+lh*(i+.5))/f));
   x.restore();
  }else drawBar(x,it)}
-function paintItems(x,k,E){
+let DIM=1;
+function paintItems(x,k,E,dim){
  E.items.forEach(it=>{
+  if(it.hid)return;
   if(it.type==='text')layoutText(it);
-  x.save();x.translate((it.x+it.w/2)*k,(it.y+it.h/2)*k);x.rotate(it.rot*R2D);x.scale(k,k);
-  drawItem(x,it);x.restore()})}
+  DIM=(dim&&E.hov!=null&&E.hov!==it.id)?.18:1;
+  x.save();x.globalAlpha=DIM;x.translate((it.x+it.w/2)*k,(it.y+it.h/2)*k);x.rotate(it.rot*R2D);x.scale(k,k);
+  drawItem(x,it);x.restore()});
+ DIM=1}
+
 
 /* ---------- Sincronizare cu pipeline-ul existent ---------- */
 function sizeCv(){S.cv.width=Math.round(S.design.w*MM*P);S.cv.height=Math.round(S.design.h*MM*P)}
@@ -3135,7 +3167,9 @@ async function designPdf(){
 
  let pend=[];
  for(const it of E.items){
+  if(it.hid)continue;
   if(isVec(it)){
+
    try{await flush(pend);pend=[];await vec(it)}catch(_){pend.push(it)}
   }else pend.push(it)}
  await flush(pend);
@@ -3192,7 +3226,8 @@ const{ed,cv}=E.dom,z=Math.min(8,Math.max(1,ZM.b1.z||1)),dpr=window.devicePixelRa
  const W=Math.min(8192,Math.round(E.w*cw*dpr*z/E.w)),H=Math.min(8192,Math.round(E.h*W/E.w)),kk=W/E.w;
  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
  const x=cv.getContext('2d');x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,W,H);
- paintItems(x,kk,E);
+ paintItems(x,kk,E,true);
+
  ed.style.borderRadius=E.ci?'50%':(E.rad*cw/E.w)+'px';
  ed.style.cursor=(CUTM||DRAWK)?'crosshair':'';
 
@@ -3209,7 +3244,9 @@ function paintSel(){
  const s=sel(E),single=s.length===1;
  E.items.forEach(it=>{
   const b=bbox([it]);
+  if(it.hid)return;
   /* roșu doar dacă elementul e complet în afara etichetei */
+
   if(b[2]>0&&b[3]>0&&b[0]<E.w&&b[1]<E.h)return;
 
   const d=document.createElement('div');
@@ -3253,14 +3290,21 @@ function paintSel(){
 
   d.textContent=single?nf(s[0].w)+' × '+nf(s[0].h)+' mm':nf(b[2]-b[0])+' × '+nf(b[3]-b[1])+' mm';
   d.style.cssText=`left:${(b[0]+b[2])/2*sc}px;top:${b[3]*sc+8/z}px;transform:translateX(-50%) rotate(${-(E.vr||0)*90}deg) scale(${1/z})`;ov.appendChild(d)}
+ {const hv=E.hov!=null&&E.items.find(i=>i.id===E.hov);
+  if(hv&&!hv.hid&&!E.sel.has(hv.id)){
+   const d=document.createElement('div');d.className='ed-sel m';
+   d.style.cssText=`left:${hv.x*sc}px;top:${hv.y*sc}px;width:${hv.w*sc}px;height:${hv.h*sc}px;transform:rotate(${hv.rot}deg);border-width:${1.5/z}px`;
+   ov.appendChild(d)}}
  (E.guides||[]).forEach(([t,p])=>{
+
   const g=document.createElement('div');g.className='ed-guide';
   g.style.cssText=t==='v'?`left:${p*sc}px;top:0;width:${1/z}px;height:100%`:`top:${p*sc}px;left:0;height:${1/z}px;width:100%`;ov.appendChild(g)});
  if(E.mq){const[a,b,c,d]=E.mq,m=document.createElement('div');m.className='ed-mq';
   m.style.cssText=`left:${Math.min(a,c)*sc}px;top:${Math.min(b,d)*sc}px;width:${Math.abs(c-a)*sc}px;height:${Math.abs(d-b)*sc}px`;ov.appendChild(m)}}
 
 function pick(E,mx,my){
- for(let n=E.items.length-1;n>=0;n--){const it=E.items[n],[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);
+ for(let n=E.items.length-1;n>=0;n--){const it=E.items[n];if(it.hid)continue;const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);
+
   if(Math.abs(p[0]-cx)<=it.w/2&&Math.abs(p[1]-cy)<=it.h/2)return it}
  return null}
 function snapMove(E,mv,th){
@@ -3402,7 +3446,7 @@ window.addEventListener('pointermove',e=>{
   E.mq=[d.m0[0],d.m0[1],mx,my];
   const x0=Math.min(d.m0[0],mx),x1=Math.max(d.m0[0],mx),y0=Math.min(d.m0[1],my),y1=Math.max(d.m0[1],my);
   E.sel=new Set(d.base);
-  E.items.forEach(i=>{const b=bbox([i]);if(b[0]<x1&&b[2]>x0&&b[1]<y1&&b[3]>y0)E.sel.add(i.id)});
+  E.items.forEach(i=>{if(i.hid)return;const b=bbox([i]);if(b[0]<x1&&b[2]>x0&&b[1]<y1&&b[3]>y0)E.sel.add(i.id)});
  }
  sched()});
 const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();
@@ -3479,7 +3523,7 @@ document.addEventListener('pointerdown',e=>{
  const E=E_();if(!E||!E.dom||!E.sel.size)return;
  const t=e.target;if(!t||!t.closest)return;
  if(E.dom.ed.contains(t))return;
-if(t.closest('#b1,#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
+if(t.closest('#b1,#lyr,#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))return;
 
 
  E.sel=new Set();paintSel();syncInsp()},true);
@@ -3488,6 +3532,9 @@ if(t.closest('#b1,#edCard,#edBar,.modal-overlay,.dlg-overlay,#edTip,.toast'))ret
 $('b1').addEventListener('pointerdown',e=>{
  const E=E_();
  if(E&&E.onDown)E.onDown(e)});
+/* orice apăsare pe masa de lucru scoate dimmarea (important pe touch) */
+$('b1').addEventListener('pointerdown',()=>{const E=E_();if(E&&E.hov!=null){E.hov=null;paintEd()}},true);
+
 
 
 /* ---------- Adăugare elemente ---------- */
@@ -3837,7 +3884,7 @@ $('vrL').onclick=()=>rotView(-1);$('vrR').onclick=()=>rotView(1);
  const updBoxes=()=>{const E=E_();bar.classList.toggle('off',!(E&&E.sel.size))};
  const updStart=()=>{const E=E_();$('startCard').hidden=!!(E&&!E.items.length)};
  const _si=syncInsp;
- syncInsp=function(){_si();updBoxes();updStart()};
+ syncInsp=function(){_si();updBoxes();updStart();updLyr()};
  const _rn2=render;
  render=function(){
   _rn2();updStart();
@@ -3847,6 +3894,94 @@ $('vrL').onclick=()=>rotView(-1);$('vrR').onclick=()=>rotView(1);
  updBoxes();updStart();
 }
 
+
+/* ---------- Buline elemente ---------- */
+let lyrKey='';
+const DI={
+ text:'<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
+ rect:'<rect x="4" y="4" width="16" height="16" rx="2"/>',
+ ellipse:'<circle cx="12" cy="12" r="8"/>',
+ line:'<path d="M4 20L20 4"/>',
+ img:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/>',
+ bar:'<path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20.5 5v14"/>',
+ qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM17 20h4M20 17v3"/>'};
+const DN={text:'Testo',img:'Immagine',rect:'Quadrato',ellipse:'Cerchio',line:'Linea',qr:'QR Code',ean13:'EAN-13',ean8:'EAN-8',code128:'Code 128',code39:'Code 39'};
+const dotK=it=>it.type==='shape'?it.kind:it.type==='bar'?(it.kind==='qr'?'qr':'bar'):it.type;
+function updLyr(){
+ const el=$('lyr');if(!el)return;
+ const E=E_();
+ if(!E){el.innerHTML='';lyrKey='';return}
+ if(E.hov!=null&&!E.items.some(i=>i.id===E.hov)){E.hov=null;paintEd()}
+ const key=E.items.map(i=>i.id+(i.hid?'h':'')+(E.sel.has(i.id)?'s':'')).join(',');
+ if(key===lyrKey)return;lyrKey=key;
+ el.innerHTML=E.items.map(it=>{
+  const nm=DN[it.type==='img'||it.type==='text'?it.type:it.kind];
+  return `<button type="button" class="dot${E.sel.has(it.id)?' on':''}${it.hid?' hid':''}" data-id="${it.id}" title="${nm}${it.hid?' (ascuns)':''} · click: selectează · click dreapta: ascunde/arată"><svg class="i" viewBox="0 0 24 24">${DI[dotK(it)]||''}</svg></button>`}).join('')}
+{
+ const L=$('lyr');
+ const dotOf=e=>{const b=e.target.closest&&e.target.closest('.dot');return b?+b.dataset.id:null};
+ const setHov=id=>{const E=E_();if(!E||E.hov===id||(id==null&&E.hov==null))return;E.hov=id;paintEd()};
+ L.addEventListener('mouseover',e=>{
+  const id=dotOf(e),E=E_();
+  if(id==null||!E){setHov(null);return}
+  const it=E.items.find(i=>i.id===id);
+  setHov(it&&!it.hid?id:null)});
+ L.addEventListener('mouseleave',()=>setHov(null));
+ L.addEventListener('click',e=>{
+  const id=dotOf(e),E=E_();if(id==null||!E)return;
+  const it=E.items.find(i=>i.id===id);if(!it)return;
+  if(it.hid){toast('Element ascuns · click dreapta pe bulină ca să-l arăți',true);return}
+  E.sel=e.shiftKey?(E.sel.has(id)?new Set([...E.sel].filter(x=>x!==id)):new Set([...E.sel,id])):new Set([id]);
+  paintSel();syncInsp()});
+ L.addEventListener('contextmenu',e=>{
+  const id=dotOf(e),E=E_();if(id==null||!E)return;
+  e.preventDefault();
+  const it=E.items.find(i=>i.id===id);if(!it)return;
+  it.hid=!it.hid;
+  if(it.hid){E.sel.delete(id);if(E.hov===id)E.hov=null}
+  touch(true)});
+
+ /* tragere: repoziționare buline = schimbare strat (sus = fundal, jos = prim-plan) */
+ let dg=null,supClick=false;
+ L.addEventListener('click',e=>{
+  if(supClick){e.stopImmediatePropagation();e.preventDefault()}},true);
+ L.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;
+  const id=dotOf(e);if(id==null)return;
+  dg={id,x:e.clientX,y:e.clientY,on:false,to:null}});
+ window.addEventListener('pointermove',e=>{
+  if(!dg)return;
+  if(!dg.on){
+   if(Math.hypot(e.clientX-dg.x,e.clientY-dg.y)<6)return;
+   dg.on=true;L.classList.add('drg');
+   const b=L.querySelector('.dot[data-id="'+dg.id+'"]');if(b)b.classList.add('dragging');
+   setHov(null)}
+  const row=getComputedStyle(L).flexDirection==='row';
+  const dots=[...L.querySelectorAll('.dot')].filter(b=>+b.dataset.id!==dg.id);
+  let to=dots.length;
+  for(let i=0;i<dots.length;i++){
+   const r=dots[i].getBoundingClientRect(),m=row?r.left+r.width/2:r.top+r.height/2;
+   if((row?e.clientX:e.clientY)<m){to=i;break}}
+  dg.to=to;
+  L.querySelectorAll('.ins-b,.ins-a').forEach(b=>b.classList.remove('ins-b','ins-a'));
+  if(to<dots.length)dots[to].classList.add('ins-b');
+  else if(dots.length)dots[dots.length-1].classList.add('ins-a')});
+ const endDrag=()=>{
+  if(!dg)return;
+  const d=dg;dg=null;
+  L.classList.remove('drg');
+  L.querySelectorAll('.dot').forEach(b=>b.classList.remove('dragging','ins-b','ins-a'));
+  if(!d.on)return;
+  supClick=true;setTimeout(()=>{supClick=false},80);
+  const E=E_();if(!E)return;
+  const it=E.items.find(i=>i.id===d.id);if(!it)return;
+  const rest=E.items.filter(i=>i.id!==d.id);
+  rest.splice(clamp(d.to,0,rest.length),0,it);
+  if(rest.every((v,i)=>v===E.items[i]))return;
+  E.items=rest;touch(true)};
+ window.addEventListener('pointerup',endDrag);
+ window.addEventListener('pointercancel',endDrag);
+}
 
 
 
@@ -3861,7 +3996,8 @@ window.addEventListener('keydown',e=>{
  if(ctrl){
   if(lk==='z')undo(e.shiftKey?1:-1);
   else if(lk==='y')undo(1);
-  else if(lk==='a'){E.sel=new Set(E.items.map(i=>i.id));paintSel();syncInsp()}
+  else if(lk==='a'){E.sel=new Set(E.items.filter(i=>!i.hid).map(i=>i.id));paintSel();syncInsp()}
+
   else if(lk==='d')dupSel();
   else used=false;
  }else if(k==='Delete'||k==='Backspace')delSel();
