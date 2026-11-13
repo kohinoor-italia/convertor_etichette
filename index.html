@@ -850,9 +850,14 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
      <div class="pf"><span>Spess.</span><input class="ein" id="edShW" type="number" step="0.1" min="0.05" title="Spessore contorno (mm)"></div>
      <input class="ein" id="edShC" type="color" title="Colore">
     </div>
-    <label class="tgl" style="width:100%;justify-content:center"><input type="checkbox" id="edShF"><span>Riempita</span></label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+     <label class="tgl" id="edShFL" style="justify-content:center"><input type="checkbox" id="edShF"><span>Riempita</span></label>
+     <label class="tgl" id="edShDL" style="justify-content:center"><input type="checkbox" id="edShD"><span>Tratteggiata</span></label>
+    </div>
+    <div class="pf" id="edShNL" title="Lungimea liniuței (× grosime)"><span>Tratto</span><input class="ein" id="edShN" type="number" step="0.5" min="0.5"></div>
    </div>
   </details>
+
 
   <details class="ed-box" id="gImg" open hidden>
 
@@ -1476,9 +1481,11 @@ async function loadPDF(file){
 /* ---------- Anti-aliasing previzualizare (mipmap: reducere în trepte ÷2) ---------- */
 let AA=true;
 
-function aaCanvas(src,box){
+function aaCanvas(src,box,z){
  const dpr=window.devicePixelRatio||1;
- const tw=Math.round(box.clientWidth*dpr),th=Math.round(box.clientHeight*dpr);
+ z=Math.max(z||1,0.05);
+ const tw=Math.round(box.clientWidth*dpr*z),th=Math.round(box.clientHeight*dpr*z);
+
  if(tw<2||th<2||(tw>=src.width&&th>=src.height))return src;
  if(src._aa&&src._aa.width===tw&&src._aa.height===th)return src._aa;
  let cur=src,cw=src.width,ch=src.height;
@@ -1506,7 +1513,8 @@ function swapQ(b){
  const w=$(b==='b1'?'sh1':'sh2'),cv=w.querySelector(':scope>canvas');
  if(!cv)return;
  const base=cv._hi||cv;
- const nx=(AA&&!aaBusy&&ZM[b].z<=1)?aaCanvas(base,w):base;
+ const nx=(AA&&!aaBusy)?aaCanvas(base,w,ZM[b].z):base;
+
  if(nx!==cv)w.replaceChild(nx,cv)}
 
 function repaintAA(){if(S){swapQ('b1');swapQ('b2')}}
@@ -1527,7 +1535,8 @@ function fitSheets(){
 
 function drawSrc(){
  const d=cur,w=$('sh1');
- w.innerHTML='';w.appendChild(AA&&ZM.b1.z<=1?aaCanvas(S.cv,w):S.cv);
+ w.innerHTML='';w.appendChild(AA&&!aaBusy?aaCanvas(S.cv,w,ZM.b1.z):S.cv);
+
 
  // bordi: un unico tracciato sottile (nessun ispessimento dove si sovrappongono)
  const pth=S.cells.map(p=>cellPath(p[0],p[1],d.W,d.H,d.rad,d.ci)).join('');
@@ -1591,7 +1600,7 @@ drawRot(x,S.cv, s[0]*sxm*P,
   }
  }
 
- const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy&&ZM.b2.z<=1?aaCanvas(c,w):c);
+ const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy?aaCanvas(c,w,ZM.b2.z):c);
 
 
 
@@ -2624,7 +2633,9 @@ function applyZ(b){
  s.style.transformOrigin='50% 50%';
  s.style.transform=(q.z===1&&!q.x&&!q.y)?'':'translate('+q.x+'px,'+q.y+'px) scale('+q.z+')';
  $(b).classList.toggle('zm',q.z>1);
+ aaDefer();
  swapQ(b)}
+
 
 
 function resetZ(){['b1','b2'].forEach(b=>{ZM[b].z=1;ZM[b].x=0;ZM[b].y=0;applyZ(b)})}
@@ -2786,7 +2797,7 @@ function drawRes(){
   }
  }
 
- const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy&&ZM.b2.z<=1?aaCanvas(c,w):c);
+ const w=$('sh2');w.innerHTML='';w.appendChild(AA&&!aaBusy?aaCanvas(c,w,ZM.b2.z):c);
 
  let pAct='',pExc='',pEmp='';
  T.forEach((p,j)=>{
@@ -2983,7 +2994,7 @@ setTimeout(lastRestore,0);
 
 (()=>{
 const R2D=Math.PI/180,MARK='[[SLS-ELEMENTS]]';
-const IMGS={};let UID=1,CLIP=null,PN=0,DR=null,cT=0,sT=0,rq=0;
+const IMGS={},PDFS={};let NEXTPDF=null,UID=1,CLIP=null,PN=0,DR=null,cT=0,sT=0,rq=0;
 const MC=document.createElement('canvas').getContext('2d');
 const E_=()=>(S&&S.design)||null;
 const sel=E=>E.items.filter(i=>E.sel.has(i.id));
@@ -3001,6 +3012,12 @@ const mmOf=(E,e)=>{const[u,v]=uvOf(E,e);return[u*E.w,v*E.h]};
 const loc=(it,mx,my)=>{const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);let u=(p[0]-(cx-it.w/2))/it.w,v=(p[1]-(cy-it.h/2))/it.h;if(it.fx)u=1-u;if(it.fy)v=1-v;return[u,v]};
 
 let ERM=false,CUTM=false;
+let DRAWK=null; // 'rect' | 'ellipse' | 'line' cât timp ești în modul desen
+function setDraw(k){
+ DRAWK=k;
+ if(k)toast(k==='line'?'Apasă și trage. Linia se îndreaptă singură (Alt = liber)':'Apasă și trage pentru a desena (Shift = proporțional)',true);
+ paintEd()}
+
 
 let ERP=false,ERPold='#ffffff';
 function setER(v){ERM=!!v;if(ERM&&CUTM)setCUT(false);if(!ERM&&ERP)setERP(false);const b=$('edEr');if(b)b.classList.toggle('on',ERM);paintEd()}
@@ -3151,12 +3168,16 @@ function drawItem(x,it){
   x.restore();
 
  }else if(it.type==='shape'){
-  const sw=Math.max(.05,it.sw||.5),hw=it.w/2,hh=it.h/2,k=it.fill?0:sw/2;
+  const ln=it.kind==='line',fl=it.fill&&!ln;
+  const sw=Math.max(.05,it.sw||.5),hw=it.w/2,hh=it.h/2,k=fl||ln?0:sw/2;
   x.save();x.fillStyle=it.color;x.strokeStyle=it.color;x.lineWidth=sw;x.beginPath();
-  if(it.kind==='ellipse')x.ellipse(0,0,Math.max(.01,hw-k),Math.max(.01,hh-k),0,0,Math.PI*2);
+  if(it.dash&&!fl){const d=sw*Math.max(.5,it.dl||4);x.setLineDash([d,d*.6])}
+  if(ln){x.moveTo(-hw,0);x.lineTo(hw,0)}
+  else if(it.kind==='ellipse')x.ellipse(0,0,Math.max(.01,hw-k),Math.max(.01,hh-k),0,0,Math.PI*2);
   else x.rect(-hw+k,-hh+k,Math.max(.01,it.w-2*k),Math.max(.01,it.h-2*k));
-  if(it.fill)x.fill();else x.stroke();
+  if(fl)x.fill();else x.stroke();
   x.restore();
+
  }else if(it.type==='text'){
   const fm=it.size/MM,f=fm/100,lh=fm*1.2;
 
@@ -3249,14 +3270,62 @@ window.setDesignFmt=function(t){
 
 /* ---------- PDF (raster 600 dpi) ---------- */
 async function designPdf(){
- const E=S.design,{PDFDocument}=PDFLib,k=Math.min(600/25.4,8000/Math.max(E.w,E.h));
- const c=document.createElement('canvas');c.width=Math.round(E.w*k);c.height=Math.round(E.h*k);
- const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);paintItems(x,c.width/E.w,E);
- const blob=await new Promise(r=>c.toBlob(r,'image/png'));
- const doc=await PDFDocument.create(),pg=doc.addPage([E.w*MM,E.h*MM]);
- const im=await doc.embedPng(new Uint8Array(await blob.arrayBuffer()));
- pg.drawImage(im,{x:0,y:0,width:E.w*MM,height:E.h*MM});
+ const E=S.design,L=PDFLib,{PDFDocument}=L,k=Math.min(600/25.4,8000/Math.max(E.w,E.h));
+ const doc=await PDFDocument.create(),Wp=E.w*MM,Hp=E.h*MM,pg=doc.addPage([Wp,Hp]);
+ pg.drawRectangle({x:0,y:0,width:Wp,height:Hp,color:L.rgb(1,1,1)});
+ const isVec=it=>it.type==='img'&&it.pdf&&PDFS[it.pdf.id]&&(it.op==null||it.op>=.999);
+ const srcs={},embs={};
+ /* elemente raster (text, barcode, imagini) = strat PNG transparent 600 dpi */
+ const flush=async list=>{
+  if(!list.length)return;
+  const c=document.createElement('canvas');c.width=Math.round(E.w*k);c.height=Math.round(E.h*k);
+  paintItems(c.getContext('2d'),c.width/E.w,{items:list});
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  const im=await doc.embedPng(new Uint8Array(await blob.arrayBuffer()));
+  pg.drawImage(im,{x:0,y:0,width:Wp,height:Hp})};
+ /* PDF = vector pur, cu poziție/rotație/oglindire */
+ const vec=async it=>{
+  const p=it.pdf,R=p.rot||0;
+  if(!srcs[p.id])srcs[p.id]=await PDFDocument.load(PDFS[p.id],{ignoreEncryption:true});
+  /* caseta in spatiul paginii nerotite */
+  let bl=p.l,bb=p.b,br=p.r,bt=p.t;
+  if(R){
+   const Wu=p.Wu,Hu=p.Hu;
+   const m1=(xd,yd)=>R===90?[Wu-yd,xd]:R===180?[Wu-xd,Hu-yd]:[yd,Hu-xd];
+   const a=m1(p.l,p.b),c2=m1(p.r,p.t);
+   bl=Math.min(a[0],c2[0])+p.ox;br=Math.max(a[0],c2[0])+p.ox;
+   bb=Math.min(a[1],c2[1])+p.oy;bt=Math.max(a[1],c2[1])+p.oy;
+  }
+  const key=[p.id,bl,bb,br,bt].join('|');
+  if(!embs[key])embs[key]=await doc.embedPage(srcs[p.id].getPage(0),{left:bl,bottom:bb,right:br,top:bt});
+  const wp=it.w*MM,hp=it.h*MM,th=it.rot*R2D,c=Math.cos(th),s=Math.sin(th),sx=it.fx?-1:1,sy=it.fy?-1:1,[cx,cy]=ctr(it);
+  const m=[c*sx,-s*sx,s*sy,c*sy,MM*cx-c*sx*wp/2-s*sy*hp/2,Hp-MM*cy+s*sx*wp/2-c*sy*hp/2];
+  pg.pushOperators(L.pushGraphicsState(),L.concatTransformationMatrix(...m),
+   L.moveTo(0,0),L.lineTo(wp,0),L.lineTo(wp,hp),L.lineTo(0,hp),L.closePath(),L.clip(),L.endPath());
+  if(R){
+   const dw=R===180?wp:hp,dh=R===180?hp:wp;
+   const M=R===90?[0,-1,1,0,0,hp]:R===180?[-1,0,0,-1,wp,hp]:[0,1,-1,0,wp,0];
+   pg.pushOperators(L.pushGraphicsState(),L.concatTransformationMatrix(...M));
+   pg.drawPage(embs[key],{x:0,y:0,width:dw,height:dh});
+   pg.pushOperators(L.popGraphicsState());
+  }else pg.drawPage(embs[key],{x:0,y:0,width:wp,height:hp});
+  (it.er||[]).forEach(r=>{
+   const q=r[5];if(!q||q.length<3)return;
+   const h=String(r[4]||'#ffffff').replace('#',''),cl=L.rgb(parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255);
+   const ops=[L.setFillingColor(cl)];
+   q.forEach((a,i)=>{const X=a[0]*wp,Y=(1-a[1])*hp;ops.push(i?L.lineTo(X,Y):L.moveTo(X,Y))});
+   ops.push(L.closePath(),L.fill());
+   pg.pushOperators(...ops)});
+  pg.pushOperators(L.popGraphicsState())};
+
+ let pend=[];
+ for(const it of E.items){
+  if(isVec(it)){
+   try{await flush(pend);pend=[];await vec(it)}catch(_){pend.push(it)}
+  }else pend.push(it)}
+ await flush(pend);
  return new Uint8Array(await doc.save())}
+
 const _br=buildResult;
 buildResult=async function(){if(S&&S.design)S.bytes=await designPdf();return _br()};
 
@@ -3302,14 +3371,16 @@ function paintEd(){
 
  const E=E_();if(!E||!E.dom||!E.dom.ed.isConnected)return;
  viewFit(E);
- const{ed,cv}=E.dom,z=Math.min(4,Math.max(1,ZM.b1.z||1)),dpr=window.devicePixelRatio||1,cw=ed.clientWidth||300;
+const{ed,cv}=E.dom,z=Math.min(8,Math.max(1,ZM.b1.z||1)),dpr=window.devicePixelRatio||1,cw=ed.clientWidth||300;
+
 
  const W=Math.min(8192,Math.round(E.w*cw*dpr*z/E.w)),H=Math.min(8192,Math.round(E.h*W/E.w)),kk=W/E.w;
  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
  const x=cv.getContext('2d');x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,W,H);
  paintItems(x,kk,E);
  ed.style.borderRadius=E.ci?'50%':(E.rad*cw/E.w)+'px';
- ed.style.cursor=(ERM||ERP||CUTM)?'crosshair':'';
+ ed.style.cursor=(ERM||ERP||CUTM||DRAWK)?'crosshair':'';
+
 
 
  paintSel()}
@@ -3496,7 +3567,31 @@ window.addEventListener('pointermove',e=>{
    d.r=true;d.moved=true}
   E.mq=[d.a[0],d.a[1],mx,my];
   d.pts=[[d.a[0],d.a[1]],[mx,d.a[1]],[mx,my],[d.a[0],my]].map(p=>loc(d.it,p[0],p[1]));
+ }else if(d.k==='draw'){
+  let bx=mx,by=my,dx=bx-d.a[0],dy=by-d.a[1];
+  if(!d.it){
+   if(Math.hypot(dx,dy)*sc*z<4)return;
+   d.it={type:'shape',kind:d.kind,fill:false,dash:false,dl:4,color:'#000000',sw:.5,w:1,h:1,x:0,y:0,rot:0,id:UID++};
+   E.items.push(d.it);E.sel=new Set([d.it.id])}
+  const it=d.it;E.guides=[];
+  if(d.kind==='line'){
+   const TH=6; // grade de toleranță pentru îndreptare
+   const ang=Math.atan2(dy,dx)/R2D,m=((ang%180)+180)%180;
+   if(!e.altKey){
+    if(m<TH||m>180-TH){by=d.a[1];E.guides=[['h',d.a[1]]]}
+    else if(Math.abs(m-90)<TH){bx=d.a[0];E.guides=[['v',d.a[0]]]}}
+   dx=bx-d.a[0];dy=by-d.a[1];
+   it.w=Math.max(.2,Math.hypot(dx,dy));it.h=3;
+   it.rot=+((((Math.atan2(dy,dx)/R2D)%180)+180)%180).toFixed(2);
+   const cx=(d.a[0]+bx)/2,cy=(d.a[1]+by)/2;
+   it.x=cx-it.w/2;it.y=cy-it.h/2;
+  }else{
+   if(e.shiftKey){const s=Math.max(Math.abs(dx),Math.abs(dy));bx=d.a[0]+(dx<0?-s:s);by=d.a[1]+(dy<0?-s:s)}
+   it.x=Math.min(d.a[0],bx);it.y=Math.min(d.a[1],by);
+   it.w=Math.max(.2,Math.abs(bx-d.a[0]));it.h=Math.max(.2,Math.abs(by-d.a[1]));
+  }
  }else if(d.k==='mq'){
+
 
 
   E.mq=[d.m0[0],d.m0[1],mx,my];
@@ -3506,7 +3601,9 @@ window.addEventListener('pointermove',e=>{
  }
  sched()});
 const up=()=>{if(!DR)return;const E=E_(),d=DR;DR=null;if(!E)return;E.guides=[];E.mq=null;paintEd();syncInsp();
+ if(d.k==='draw'){if(d.it){setDraw(null);touch(true)}return}
  if(d.k==='cut'){if(d.r&&d.pts){setCUT(false);cutRegion(d.it,d.pts)}return}
+
  if(d.moved)touch(true)};
 
 window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
@@ -3590,7 +3687,7 @@ $('b1').addEventListener('pointerdown',e=>{
 
 /* ---------- Adăugare elemente ---------- */
 function addItem(it){
- const E=E_();it.id=UID++;
+ const E=E_();it.id=UID++;if(NEXTPDF&&it.type==='img')it.pdf=NEXTPDF;NEXTPDF=null;
  if(it.keep){delete it.keep}
  else{
   const vr=((E.vr||0)%4+4)%4;
@@ -3654,7 +3751,14 @@ function cutRegion(it,pts){
  const uc=(sx+cw/2)/nw,vc=(sy+ch/2)/nh,[cx,cy]=ctr(it);
  const du=((it.fx?1-uc:uc)-.5)*it.w,dv=((it.fy?1-vc:vc)-.5)*it.h;
  const[px,py]=rp(cx+du,cy+dv,cx,cy,it.rot);
- const w=cw/nw*it.w,h=ch/nh*it.h,col=$('edErC').value;
+const w=cw/nw*it.w,h=ch/nh*it.h,col=$('edErC').value;
+ let cpdf=null;
+ if(it.pdf){const p=it.pdf,pw=p.r-p.l,ph=p.t-p.b;
+  cpdf={...p,l:p.l+sx/nw*pw,r:p.l+(sx+cw)/nw*pw,t:p.t-sy/nh*ph,b:p.t-(sy+ch)/nh*ph}}
+
+ const cer=(it.er||[]).map(r=>{const q=r[5]||[[r[0],r[1]],[r[2],r[1]],[r[2],r[3]],[r[0],r[3]]];
+  return[0,0,0,0,r[4]||'#ffffff',q.map(p=>[(p[0]*nw-sx)/cw,(p[1]*nh-sy)/ch])]});
+
  c.toBlob(b=>{
   if(!b)return;
   const ni=new Image();
@@ -3663,7 +3767,7 @@ function cutRegion(it,pts){
    const id='i'+(UID++);IMGS[id]=ni;
    /* zona originală se umple cu culoarea aleasă */
    (it.er=it.er||[]).push([0,0,0,0,col,[[sx/nw,sy/nh],[(sx+cw)/nw,sy/nh],[(sx+cw)/nw,(sy+ch)/nh],[sx/nw,(sy+ch)/nh]]]);
-   addItem({keep:true,type:'img',imgId:id,fx:it.fx,fy:it.fy,op:it.op==null?1:it.op,w,h,x:px-w/2,y:py-h/2,rot:it.rot})};
+   addItem({keep:true,type:'img',imgId:id,fx:it.fx,fy:it.fy,op:it.op==null?1:it.op,w,h,x:px-w/2,y:py-h/2,rot:it.rot,pdf:cpdf,er:cer})};
 
   ni.src=URL.createObjectURL(b)},'image/png')}
 
@@ -3671,15 +3775,15 @@ async function addPdfFile(file){
  if(!window.pdfjsLib){toast('La libreria pdf.js non è stata caricata.');return}
  try{
   const bytes=new Uint8Array(await file.arrayBuffer());
-  const doc=await pdfjsLib.getDocument({data:bytes}).promise;
+  const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
   const pg=await doc.getPage(1),v1=pg.getViewport({scale:1});
   const k=clamp(CAN_MAX/Math.max(v1.width,v1.height),2,8),vp=pg.getViewport({scale:k});
   const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
   const ctx=cv.getContext('2d',{willReadFrequently:true});
   ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
   await pg.render({canvasContext:ctx,viewport:vp}).promise;
-  /* dacă formatul e recunoscut: se ia prima etichetă cu conținut */
-  let src=cv;
+  /* daca formatul e recunoscut: se ia prima eticheta cu continut */
+  let src=cv,box={x:0,y:0,w:cv.width,h:cv.height};
   const code=detect(file.name),fc=code?refine(code,v1.width,v1.height):null,d=fc&&D.find(x=>x.code===fc);
   if(d&&Math.abs(d.SW*MM-v1.width)<6&&Math.abs(d.SH*MM-v1.height)<6){
    const kx=cv.width/d.SW,ky=cv.height/d.SH;
@@ -3688,20 +3792,36 @@ async function addPdfFile(file){
     if(w<2||h<2)continue;
     const px=ctx.getImageData(x,y,w,h).data;let n=0;
     for(let p=0;p<px.length;p+=16){if(px[p]<160&&++n>6)break}
-    if(n>6){const c2=document.createElement('canvas');c2.width=w;c2.height=h;c2.getContext('2d').drawImage(cv,x,y,w,h,0,0,w,h);src=c2;break}
+    if(n>6){const c2=document.createElement('canvas');c2.width=w;c2.height=h;c2.getContext('2d').drawImage(cv,x,y,w,h,0,0,w,h);src=c2;box={x,y,w,h};break}
    }
   }
+  let pm=null;
+  if(window.PDFLib){try{
+   const R=(((pg.rotate||0)%360)+360)%360;
+   const sd=await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true}),bx=sd.getPage(0).getCropBox();
+   const id='p'+(UID++);
+   PDFS[id]=bytes;
+   if(!R){
+    const l=bx.x+box.x/k,t=bx.y+bx.height-box.y/k;
+    pm={id,l,r:Math.min(bx.x+bx.width,l+box.w/k),t,b:Math.max(bx.y,t-box.h/k)};
+   }else{
+    /* pagina rotita: coordonate in spatiul afisat (rotit); la export se convertesc in cele nerotite */
+    const Wd=v1.width,Hd=v1.height,l=box.x/k,t=Hd-box.y/k;
+    pm={id,rot:R,Wu:bx.width,Hu:bx.height,ox:bx.x,oy:bx.y,l,r:Math.min(Wd,l+box.w/k),t,b:Math.max(0,t-box.h/k)};
+   }
+  }catch(_){}}
   src.toBlob(b=>{
    if(!b)return;
    const im=new Image();
    im.onload=()=>{
     const E=E_();if(!E)return;
     const id='i'+(UID++);IMGS[id]=im;
-    let w=E.w,h=w*im.naturalHeight/im.naturalWidth;
+    let w=E.w,h=w*im.naturalHeight/im.naturalWidth;NEXTPDF=pm;
     if(h>E.h){h=E.h;w=h*im.naturalWidth/im.naturalHeight}
     addItem({type:'img',imgId:id,fx:false,fy:false,op:1,w,h,x:(E.w-w)/2,y:(E.h-h)/2,rot:0})};
    im.src=URL.createObjectURL(b)},'image/png');
  }catch(e){toast('Impossibile leggere il PDF: '+(e.message||e))}}
+
 
 function delSel(){const E=E_();if(!E||!E.sel.size)return;E.items=E.items.filter(i=>!E.sel.has(i.id));E.sel=new Set();touch(true)}
 
@@ -3769,7 +3889,12 @@ $('edInfo').textContent=s.length?(s.length+(s.length>1?' elementi selezionati':'
  $('edH').readOnly=it.type==='text';
  if(it.type==='text'){setv('edTxt',it.text);setv('edSz',it.size);setv('edFont',it.font);setv('edCol',it.color);setv('edTb',it.bold);setv('edTi',it.italic)}
  else if(it.type==='bar'){setv('edBv',it.value);setv('edBk',it.kind);setv('edBs',it.tsize);setv('edBc',it.color);setv('edBt',it.showText);setv('edBb',it.tbold);setv('edBg',it.bg)}
- else if(it.type==='shape'){setv('edShW',it.sw||.5);setv('edShC',it.color);setv('edShF',it.fill);$('edShW').disabled=!!it.fill}
+ else if(it.type==='shape'){
+  const ln=it.kind==='line',fl=!!it.fill&&!ln;
+  setv('edShW',it.sw||.5);setv('edShC',it.color);setv('edShF',it.fill);setv('edShD',it.dash);setv('edShN',it.dl||4);
+  $('edShFL').style.display=ln?'none':'';
+  $('edShW').disabled=fl;$('edShD').disabled=fl;$('edShN').disabled=fl||!it.dash}
+
  else setv('edOp',it.op==null?1:it.op)}
 
 const B=(id,fn,ev)=>$(id).addEventListener(ev||'input',e=>{const it=one();if(!it)return;fn(it,e.target);touch(false)});
@@ -3796,6 +3921,9 @@ B('edOp',(it,el)=>it.op=num(el.value,1));
 B('edShW',(it,el)=>it.sw=Math.max(.05,num(el.value,it.sw||.5)));
 B('edShC',(it,el)=>it.color=el.value);
 B('edShF',(it,el)=>it.fill=el.checked,'change');
+B('edShD',(it,el)=>it.dash=el.checked,'change');
+B('edShN',(it,el)=>it.dl=Math.max(.5,num(el.value,it.dl||4)));
+
 
 $('edAuto').onclick=()=>{const it=one();if(it&&it.type==='text'){it.auto=true;touch(true)}};
 document.querySelectorAll('#edBar [data-al]').forEach(b=>b.onclick=()=>align(b.dataset.al));
@@ -3820,7 +3948,9 @@ window.edAddPdf=addPdfFile;
 function addShape(kind,fill){
  const E=E_();if(!E)return;
  const s=Math.min(E.w,E.h)*.5;
- addItem({type:'shape',kind,fill,color:'#000000',sw:.5,w:s,h:s,x:(E.w-s)/2,y:(E.h-s)/2,rot:0})}
+ if(kind==='line'){const w=E.w*.8,h=3;addItem({type:'shape',kind:'line',fill:false,dash:false,dl:4,color:'#000000',sw:.5,w,h,x:(E.w-w)/2,y:(E.h-h)/2,rot:0});return}
+ addItem({type:'shape',kind,fill,dash:false,dl:4,color:'#000000',sw:.5,w:s,h:s,x:(E.w-s)/2,y:(E.h-s)/2,rot:0})}
+
 function mkMenu(btnId,items){
  const m=document.createElement('div');
  m.style.cssText='position:fixed;z-index:140;display:none;flex-direction:column;gap:2px;padding:5px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
@@ -3833,8 +3963,20 @@ mkMenu('edAddI',[
  ['PDF dal computer',()=>$('edPdf').click()],
  ['PDF dalla libreria',()=>{if(LIB.length)openPdfModal('');else $('edPdf').click()}]]);
 mkMenu('edAddP',[
- ['Quadrato',()=>addShape('rect',false)],
- ['Cerchio',()=>addShape('ellipse',false)]]);
+ ['Quadrato',()=>setDraw('rect')],
+ ['Cerchio',()=>setDraw('ellipse')],
+ ['Linea',()=>setDraw('line')]]);
+
+/* începe desenul: apasă, trage, dă drumul */
+document.addEventListener('pointerdown',e=>{
+ if(!DRAWK||e.button!==0)return;
+ const E=E_();if(!E||!E.dom)return;
+ if(!e.target.closest||!e.target.closest('#b1'))return;
+ e.stopPropagation();e.preventDefault();
+ const[mx,my]=mmOf(E,e);
+ DR={k:'draw',kind:DRAWK,a:[mx,my],it:null}},true);
+
+
 
 
 
@@ -3951,7 +4093,8 @@ window.addEventListener('keydown',e=>{
   else if(lk==='d')dupSel();
   else used=false;
  }else if(k==='Delete'||k==='Backspace')delSel();
- else if(k==='Escape'){E.sel=new Set();paintSel();syncInsp()}
+ else if(k==='Escape'){if(DRAWK)setDraw(null);else{E.sel=new Set();paintSel();syncInsp()}}
+
  else if(k.startsWith('Arrow')){
   const st=e.shiftKey?1:.1,s=sel(E);
   s.forEach(i=>{if(k==='ArrowLeft')i.x-=st;if(k==='ArrowRight')i.x+=st;if(k==='ArrowUp')i.y-=st;if(k==='ArrowDown')i.y+=st});
@@ -4018,7 +4161,9 @@ async function dsvSave(){
     if(b)imgs[it.imgId]=b;
    }
   }
-  const rec={tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs};
+const pdfs={};items.forEach(it=>{if(it.pdf&&PDFS[it.pdf.id])pdfs[it.pdf.id]=PDFS[it.pdf.id]});
+  const rec={tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs,pdfs};
+
   const db=await idb();
   const tx=db.transaction('h','readwrite');
   tx.objectStore('h').put(rec,'lastdesign');
@@ -4040,9 +4185,12 @@ async function dsvRestore(r){
     im.src=URL.createObjectURL(r.imgs[id]);
    });
   }
+  for(const id in (r.pdfs||{}))PDFS[id]=r.pdfs[id];
   let mx=0;
   r.items.forEach(it=>{
    mx=Math.max(mx,it.id||0);
+   if(it.pdf)mx=Math.max(mx,parseInt(String(it.pdf.id).slice(1))||0);
+
    if(it.imgId)mx=Math.max(mx,parseInt(String(it.imgId).slice(1))||0);
   });
   UID=Math.max(UID,mx+1);
