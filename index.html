@@ -3613,7 +3613,10 @@ function addItem(it){
 function addText(txt){
  const E=E_();if(!E)return;
  const it={type:'text',text:txt||'Testo',size:Math.max(4,Math.min(24,+(E.h*.18*MM).toFixed(1))),font:'Arial',bold:false,italic:false,color:'#000000',align:'left',auto:true,x:0,y:0,w:10,h:5,rot:0};
- layoutText(it);it.x=(E.w-it.w)/2;it.y=(E.h-it.h)/2;addItem(it)}
+layoutText(it);
+ {let g=0;while((it.w>E.w||it.h>E.h)&&it.size>1&&g++<60){it.auto=false;it.w=E.w;layoutText(it);if(it.w>E.w||it.h>E.h)it.size=+(it.size*.92).toFixed(2)}}
+ it.x=(E.w-it.w)/2;it.y=(E.h-it.h)/2;addItem(it)}
+
 function addBar(kind){
  const E=E_();if(!E)return;
  const qr=kind==='qr',w=qr?Math.min(E.w,E.h)*.9:Math.min(E.w*.9,37.3);
@@ -3775,7 +3778,8 @@ B('edY',(it,el)=>it.y=num(el.value,it.y));
 B('edW',(it,el)=>{const w=Math.max(.1,num(el.value,it.w)),r=it.h/it.w;if(it.type==='text'){it.auto=false;it.w=w}else{it.w=w;if(it.type==='img'&&$('edLock').checked)it.h=w*r}});
 B('edH',(it,el)=>{if(it.type==='text')return;const h=Math.max(.1,num(el.value,it.h)),r=it.w/it.h;it.h=h;if(it.type==='img'&&$('edLock').checked)it.w=h*r});
 B('edR',(it,el)=>it.rot=num(el.value,it.rot));
-B('edTxt',(it,el)=>it.text=el.value);
+B('edTxt',(it,el)=>{it.text=el.value;const E=E_();if(E&&it.auto){layoutText(it);if(it.w>E.w){it.auto=false;it.w=E.w}}});
+
 B('edSz',(it,el)=>it.size=Math.max(.1,num(el.value,it.size)));
 B('edFont',(it,el)=>it.font=el.value,'change');
 B('edCol',(it,el)=>it.color=el.value);
