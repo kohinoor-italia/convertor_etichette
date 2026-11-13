@@ -1362,8 +1362,11 @@ function isEmpty(i){
  for(let p=0;p<im.length;p+=16){if(im[p]<160){if(++k>6)return false}}
  return true}
 
-const SAFE_DEF=8; // zona neimprimabilă (mm), valabilă pentru toate formatele
-const SAFE={}; // excepții pe format, ex: {C531:6} sau {A460:0} ca să dezactivezi fixul
+const SAFE_DEF=8;   // sus/jos (mm)
+const SAFE_X_DEF=8; // stânga/dreapta (mm), pune aici 7 dacă vrei 7 mm
+const SAFE={};      // excepții sus/jos pe format, ex: {C531:6}
+const SAFE_X={};    // excepții stânga/dreapta pe format, ex: {A460:0}
+
 
 const GAP=2; // spațiu liber (mm) între conținutul micșorat și marginea etichetei
 
@@ -1385,8 +1388,9 @@ function inkBox(i){
  }
  S.ink[i]=r;return r}
 function geo(i,p,fb){
- const t=TG(),d=cur,m=SAFE[t.code]??SAFE_DEF;
- if(!m||i==null)return null;
+ const t=TG(),d=cur,m=SAFE[t.code]??SAFE_DEF,mx=SAFE_X[t.code]??SAFE_X_DEF;
+ if((!m&&!mx)||i==null)return null;
+
  const ik=inkBox(i);if(!ik)return null;
  const u0=ik[0]/d.W,v0=ik[1]/d.H,u1=ik[2]/d.W,v1=ik[3]/d.H;
  let a0,b0,a1,b1;
@@ -1395,18 +1399,22 @@ function geo(i,p,fb){
  else if(rot===2)[a0,b0,a1,b1]=[1-u1,1-v1,1-u0,1-v0];
  else [a0,b0,a1,b1]=[v0,1-u1,v1,1-u0];
  const X=p[0]+fb.x,Y=p[1]+fb.y,W=fb.w,H=fb.h;
- return{m,t,a0,b0,a1,b1,X,Y,W,H,ix0:X+a0*W,iy0:Y+b0*H,ix1:X+a1*W,iy1:Y+b1*H}}
+ return{m,mx,t,a0,b0,a1,b1,X,Y,W,H,ix0:X+a0*W,iy0:Y+b0*H,ix1:X+a1*W,iy1:Y+b1*H}}
+
 
 function needK(g,p){
- const t=g.t,m=g.m,tol=0.5,e=GAP;
- const cx0=Math.max(p[0],m),cy0=Math.max(p[1],m),cx1=Math.min(p[0]+t.W,t.SW-m),cy1=Math.min(p[1]+t.H,t.SH-m);
+ const t=g.t,m=g.m,mx=g.mx,tol=0.5,e=GAP;
+ const cx0=Math.max(p[0],mx),cy0=Math.max(p[1],m),cx1=Math.min(p[0]+t.W,t.SW-mx),cy1=Math.min(p[1]+t.H,t.SH-m);
+
  if(g.ix0>=cx0-tol&&g.iy0>=cy0-tol&&g.ix1<=cx1+tol&&g.iy1<=cy1+tol)return 1;
- const gx0=Math.max(p[0]+e,m),gy0=Math.max(p[1]+e,m),gx1=Math.min(p[0]+t.W-e,t.SW-m),gy1=Math.min(p[1]+t.H-e,t.SH-m);
+ const gx0=Math.max(p[0]+e,mx),gy0=Math.max(p[1]+e,m),gx1=Math.min(p[0]+t.W-e,t.SW-mx),gy1=Math.min(p[1]+t.H-e,t.SH-m);
  return Math.min(1,(gx1-gx0)/(g.ix1-g.ix0),(gy1-gy0)/(g.iy1-g.iy0))}
 
+
 function uniK(fb){
- const t=TG(),o=off(),m=SAFE[t.code]??SAFE_DEF;
- const key=[t.code,rot,o[0],o[1],mval(),m,GAP,cur.code].join('|');
+ const t=TG(),o=off(),m=SAFE[t.code]??SAFE_DEF,mx=SAFE_X[t.code]??SAFE_X_DEF;
+ const key=[t.code,rot,o[0],o[1],mval(),m,mx,GAP,cur.code].join('|');
+
  if(S.kgKey===key)return S.kgVal;
  const T=cells(t,o[0],o[1]);let k=1;
  for(let i=0;i<S.cells.length;i++){
@@ -1421,8 +1429,8 @@ function place(i,p,fb){
  if(needK(g,p)>=0.9999)return base;
  const kg=uniK(fb);
  if(kg>=0.9999)return base;
- const t=g.t,m=g.m,e=GAP;
- const gx0=Math.max(p[0]+e,m),gy0=Math.max(p[1]+e,m),gx1=Math.min(p[0]+t.W-e,t.SW-m),gy1=Math.min(p[1]+t.H-e,t.SH-m);
+ const t=g.t,m=g.m,mx=g.mx,e=GAP;
+ const gx0=Math.max(p[0]+e,mx),gy0=Math.max(p[1]+e,m),gx1=Math.min(p[0]+t.W-e,t.SW-mx),gy1=Math.min(p[1]+t.H-e,t.SH-m);
  const nw=(g.ix1-g.ix0)*kg,nh=(g.iy1-g.iy0)*kg;
  const nx=clamp((g.ix0+g.ix1)/2-nw/2,gx0,gx1-nw),ny=clamp((g.iy0+g.iy1)/2-nh/2,gy0,gy1-nh);
  return{x:nx-g.a0*g.W*kg,y:ny-g.b0*g.H*kg,w:g.W*kg,h:g.H*kg}}
