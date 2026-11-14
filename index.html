@@ -898,11 +898,8 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
     <div class="er-grp">
      <div class="ed-cap" style="margin:0 0 1px 2px">Muovi una parte</div>
      <button class="tgl btn-like er-b er-main" id="edCut" type="button" title="Trascina sull'immagine: la zona diventa un elemento mobile"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>Taglia zona (sposta)</span></button>
-     <div class="er-r2">
-      <input class="ein" id="edErC" type="color" value="#ffffff" title="Colore di riempimento del punto originale">
-      <small class="er-hint" style="align-self:center;text-align:left">colore con cui si riempie il punto originale</small>
-     </div>
-     <small class="er-hint">Trascina su una zona: diventa un elemento separato da spostare o eliminare.</small>
+     <small class="er-hint">Trascina su una zona: diventa un elemento separato da spostare o eliminare. Il punto originale si riempie in automatico con i colori dei bordi.</small>
+
     </div>
 
 
@@ -1059,11 +1056,11 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
      <button class="btn pri" type="button" id="btnFolder2"><svg class="i"><use href="#i-folder"/></svg>Carica cartella</button>
     </div>
     <button class="btn sm" type="button" id="btnExc2" hidden style="margin-top:14px"><svg class="i"><use href="#i-folder"/></svg>Cartelle escluse</button>
-    <div class="steps"><span>1 · Carica</span>
-
+    <div class="steps"><span>1 · Carica</span><span>2 · Configura</span><span>3 · Esporta</span><span>4 · Stampa</span></div>
    </div>
   </div>
  </div>
+
 
  <div id="stbar" class="pv" hidden>
   <div class="panes-wrapper">
@@ -2762,7 +2759,8 @@ document.addEventListener('keydown',e=>{
  if(tg==='TEXTAREA'||tg==='SELECT'||(a&&a.isContentEditable))return;
  if(isSpace&&tg==='INPUT')return;
  if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
- if(modal.classList.contains('open')||pdfModal.classList.contains('open')||clrDlg.classList.contains('open'))return;
+ if(modal.classList.contains('open')||pdfModal.classList.contains('open')||clrDlg.classList.contains('open')||document.querySelector('.dlg-overlay.open'))return;
+
  if(isSpace&&a&&a.closest&&a.closest('#lib'))return;
  if(isChar){
   if(!LIB.length)return;
@@ -3124,7 +3122,14 @@ function drawItem(x,it){
    x.save();x.globalAlpha=DIM;x.beginPath();x.rect(-it.w/2,-it.h/2,it.w,it.h);x.clip();
    it.er.forEach(r=>{
     x.fillStyle=r[4]||'#ffffff';
-    if(r[5]){
+    const pi=r[6]&&r[5]?patchImg(r[6]):null;
+    if(pi){
+     let u0=1,v0=1,u1=0,v1=0;
+     r[5].forEach(p=>{u0=Math.min(u0,p[0]);u1=Math.max(u1,p[0]);v0=Math.min(v0,p[1]);v1=Math.max(v1,p[1])});
+     const tm=x.getTransform(),e=.5/(Math.hypot(tm.a,tm.b)||1);
+     x.drawImage(pi,-it.w/2+u0*it.w-e,-it.h/2+v0*it.h-e,(u1-u0)*it.w+2*e,(v1-v0)*it.h+2*e);
+    }else if(r[5]){
+
      x.beginPath();
      r[5].forEach((p,i)=>{const X=-it.w/2+p[0]*it.w,Y=-it.h/2+p[1]*it.h;if(i)x.lineTo(X,Y);else x.moveTo(X,Y)});
      x.closePath();x.fill();
@@ -3248,7 +3253,8 @@ async function designPdf(){
  const doc=await PDFDocument.create(),Wp=E.w*MM,Hp=E.h*MM,pg=doc.addPage([Wp,Hp]);
  pg.drawRectangle({x:0,y:0,width:Wp,height:Hp,color:L.rgb(1,1,1)});
  const isVec=it=>it.type==='img'&&it.pdf&&PDFS[it.pdf.id]&&(it.op==null||it.op>=.999);
- const srcs={},embs={};
+ const srcs={},embs={},PIM={};
+
  /* elemente raster (text, barcode, imagini) = strat PNG transparent 600 dpi */
  const flush=async list=>{
   if(!list.length)return;
@@ -3283,13 +3289,24 @@ async function designPdf(){
    pg.drawPage(embs[key],{x:0,y:0,width:dw,height:dh});
    pg.pushOperators(L.popGraphicsState());
   }else pg.drawPage(embs[key],{x:0,y:0,width:wp,height:hp});
-  (it.er||[]).forEach(r=>{
-   const q=r[5];if(!q||q.length<3)return;
+  for(const r of (it.er||[])){
+   const q=r[5];if(!q||q.length<3)continue;
    const h=String(r[4]||'#ffffff').replace('#',''),cl=L.rgb(parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255);
    const ops=[L.setFillingColor(cl)];
    q.forEach((a,i)=>{const X=a[0]*wp,Y=(1-a[1])*hp;ops.push(i?L.lineTo(X,Y):L.moveTo(X,Y))});
    ops.push(L.closePath(),L.fill());
-   pg.pushOperators(...ops)});
+   pg.pushOperators(...ops);
+   if(r[6]){
+    try{
+     if(!PIM[r[6]])PIM[r[6]]=await doc.embedPng(Uint8Array.from(atob(r[6].split(',')[1]),c=>c.charCodeAt(0)));
+     let u0=1,v0=1,u1=0,v1=0;
+     q.forEach(p=>{u0=Math.min(u0,p[0]);u1=Math.max(u1,p[0]);v0=Math.min(v0,p[1]);v1=Math.max(v1,p[1])});
+     const e=.4;
+     pg.drawImage(PIM[r[6]],{x:u0*wp-e,y:(1-v1)*hp-e,width:(u1-u0)*wp+2*e,height:(v1-v0)*hp+2*e});
+    }catch(_){}
+   }
+  }
+
   pg.pushOperators(L.popGraphicsState())};
 
  let pend=[];
@@ -3709,7 +3726,76 @@ function addImageFile(file){
   if(h>E.h*.8){h=E.h*.8;w=h*im.naturalWidth/im.naturalHeight}
   addItem({type:'img',imgId:id,fx:false,fy:false,op:1,w,h,x:(E.w-w)/2,y:(E.h-h)/2,rot:0})};
  im.src=URL.createObjectURL(file)}
+/* ---- umplere din margini (sus/jos/stânga/dreapta) ---- */
+const PIMG=new Map();
+function patchImg(u){
+ let m=PIMG.get(u);
+ if(!m){m=new Image();m.onload=()=>{if(E_()){paintEd();commitSoon(true)}};m.src=u;PIMG.set(u,m);return null}
+ return m.getContext?m:((m.complete&&m.naturalWidth)?m:null)}
+function erPatch(c,r,W,H){
+ const pi=r[6]&&r[5]?patchImg(r[6]):null;if(!pi)return false;
+ let u0=1,v0=1,u1=0,v1=0;
+ r[5].forEach(p=>{u0=Math.min(u0,p[0]);u1=Math.max(u1,p[0]);v0=Math.min(v0,p[1]);v1=Math.max(v1,p[1])});
+ c.drawImage(pi,u0*W,v0*H,(u1-u0)*W,(v1-v0)*H);return true}
+function fillPatch(c,sx,sy,cw,ch,nw,nh){
+ try{
+  const rd=(x,y,w,h)=>(w>0&&h>0)?c.getImageData(x,y,w,h).data:null;
+  const edge=(d,len,hz)=>{
+   if(!d)return null;
+   const th=d.length/(4*len),o=new Float32Array(len*3);
+   for(let i=0;i<len;i++){
+    let r=0,g=0,b=0;
+    for(let k=0;k<th;k++){
+     const q=(hz?k*len+i:i*th+k)*4,a=d[q+3]/255;
+     r+=d[q]*a+255*(1-a);g+=d[q+1]*a+255*(1-a);b+=d[q+2]*a+255*(1-a)}
+    o[i*3]=r/th;o[i*3+1]=g/th;o[i*3+2]=b/th}
+   const R=2,s=new Float32Array(len*3);
+   for(let i=0;i<len;i++){
+    let r=0,g=0,b=0,n=0;
+    for(let k=Math.max(0,i-R);k<=Math.min(len-1,i+R);k++){r+=o[k*3];g+=o[k*3+1];b+=o[k*3+2];n++}
+    s[i*3]=r/n;s[i*3+1]=g/n;s[i*3+2]=b/n}
+   return s};
+  const eT=edge(sy>0?rd(sx,Math.max(0,sy-2),cw,Math.min(2,sy)):null,cw,true);
+  const eB=edge(sy+ch<nh?rd(sx,sy+ch,cw,Math.min(2,nh-sy-ch)):null,cw,true);
+  const eL=edge(sx>0?rd(Math.max(0,sx-2),sy,Math.min(2,sx),ch):null,ch,false);
+  const eR=edge(sx+cw<nw?rd(sx+cw,sy,Math.min(2,nw-sx-cw),ch):null,ch,false);
+  if(!eT&&!eB&&!eL&&!eR)return null;
+  const sc=Math.min(1,192/Math.max(cw,ch)),pw=Math.max(1,Math.round(cw*sc)),ph=Math.max(1,Math.round(ch*sc));
+  const cv=document.createElement('canvas');cv.width=pw;cv.height=ph;
+  const cx=cv.getContext('2d'),im=cx.createImageData(pw,ph),o=im.data;
+  for(let j=0;j<ph;j++){
+   const v=(j+.5)/ph,iy=Math.min(ch-1,Math.floor(v*ch));
+   for(let i=0;i<pw;i++){
+    const u=(i+.5)/pw,ix=Math.min(cw-1,Math.floor(u*cw));
+    let r=0,g=0,b=0,W=0;
+    const add=(e,k,d)=>{if(!e)return;const w=1/(d*d+.25);r+=e[k*3]*w;g+=e[k*3+1]*w;b+=e[k*3+2]*w;W+=w};
+    add(eT,ix,v*ch);add(eB,ix,(1-v)*ch);add(eL,iy,u*cw);add(eR,iy,(1-u)*cw);
+    const q=(j*pw+i)*4;
+    o[q]=r/W;o[q+1]=g/W;o[q+2]=b/W;o[q+3]=255}}
+  cx.putImageData(im,0,0);
+  const url=cv.toDataURL('image/png');
+  PIMG.set(url,cv);
+  return{url}
+ }catch(_){return null}}
+
+/* culoarea din punctul de start (u,v în 0..1), media 3x3, pe imaginea cu ștergerile deja aplicate */
+
+function pickCol(c,p,nw,nh){
+ const px=clamp(Math.round(p[0]*nw),0,nw-1),py=clamp(Math.round(p[1]*nh),0,nh-1);
+ const x0=clamp(px-1,0,Math.max(0,nw-3)),y0=clamp(py-1,0,Math.max(0,nh-3));
+ const w=Math.min(3,nw-x0),h=Math.min(3,nh-y0);
+ let r=0,g=0,b=0,n=0;
+ try{
+  const d=c.getImageData(x0,y0,w,h).data;
+  for(let i=0;i<d.length;i+=4){
+   const a=d[i+3]/255;
+   r+=d[i]*a+255*(1-a);g+=d[i+1]*a+255*(1-a);b+=d[i+2]*a+255*(1-a);n++}
+ }catch(_){return'#ffffff'}
+ if(!n)return'#ffffff';
+ const h2=v=>Math.round(v/n).toString(16).padStart(2,'0');
+ return'#'+h2(r)+h2(g)+h2(b)}
 function cutRegion(it,pts){
+
  const im=IMGS[it.imgId];if(!im)return;
  let u0=1,v0=1,u1=0,v1=0;
  pts.forEach(p=>{u0=Math.min(u0,p[0]);u1=Math.max(u1,p[0]);v0=Math.min(v0,p[1]);v1=Math.max(v1,p[1])});
@@ -3722,7 +3808,9 @@ function cutRegion(it,pts){
  const fx=f.getContext('2d');fx.drawImage(im,0,0);
  (it.er||[]).forEach(r=>{
   fx.fillStyle=r[4]||'#ffffff';
-  if(r[5]){fx.beginPath();r[5].forEach((p,i)=>{if(i)fx.lineTo(p[0]*nw,p[1]*nh);else fx.moveTo(p[0]*nw,p[1]*nh)});fx.closePath();fx.fill()}
+  if(erPatch(fx,r,nw,nh))return;
+  if(r[5]){fx.beginPath();
+r[5].forEach((p,i)=>{if(i)fx.lineTo(p[0]*nw,p[1]*nh);else fx.moveTo(p[0]*nw,p[1]*nh)});fx.closePath();fx.fill()}
   else fx.fillRect(r[0]*nw,r[1]*nh,(r[2]-r[0])*nw,(r[3]-r[1])*nh)});
  const c=document.createElement('canvas');c.width=cw;c.height=ch;
  c.getContext('2d').drawImage(f,sx,sy,cw,ch,0,0,cw,ch);
@@ -3730,13 +3818,15 @@ function cutRegion(it,pts){
  const uc=(sx+cw/2)/nw,vc=(sy+ch/2)/nh,[cx,cy]=ctr(it);
  const du=((it.fx?1-uc:uc)-.5)*it.w,dv=((it.fy?1-vc:vc)-.5)*it.h;
  const[px,py]=rp(cx+du,cy+dv,cx,cy,it.rot);
-const w=cw/nw*it.w,h=ch/nh*it.h,col=$('edErC').value;
+const w=cw/nw*it.w,h=ch/nh*it.h,col=pickCol(fx,pts[0],nw,nh),pt=fillPatch(fx,sx,sy,cw,ch,nw,nh);
+
+
  let cpdf=null;
  if(it.pdf){const p=it.pdf,pw=p.r-p.l,ph=p.t-p.b;
   cpdf={...p,l:p.l+sx/nw*pw,r:p.l+(sx+cw)/nw*pw,t:p.t-sy/nh*ph,b:p.t-(sy+ch)/nh*ph}}
 
  const cer=(it.er||[]).map(r=>{const q=r[5]||[[r[0],r[1]],[r[2],r[1]],[r[2],r[3]],[r[0],r[3]]];
-  return[0,0,0,0,r[4]||'#ffffff',q.map(p=>[(p[0]*nw-sx)/cw,(p[1]*nh-sy)/ch])]});
+  return[0,0,0,0,r[4]||'#ffffff',q.map(p=>[(p[0]*nw-sx)/cw,(p[1]*nh-sy)/ch]),r[6]]});
 
  c.toBlob(b=>{
   if(!b)return;
@@ -3745,7 +3835,7 @@ const w=cw/nw*it.w,h=ch/nh*it.h,col=$('edErC').value;
    const E=E_();if(!E)return;
    const id='i'+(UID++);IMGS[id]=ni;
    /* zona originală se umple cu culoarea aleasă */
-   (it.er=it.er||[]).push([0,0,0,0,col,[[sx/nw,sy/nh],[(sx+cw)/nw,sy/nh],[(sx+cw)/nw,(sy+ch)/nh],[sx/nw,(sy+ch)/nh]]]);
+   (it.er=it.er||[]).push([0,0,0,0,col,[[sx/nw,sy/nh],[(sx+cw)/nw,sy/nh],[(sx+cw)/nw,(sy+ch)/nh],[sx/nw,(sy+ch)/nh]],pt?pt.url:null]);
    addItem({keep:true,type:'img',imgId:id,fx:it.fx,fy:it.fy,op:it.op==null?1:it.op,w,h,x:px-w/2,y:py-h/2,rot:it.rot,pdf:cpdf,er:cer})};
 
   ni.src=URL.createObjectURL(b)},'image/png')}
