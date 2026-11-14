@@ -686,7 +686,43 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 }
 
 @media(max-width:1000px){.lyr{width:auto;flex-direction:row;flex-wrap:wrap;justify-content:center;padding:0 0 8px}}
+/* Brand compact */
+.brand-card{padding:10px 12px;border-radius:16px}
+.brand-card::after{top:-50px;right:-50px;width:130px;height:130px}
+.brand{align-items:center;gap:11px}
+.logo{width:42px;height:42px;border-radius:13px;align-self:center}
+.logo::before{border-radius:13px}
+.logo-svg{width:26px;height:26px}
+.brand-texts{gap:4px}
+.bt-row{gap:7px}
+.brand h1{font-size:16px;letter-spacing:-.3px;white-space:nowrap;line-height:1.1}
+.bt-pro{font-size:8.5px;padding:2px 6px;border-radius:5px;letter-spacing:.8px}
+.brand-subtitle{flex-wrap:nowrap;gap:6px;overflow:hidden}
+.bs-txt{font-size:8.5px;letter-spacing:.9px}
+.bs-dot{width:3px;height:3px;border-radius:50%;background:var(--m2);flex:none}
+.bs-tag{font-size:8.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--a);white-space:nowrap}
+/* Escludi cartelle */
+.exc-card{max-width:520px}
+.exc-card h3{margin:0 0 6px;font-size:19px;font-weight:900;letter-spacing:-.3px}
+.exc-card p{margin:0 0 12px;color:var(--m);font-size:12.5px}
+.exc-list{max-height:min(46vh,380px);overflow:auto;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.22);padding:6px;margin-bottom:14px}
+.exc-r{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;user-select:none;transition:background .12s}
+.exc-r:hover{background:rgba(255,255,255,.06)}
+.exc-r input{accent-color:var(--bad);width:16px;height:16px;flex:none}
+.exc-r .i{color:var(--a);flex:none}
+.exc-r .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exc-r em{font-style:normal;font-size:10.5px;color:var(--m);background:var(--panel2);border:1px solid var(--line);padding:1px 8px;border-radius:99px;font-weight:700;flex:none}
+.exc-r.ex{cursor:default;opacity:.85}
+.exc-r.ex .i{color:var(--bad)}
+.exc-h{margin:10px 6px 4px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--m);font-weight:800}
+.exc-all{width:100%;margin-top:10px;justify-content:center}
+.exc-all:hover{border-color:rgba(255,92,92,.6);background:rgba(255,92,92,.14);color:#ffb3b3}
+.exc-card .srch{min-width:0;margin-bottom:10px}
+.exc-card .srch .inp{height:40px;font-size:13.5px}
 </style>
+
+
+
 
 
 </head><body>
@@ -734,14 +770,7 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
    <div class="brand-texts">
     <div class="bt-row"><h1>Smart Label Studio</h1><b class="bt-pro">Pro</b></div>
-<div class="brand-subtitle"><span class="bs-txt"><span class="bs-line"></span>Convertitore <em>etichette</em></span></div>
-
-
-
-
-    <div class="brand-tags">
-     <span>Smart Convert</span>
-    </div>
+    <div class="brand-subtitle"><span class="bs-txt">Convertitore <em>etichette</em></span><i class="bs-dot"></i><span class="bs-tag">Smart Convert</span></div>
    </div>
   </div>
  </div>
@@ -1029,7 +1058,9 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
      <button class="btn" type="button" id="btnPdf2"><svg class="i"><use href="#i-up"/></svg>Scegli PDF</button>
      <button class="btn pri" type="button" id="btnFolder2"><svg class="i"><use href="#i-folder"/></svg>Carica cartella</button>
     </div>
-    <div class="steps"><span>1 · Carica</span><span>2 · Configura</span><span>3 · Esporta</span><span>4 · Stampa</span></div>
+    <button class="btn sm" type="button" id="btnExc2" hidden style="margin-top:14px"><svg class="i"><use href="#i-folder"/></svg>Cartelle escluse</button>
+    <div class="steps"><span>1 · Carica</span>
+
    </div>
   </div>
  </div>
@@ -2053,6 +2084,12 @@ function showUpd(){
  el.innerHTML='Cartella aggiornata: <b>'+esc(s)+'</b>';
  el.hidden=false}
 
+/* ---------- Cartelle escluse (salvate local) ---------- */
+const EXC_KEY='sls_lib_excl';
+let EXC=(()=>{try{const a=JSON.parse(localStorage.getItem(EXC_KEY));return Array.isArray(a)?a:[]}catch(_){return[]}})();
+function setExc(a){EXC=a;try{if(a.length)localStorage.setItem(EXC_KEY,JSON.stringify(a));else localStorage.removeItem(EXC_KEY)}catch(_){}}
+const isExc=p=>EXC.some(x=>p===x||p.startsWith(x+'/'));
+
 function idb(){
  return dbp||(dbp=new Promise((res,rej)=>{
   if(!window.indexedDB){rej(new Error('IndexedDB non disponibile'));return}
@@ -2074,7 +2111,7 @@ const normPath=p=>String(p).replace(/\\/g,'/').replace(/^\/+/,'').replace(/\/{2,
 
 async function refreshLib(){
  const db=await idb();
- LIB=await reqP(db.transaction('meta').objectStore('meta').getAll());
+ LIB=(await reqP(db.transaction('meta').objectStore('meta').getAll())).filter(m=>!isExc(m.path));
  renderLib()}
 
 function buildTree(list){
@@ -2105,6 +2142,8 @@ function renderLib(){
  $('btnClearLib').hidden=!has;
  $('libq').disabled=!has;
  $('btnFolderTxt').textContent=has?'Aggiorna cartella':'Carica cartella';
+ $('btnExc2').hidden=has||!EXC.length;
+
  showUpd();
 
  if(!has){LAST=[];return}
@@ -2139,7 +2178,9 @@ async function importItems(items,quiet){
  const ok=[];let ign=0;
  for(const it of items){
   const path=normPath(it.path||it.file.name),name=path.split('/').pop();
+  if(isExc(path))continue;
   if(/\.pdf$/i.test(name)&&!name.startsWith('._'))ok.push({file:it.file,path,name});else ign++}
+
  if(!ok.length){toast('Nessun PDF trovato'+(ign?' ('+ign+' file ignorati)':''));return}
  importing=true;
  try{
@@ -2206,6 +2247,8 @@ async function walk(entry,out){
   const f=await new Promise((res,rej)=>entry.file(res,rej));
   out.push({file:f,path:entry.fullPath.replace(/^\/+/,'')});
  }else if(entry.isDirectory){
+  if(isExc(normPath(entry.fullPath)))return;
+
   const r=entry.createReader(),all=[];let b;
   do{b=await readDir(r);all.push(...b)}while(b.length);
   for(let i=0;i<all.length;i+=64)
@@ -2214,7 +2257,8 @@ async function walk(entry,out){
 async function walkHandle(dir,prefix,out){
  const files=[];
  for await(const [n,h] of dir.entries()){
-  if(h.kind==='directory')await walkHandle(h,prefix+n+'/',out);
+  if(h.kind==='directory'){if(!isExc(prefix+n))await walkHandle(h,prefix+n+'/',out)}
+
   else if(/\.pdf$/i.test(n)&&!n.startsWith('._'))files.push([n,h]);
  }
  for(let i=0;i<files.length;i+=64)
@@ -2367,7 +2411,90 @@ async function clrDo(){
   await refreshLib();
   toast('Libreria svuotata (i file sul PC sono intatti)',true);
  }catch(e){toast('Errore: '+(e.message||e))}}
-$('btnClearLib').onclick=()=>{if(!LIB.length)return;clrStep=0;clrShow();clrDlg.classList.add('open')};
+$('clrTxt').textContent='Escludi cartelle';
+function startClear(){if(!LIB.length)return;clrStep=0;clrShow();clrDlg.classList.add('open')}
+
+function folderList(){
+ const m=new Map();
+ LIB.forEach(f=>{const parts=f.path.split('/');parts.pop();let p='';parts.forEach(s=>{p=p?p+'/'+s:s;m.set(p,(m.get(p)||0)+1)})});
+ return [...m.entries()].sort((a,b)=>nat(a[0],b[0]))}
+function excUpd(){
+ const n=$('excList').querySelectorAll('input[data-p]:checked').length;
+ $('excYes').disabled=!n;$('excYes').textContent=n?'Escludi ('+n+')':'Escludi'}
+function excRender(){
+ const L=$('excList');let h='';
+ folderList().forEach(([p,n])=>{
+  const d=p.split('/').length-1,nm=p.split('/').pop();
+  h+=`<label class="exc-r" data-s="${esc(p.toLowerCase())}" style="padding-left:${10+d*18}px"><input type="checkbox" data-p="${esc(p)}"><svg class="i"><use href="#i-folder"/></svg><span class="fn" title="${esc(p)}">${esc(nm)}</span><em>${n}</em></label>`});
+ if(EXC.length){
+  h+='<div class="exc-h">Cartelle escluse</div>';
+  EXC.forEach(p=>{h+=`<div class="exc-r ex" data-s="${esc(p.toLowerCase())}"><svg class="i"><use href="#i-x"/></svg><span class="fn" title="${esc(p)}">${esc(p)}</span><button type="button" class="btn sm" data-r="${esc(p)}">Ripristina</button></div>`})}
+ L.innerHTML=(h||'<div class="lib-none">Nessuna cartella</div>')+'<div class="lib-none" id="excNone" hidden>Nessun risultato</div>';
+ excUpd();excFilter()}
+function excFilter(){
+ const q=$('excQ'),L=$('excList');if(!q||!L)return;
+ const terms=q.value.toLowerCase().split(/\s+/).filter(Boolean);
+ let vis=0,visEx=0;
+ L.querySelectorAll('.exc-r').forEach(r=>{
+  const s=r.dataset.s||'',ok=terms.every(t=>s.includes(t));
+  r.style.display=ok?'':'none';
+  if(ok){vis++;if(r.classList.contains('ex'))visEx++}});
+ const h=L.querySelector('.exc-h');if(h)h.style.display=visEx?'':'none';
+ const n=$('excNone');if(n)n.hidden=!(terms.length&&!vis)}
+
+async function excApply(){
+ const ch=[...$('excList').querySelectorAll('input[data-p]:checked')].map(x=>x.dataset.p);
+ if(!ch.length)return;
+ const top=ch.filter(p=>!ch.some(q=>q!==p&&p.startsWith(q+'/')));
+ const del=LIB.filter(m=>top.some(t=>m.path===t||m.path.startsWith(t+'/')));
+ setExc([...EXC.filter(x=>!top.some(t=>x===t||x.startsWith(t+'/'))),...top]);
+ $('excDlg').classList.remove('open');
+ try{
+  const db=await idb(),tx=db.transaction(['meta','data'],'readwrite');
+  del.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
+  await txDone(tx);
+  await refreshLib();
+  toast(top.length+(top.length===1?' cartella esclusa':' cartelle escluse')+' · '+del.length+' PDF rimossi dalla libreria',true);
+ }catch(e){toast('Errore: '+(e.message||e))}}
+function openExcDlg(){
+ if(!LIB.length&&!EXC.length)return;
+ let ov=$('excDlg');
+ if(!ov){
+  ov=document.createElement('div');ov.id='excDlg';ov.className='dlg-overlay';
+  ov.innerHTML='<div class="dlg-card exc-card"><h3>Escludi cartelle</h3><p>Le cartelle selezionate non verranno più aggiornate e spariscono dalla libreria. I file sul PC restano intatti.</p><div class="srch"><svg class="i"><use href="#i-search"/></svg><input type="search" class="inp" id="excQ" placeholder="Cerca cartella…" autocomplete="off" spellcheck="false"></div><div class="exc-list" id="excList"></div><div class="clr-actions"><button class="btn" id="excNo" type="button">Annulla</button><button class="btn pri" id="excYes" type="button" disabled>Escludi</button></div><button class="btn sm exc-all" id="excAll" type="button"><svg class="i"><use href="#i-trash"/></svg>Svuota tutta la libreria…</button></div>';
+  document.body.appendChild(ov);
+  const L=ov.querySelector('#excList');
+  L.addEventListener('change',e=>{
+   const c=e.target;if(!c.dataset||!c.dataset.p)return;
+   L.querySelectorAll('input[data-p]').forEach(x=>{if(x.dataset.p.startsWith(c.dataset.p+'/'))x.checked=c.checked});
+   excUpd()});
+  L.addEventListener('click',e=>{
+   const b=e.target.closest('[data-r]');if(!b)return;
+   const p=b.dataset.r;
+   setExc(EXC.filter(x=>x!==p));excRender();renderLib();
+   toast('Ripristinata. Premi «Aggiorna cartella» per ricaricare i PDF',true)});
+  ov.querySelector('#excNo').onclick=()=>ov.classList.remove('open');
+  ov.querySelector('#excYes').onclick=excApply;
+  ov.querySelector('#excAll').onclick=()=>{ov.classList.remove('open');startClear()};
+  ov.addEventListener('mousedown',e=>{if(e.target===ov)ov.classList.remove('open')});
+  window.addEventListener('keydown',e=>{
+   if(!ov.classList.contains('open'))return;
+   e.stopImmediatePropagation();
+   if(e.key==='Escape'){
+    e.preventDefault();
+    const q=$('excQ');
+    if(q&&q.value){q.value='';excFilter()}else ov.classList.remove('open')}
+  },true);
+  $('excQ').addEventListener('input',excFilter);
+ }
+ $('excQ').value='';
+ excRender();
+ ov.classList.add('open');
+ if(window.innerWidth>1000)setTimeout(()=>$('excQ').focus(),50)}
+
+$('btnClearLib').onclick=openExcDlg;
+$('btnExc2').onclick=e=>{e.stopPropagation();openExcDlg()};
+
 $('clrNo').onclick=clrClose;
 $('clrYes').onclick=()=>{
  if(clrStep<CLR_STEPS.length-1){clrStep++;clrShow();return}
