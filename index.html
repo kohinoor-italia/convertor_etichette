@@ -2490,6 +2490,50 @@ function openExcDlg(){
  if(window.innerWidth>1000)setTimeout(()=>$('excQ').focus(),50)}
 
 $('btnClearLib').onclick=openExcDlg;
+/* ---------- Click dreapta în libreria de PDF: exclude cartela ---------- */
+async function excOne(p){
+ const del=LIB.filter(m=>m.path===p||m.path.startsWith(p+'/'));
+ setExc([...EXC.filter(x=>!(x===p||x.startsWith(p+'/'))),p]);
+ try{
+  const db=await idb(),tx=db.transaction(['meta','data'],'readwrite');
+  del.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
+  await txDone(tx);
+  await refreshLib();
+  toast('Cartella esclusa · '+del.length+' PDF rimossi dalla libreria (ripristinabile da «Escludi cartelle»)',true);
+ }catch(e){toast('Errore: '+(e.message||e))}}
+{
+ const m=document.createElement('div');
+ m.style.cssText='position:fixed;z-index:150;display:none;flex-direction:column;gap:1px;padding:5px;min-width:230px;max-width:340px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
+ document.body.appendChild(m);
+ const hide=()=>{m.style.display='none'};
+ const add=(label,fn)=>{
+  const b=document.createElement('button');
+  b.type='button';b.className='btn sm';
+  b.style.cssText='justify-content:flex-start;border-color:transparent;background:transparent;box-shadow:none;white-space:normal;text-align:left';
+  b.textContent=label;
+  b.onclick=()=>{hide();fn()};
+  m.appendChild(b)};
+ $('libTree').addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  let p=null;
+  const s=e.target.closest('.fd > summary'),f=e.target.closest('.lf');
+  if(s)p=s.parentNode.dataset.p;
+  else if(f){const a=f.dataset.p.split('/');a.pop();p=a.join('/')||null}
+  m.innerHTML='';
+  if(p)add('Escludi cartella «'+p.split('/').pop()+'»',()=>excOne(p));
+  add('Escludi cartelle…',openExcDlg);
+  m.style.display='flex';
+  const w=m.offsetWidth,h=m.offsetHeight;
+  m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-w-8))+'px';
+  m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-h-8))+'px'});
+ document.addEventListener('pointerdown',e=>{if(!m.contains(e.target))hide()},true);
+ window.addEventListener('keydown',e=>{if(e.key==='Escape')hide()},true);
+ window.addEventListener('resize',hide);
+ window.addEventListener('blur',hide);
+ $('libTree').addEventListener('scroll',hide,{passive:true});
+}
+
+
 $('btnExc2').onclick=e=>{e.stopPropagation();openExcDlg()};
 
 $('clrNo').onclick=clrClose;
@@ -3161,15 +3205,29 @@ function drawItem(x,it){
   layoutText(it).forEach((l,i)=>x.fillText(l,px/f,(-it.h/2+lh*(i+.5))/f));
   x.restore();
  }else drawBar(x,it)}
-let DIM=1;
+let DIM=1,SCR=null;
 function paintItems(x,k,E,dim){
  E.items.forEach(it=>{
   if(it.hid)return;
   if(it.type==='text')layoutText(it);
-  DIM=(dim&&E.hov!=null&&E.hov!==it.id)?.18:1;
-  x.save();x.globalAlpha=DIM;x.translate((it.x+it.w/2)*k,(it.y+it.h/2)*k);x.rotate(it.rot*R2D);x.scale(k,k);
-  drawItem(x,it);x.restore()});
+  const dm=!!(dim&&E.hov!=null&&E.hov!==it.id);
+  DIM=1;
+  if(dm){
+   /* strat separat la opacitate plină, apoi compus cu 0.18 */
+   const cv=x.canvas;
+   if(!SCR)SCR=document.createElement('canvas');
+   if(SCR.width!==cv.width||SCR.height!==cv.height){SCR.width=cv.width;SCR.height=cv.height}
+   const tx=SCR.getContext('2d');
+   tx.setTransform(1,0,0,1,0,0);tx.globalAlpha=1;tx.clearRect(0,0,SCR.width,SCR.height);
+   tx.save();tx.translate((it.x+it.w/2)*k,(it.y+it.h/2)*k);tx.rotate(it.rot*R2D);tx.scale(k,k);
+   drawItem(tx,it);tx.restore();
+   x.save();x.setTransform(1,0,0,1,0,0);x.globalAlpha=.18;x.drawImage(SCR,0,0);x.restore();
+  }else{
+   x.save();x.translate((it.x+it.w/2)*k,(it.y+it.h/2)*k);x.rotate(it.rot*R2D);x.scale(k,k);
+   drawItem(x,it);x.restore();
+  }});
  DIM=1}
+
 
 
 /* ---------- Sincronizare cu pipeline-ul existent ---------- */
@@ -3451,6 +3509,17 @@ function pick(E,mx,my){
 
   if(Math.abs(p[0]-cx)<=it.w/2&&Math.abs(p[1]-cy)<=it.h/2)return it}
  return null}
+
+/* dacă dai click pe un element deja selectat, rămâne el (chiar dacă sunt altele deasupra) */
+function pickSel(E,mx,my){
+ for(let n=E.items.length-1;n>=0;n--){
+  const it=E.items[n];
+  if(it.hid||!E.sel.has(it.id))continue;
+  const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);
+  if(Math.abs(p[0]-cx)<=it.w/2&&Math.abs(p[1]-cy)<=it.h/2)return it}
+ return null}
+
+
 function snapMove(E,mv,th){
  const bb=bbox(mv),cx=[0,E.w/2,E.w],cy=[0,E.h/2,E.h];
  E.items.forEach(i=>{if(E.sel.has(i.id))return;const b=bbox([i]);cx.push(b[0],(b[0]+b[2])/2,b[2]);cy.push(b[1],(b[1]+b[3])/2,b[3])});
@@ -3489,16 +3558,20 @@ function bind(E){
 
 
 
-  const it=pick(E,mx,my);
+  const mod=e.ctrlKey||e.metaKey;
+  const it=(!mod&&pickSel(E,mx,my))||pick(E,mx,my);
+
 
   if(it){
    e.stopPropagation();e.preventDefault();
-   if(e.shiftKey){if(E.sel.has(it.id))E.sel.delete(it.id);else E.sel.add(it.id)}
+   if(mod){if(E.sel.has(it.id))E.sel.delete(it.id);else E.sel.add(it.id)}
    else if(!E.sel.has(it.id))E.sel=new Set([it.id]);
+
    DR={k:'mv',m0:[mx,my],o:sel(E).map(i=>({i,x:i.x,y:i.y})),moved:false};
    paintSel();syncInsp();
   }else{
-   if(!e.shiftKey)E.sel=new Set();
+   if(!(e.ctrlKey||e.metaKey))E.sel=new Set();
+
    paintSel();syncInsp();
    if((ZM.b1.z||1)<=1){e.stopPropagation();e.preventDefault();DR={k:'mq',m0:[mx,my],base:new Set(E.sel)}}}};
  ed.addEventListener('pointerdown',onDown);
@@ -4148,7 +4221,8 @@ function updLyr(){
   const id=dotOf(e),E=E_();if(id==null||!E)return;
   const it=E.items.find(i=>i.id===id);if(!it)return;
   if(it.hid){toast('Element ascuns · click dreapta pe bulină ca să-l arăți',true);return}
-  E.sel=e.shiftKey?(E.sel.has(id)?new Set([...E.sel].filter(x=>x!==id)):new Set([...E.sel,id])):new Set([id]);
+  E.sel=(e.ctrlKey||e.metaKey)?(E.sel.has(id)?new Set([...E.sel].filter(x=>x!==id)):new Set([...E.sel,id])):new Set([id]);
+
   paintSel();syncInsp()});
  L.addEventListener('contextmenu',e=>{
   const id=dotOf(e),E=E_();if(id==null||!E)return;
