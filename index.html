@@ -804,7 +804,9 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
    <button class="ib dn" id="edClose" type="button" title="Chiudi editor"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
 
+  <div id="edDoc" hidden title="" style="display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:9px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.3);color:var(--a);font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
   <div class="ed-add">
+
    <button class="ed-tile" id="edAddT" type="button"><span class="g">T</span>Testo</button>
    <button class="ed-tile" id="edAddI" type="button"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/></svg>Immagine</button>
    <button class="ed-tile" id="edAddB" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20.5 5v14"/></svg>Barcode</button>
@@ -1459,8 +1461,11 @@ function uniK(fb){
  }
  S.kgKey=key;S.kgVal=k;return k}
 
+let PRT=false; // true doar cand se apasa Stampa
 function place(i,p,fb){
  const base={x:p[0]+fb.x,y:p[1]+fb.y,w:fb.w,h:fb.h};
+ if(!PRT)return base;
+
  const g=geo(i,p,fb);if(!g)return base;
  if(needK(g,p)>=0.9999)return base;
  const kg=uniK(fb);
@@ -2719,7 +2724,8 @@ $('dl').onclick=async()=>{
  }catch(e){toast(e.message||e)}
 };
 
-$('pr').onclick=async()=>{if(!S)return;try{printBlob(await buildResult())}catch(e){toast(e.message||e)}};
+$('pr').onclick=async()=>{if(!S)return;try{PRT=true;const b=await buildResult();PRT=false;printBlob(b)}catch(e){PRT=false;toast(e.message||e)}};
+
 
 const modal = $('fmtModal');
 function openModal(mode){
@@ -3263,7 +3269,7 @@ function undo(d){
 window.startDesign=function(t){
  P=P_MAX;
  const E={w:t.W,h:t.H,ci:t.ci,rad:t.rad,items:[],sel:new Set(),hist:[],hi:-1,dom:null,guides:[],mq:null};
- const v={code:'Design',W:t.W,H:t.H,fmt:'',SW:t.W,SH:t.H,c:1,r:1,ml:0,mt:0,gh:0,gv:0,rad:t.rad,ci:t.ci,n:1,mr:0,mb:0};
+ const v={code:t.code,W:t.W,H:t.H,fmt:'',SW:t.W,SH:t.H,c:1,r:1,ml:0,mt:0,gh:0,gv:0,rad:t.rad,ci:t.ci,n:1,mr:0,mb:0};
  const cv=document.createElement('canvas'),ctx=cv.getContext('2d',{willReadFrequently:true});
  S={name:'Etichetta '+t.code+'.pdf',base:'Etichetta',bytes:null,pages:1,W:t.W*MM,H:t.H*MM,cv,ctx,code:null,det:null,rot:0,start:1,rp:0,total:0,sheets:1,totAuto:true,exclusions:{},design:E,cells:[[0,0]],ink:{},emp:[false],cp:[1]};
  sizeCv();cur=v;tgt=t;rot=0;resetMg();$('ox').value=0;$('oy').value=0;
@@ -3300,7 +3306,7 @@ window.setDesignFmt=function(t){
 
  E.w=t.W;E.h=t.H;E.ci=t.ci;E.rad=t.rad;
  E.hist=[];E.hi=-1;
- Object.assign(cur,{W:t.W,H:t.H,SW:t.W,SH:t.H,rad:t.rad,ci:t.ci});
+ Object.assign(cur,{code:t.code,W:t.W,H:t.H,SW:t.W,SH:t.H,rad:t.rad,ci:t.ci});
  tgt=t;S.W=t.W*MM;S.H=t.H*MM;S.cells=[[0,0]];sizeCv();resetStart();resetZ();snapNow();render();commit()};
 
 
@@ -3382,7 +3388,7 @@ buildResult=async function(){if(S&&S.design)S.bytes=await designPdf();return _br
 
 /* ---------- Integrare cu aplicația ---------- */
 const _ds=drawSrc;drawSrc=function(){if(S&&S.design)return drawEd();return _ds()};
-const _geo=geo;geo=function(i,p,fb){return(S&&S.design)?null:_geo(i,p,fb)}; // fără micșorare automată pe zona neimprimabilă
+const _geo=geo;geo=function(i,p,fb){return(S&&S.design&&!PRT)?null:_geo(i,p,fb)}; // fără micșorare automată pe zona neimprimabilă
 const _fs=fitSheets;fitSheets=function(){_fs();paintEd()};
 const _az=applyZ;applyZ=function(b){_az(b);if(b==='b1')paintEd()};
 const _rn=render;
@@ -3393,7 +3399,8 @@ render=function(){
 
  $('l1').parentNode.firstChild.nodeValue=on?'Banco di lavoro · ':'Prima · ';
  document.querySelector('#topConvBar .fmt-badge .lb').textContent=on?'Etichetta':'Dal PDF';
- if(on){$('fmeta').textContent=nf(S.design.w)+'×'+nf(S.design.h)+' mm · design';updUndo()}};
+ if(on){$('fmeta').textContent=nf(S.design.w)+'×'+nf(S.design.h)+' mm · design';updUndo()}
+ paintDoc()};
 const _clr=$('clr').onclick;
 $('clr').onclick=function(e){const E=E_();if(E&&E.items.length&&!confirm('Chiudere l\'editor? Il lavoro non salvato andrà perso.'))return;_clr.call(this,e)};
 
@@ -3559,7 +3566,8 @@ function bind(E){
 
 
   const mod=e.ctrlKey||e.metaKey;
-  const it=(!mod&&pickSel(E,mx,my))||pick(E,mx,my);
+const it=pick(E,mx,my);
+
 
 
   if(it){
@@ -3913,7 +3921,13 @@ const w=cw/nw*it.w,h=ch/nh*it.h,col=pickCol(fx,pts[0],nw,nh),pt=fillPatch(fx,sx,
 
   ni.src=URL.createObjectURL(b)},'image/png')}
 
+function paintDoc(){
+ const E=E_(),el=$('edDoc');if(!el)return;
+ const n=E&&E.doc;
+ el.hidden=!n;el.textContent=n?'📄 '+n:'';el.title=n||''}
 async function addPdfFile(file){
+ {const E0=E_();if(E0){E0.doc=file.name;paintDoc()}}
+
  if(!window.pdfjsLib){toast('La libreria pdf.js non è stata caricata.');return}
  try{
   const bytes=new Uint8Array(await file.arrayBuffer());
@@ -4126,7 +4140,18 @@ $('pdfEdit').onclick=e=>{
  window.startDesign(t);
  window.edAddPdf(f)};
 
+{
+ const _lpE=loadPDF;
+ loadPDF=async function(f){
+  await _lpE(f);
+  if(!S||S.design||!S.bytes)return;
+  const f2=new File([S.bytes.slice()],S.name,{type:'application/pdf'});
+  window.startDesign(cur);
+  window.edAddPdf(f2);
+ };
+}
 $('edClose').onclick=()=>$('clr').click();
+
 function rotView(d){
  const E=E_();
  if(E){E.vr=((E.vr||0)+d+4)%4;resetZ();fitSheets();return}
@@ -4410,7 +4435,7 @@ async function dsvSave(){
    }
   }
 const pdfs={};items.forEach(it=>{if(it.pdf&&PDFS[it.pdf.id])pdfs[it.pdf.id]=PDFS[it.pdf.id]});
-  const rec={tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs,pdfs};
+  const rec={doc:E.doc||null,tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs,pdfs};
 
   const db=await idb();
   const tx=db.transaction('h','readwrite');
@@ -4448,7 +4473,7 @@ async function dsvRestore(r){
   const E=E_();
   E.items=r.items;
   if(r.fr){E.fr=r.fr;E.ow=r.ow;E.oh=r.oh;E.oci=r.oci}
-  E.vr=r.vr||0;
+  E.vr=r.vr||0;E.doc=r.doc||null;paintDoc();
   E.hist=[];E.hi=-1;
   touch(true);
   fitSheets();
