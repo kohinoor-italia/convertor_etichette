@@ -719,6 +719,35 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 .exc-all:hover{border-color:rgba(255,92,92,.6);background:rgba(255,92,92,.14);color:#ffb3b3}
 .exc-card .srch{min-width:0;margin-bottom:10px}
 .exc-card .srch .inp{height:40px;font-size:13.5px}
+
+/* Nume PDF în locul subtitlului din brand */
+.brand-subtitle{width:100%;min-width:0}
+.bs-def{display:contents}
+#edDoc{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%;
+ font-size:10px;line-height:1.2;font-weight:800;letter-spacing:.4px;color:var(--a)}
+#edDoc .dpi{flex:none;position:relative;width:11px;height:14px;border-radius:2.5px;
+ background:linear-gradient(160deg,#fff,#d4d8ea);color:#d93025;font:900 4px/1 system-ui;font-style:normal;
+ display:grid;place-items:end center;padding-bottom:1.5px;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+#edDoc .dpi::before{content:"";position:absolute;top:0;right:0;width:4px;height:4px;
+ background:linear-gradient(225deg,#0b0e1c 50%,#b8bdd4 50%);border-bottom-left-radius:2px}
+#edDoc .dn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+
+
+
+/* Meniu Imagine compact */
+#gImg>summary.ed-sec{padding:6px 10px}
+#gImg .ed-bd{padding:0 10px 8px}
+.img-row{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.img-row .er-b{width:auto;padding:0 11px}
+.img-row .er-b span{font-size:10.5px}
+.img-row #edCut{border-color:rgba(45,212,191,.35);color:var(--a)}
+
+
+
+
+
+
 </style>
 
 
@@ -770,7 +799,11 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
    <div class="brand-texts">
     <div class="bt-row"><h1>Smart Label Studio</h1><b class="bt-pro">Pro</b></div>
-    <div class="brand-subtitle"><span class="bs-txt">Convertitore <em>etichette</em></span><i class="bs-dot"></i><span class="bs-tag">Smart Convert</span></div>
+    <div class="brand-subtitle">
+     <span class="bs-def" id="bsDef"><span class="bs-txt">Convertitore <em>etichette</em></span><i class="bs-dot"></i><span class="bs-tag">Smart Convert</span></span>
+     <div id="edDoc" hidden title=""></div>
+    </div>
+
    </div>
   </div>
  </div>
@@ -804,7 +837,7 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
    <button class="ib dn" id="edClose" type="button" title="Chiudi editor"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
 
-  <div id="edDoc" hidden title="" style="display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:9px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.3);color:var(--a);font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+
   <div class="ed-add">
 
    <button class="ed-tile" id="edAddT" type="button"><span class="g">T</span>Testo</button>
@@ -892,23 +925,15 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
 
   <details class="ed-box" id="gImg" open hidden>
-
    <summary class="ed-sec">Immagine</summary>
    <div class="ed-bd">
-    <div class="pf rg"><span>Opacità</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
-
-    <div class="er-grp">
-     <div class="ed-cap" style="margin:0 0 1px 2px">Muovi una parte</div>
-     <button class="tgl btn-like er-b er-main" id="edCut" type="button" title="Trascina sull'immagine: la zona diventa un elemento mobile"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>Taglia zona (sposta)</span></button>
-     <small class="er-hint">Trascina su una zona: diventa un elemento separato da spostare o eliminare. Il punto originale si riempie in automatico con i colori dei bordi.</small>
-
+    <div class="img-row">
+     <div class="pf rg" title="Opacità"><span>Opac.</span><input id="edOp" class="ein" type="range" min="0.05" max="1" step="0.05"></div>
+     <button class="tgl btn-like er-b" id="edCut" type="button" title="Taglia zona: trascina sull'immagine e la zona diventa un elemento separato da spostare o eliminare. Il punto originale si riempie in automatico con i colori dei bordi."><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>Taglia</span></button>
     </div>
-
-
- 
-
    </div>
   </details>
+
 
 
 
@@ -934,7 +959,8 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
 
 
  <section class="card" id="startCard">
-  <div class="ch"><span class="num">2</span><h2>Parametri &amp; Quantità</h2></div>
+  <div class="ch"><span class="num"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px;stroke-width:2.3"><path d="M3 6h11M18 6h3M3 12h4M11 12h10M3 18h9M16 18h5"/><circle cx="16" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="14" cy="18" r="2"/></svg></span><h2>Parametri &amp; Quantità</h2></div>
+
   
   <div class="params-container">
    <div class="grid-2col">
@@ -983,6 +1009,10 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
        <input type="number" id="oy" class="fld-input" value="0" step="0.1">
       </div>
      </div>
+     <div class="fld-box" style="margin-top:10px">
+      <label>Margine di sicurezza stampa (mm)</label>
+      <input type="number" id="sf" class="fld-input" value="7" min="0" max="30" step="0.1">
+     </div>
     </div>
    </details>
   </div>
@@ -1011,6 +1041,9 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
     <div><span class="lb">Sul foglio</span><div class="code" id="tcode">---</div></div>
    </div>
   </div>
+
+
+
 
 
 
@@ -1400,8 +1433,18 @@ function isEmpty(i){
  for(let p=0;p<im.length;p+=16){if(im[p]<160){if(++k>6)return false}}
  return true}
 
-const SAFE_DEF=8;   // sus/jos (mm)
-const SAFE_X_DEF=8; // stânga/dreapta (mm), pune aici 7 dacă vrei 7 mm
+let SAFE_DEF=7;   // sus/jos (mm) – comandat din Impostazioni avanzate
+let SAFE_X_DEF=7; // stânga/dreapta (mm) – comandat din Impostazioni avanzate
+{
+ const el=$('sf');
+ try{const v=parseFloat(localStorage.getItem('sls_safe'));if(isFinite(v)&&v>=0)el.value=v}catch(_){}
+ const ap=()=>{
+  const v=parseFloat(String(el.value).replace(',','.'));
+  SAFE_DEF=SAFE_X_DEF=(isFinite(v)&&v>=0)?v:7;
+  try{localStorage.setItem('sls_safe',String(SAFE_DEF))}catch(_){}};
+ el.addEventListener('input',ap);ap();
+}
+
 const SAFE={};      // excepții sus/jos pe format, ex: {C531:6}
 const SAFE_X={};    // excepții stânga/dreapta pe format, ex: {A460:0}
 
@@ -1489,6 +1532,120 @@ function resetStart(){
  if(S){S.start=1;S.rp=0;S.exclusions={}}
  $('sstart').value=1;$('sstart').max=TG().n}
 
+/* ---------- Autodetecție format din conținut ---------- */
+function autoDetect(cv,W,H){
+ const k=2,mw=Math.round(W/MM*k),mh=Math.round(H/MM*k);
+ if(mw<10||mh<10)return[];
+ const sm=mipDown(cv,mw,mh);
+ const im=sm.getContext('2d').getImageData(0,0,mw,mh).data;
+ const ink=new Uint8Array(mw*mh),I=new Int32Array((mw+1)*(mh+1));
+ for(let y=0;y<mh;y++){
+  let row=0;
+  for(let x=0;x<mw;x++){
+   const q=(y*mw+x)*4,v=(im[q]<225||im[q+1]<225||im[q+2]<225)?1:0;
+   ink[y*mw+x]=v;row+=v;
+   I[(y+1)*(mw+1)+x+1]=I[y*(mw+1)+x+1]+row}}
+ const tot=I[mh*(mw+1)+mw];
+ if(tot<30)return[];
+ const sum=(x0,y0,x1,y1)=>{
+  x0=clamp(x0,0,mw);x1=clamp(x1,0,mw);y0=clamp(y0,0,mh);y1=clamp(y1,0,mh);
+  if(x1<=x0||y1<=y0)return 0;
+  return I[y1*(mw+1)+x1]-I[y0*(mw+1)+x1]-I[y1*(mw+1)+x0]+I[y0*(mw+1)+x0]};
+ const out=[],tol=.5;
+ for(const d of D){
+  if(Math.abs(d.SW*MM-W)>6||Math.abs(d.SH*MM-H)>6)continue;   // doar formate cu aceeași foaie
+  const cs=cells(d);
+  let ins=0;
+  for(const c of cs)ins+=sum(Math.floor((c[0]-tol)*k),Math.floor((c[1]-tol)*k),Math.ceil((c[0]+d.W+tol)*k),Math.ceil((c[1]+d.H+tol)*k));
+  const r=Math.min(1,ins/tot);
+  if(r<.985)continue;                                          // conținut în afara etichetelor = format greșit
+  let n=0,f=0;
+  for(const c of cs){
+   const x0=Math.max(0,Math.floor(c[0]*k)),y0=Math.max(0,Math.floor(c[1]*k));
+   const x1=Math.min(mw,Math.ceil((c[0]+d.W)*k)),y1=Math.min(mh,Math.ceil((c[1]+d.H)*k));
+   if(sum(x0,y0,x1,y1)<4)continue;
+   let a=x1,b=y1,e=-1,g=-1;
+   for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)if(ink[y*mw+x]){if(x<a)a=x;if(x>e)e=x;if(y<b)b=y;if(y>g)g=y}
+   if(e<0)continue;
+   n++;f+=Math.sqrt(((e-a+1)/(x1-x0))*((g-b+1)/(y1-y0)))}      // cât din etichetă ocupă conținutul
+  if(!n)continue;
+  // penalizare: marginile celulei nu trebuie să taie conținutul
+  let hit=0,tt=0;const bd=2;
+  const ik=(x,y)=>x>=0&&y>=0&&x<mw&&y<mh&&ink[y*mw+x]===1;
+  for(const c of cs){
+   const x0=Math.round(c[0]*k),y0=Math.round(c[1]*k),x1=Math.round((c[0]+d.W)*k),y1=Math.round((c[1]+d.H)*k);
+   if(sum(x0,y0,x1,y1)<4)continue;
+   for(let x=x0;x<x1;x++){
+    tt+=2;
+    for(let q=0;q<bd;q++)if(ik(x,y0+q)){hit++;break}
+    for(let q=1;q<=bd;q++)if(ik(x,y1-q)){hit++;break}
+   }
+   for(let y=y0;y<y1;y++){
+    tt+=2;
+    for(let q=0;q<bd;q++)if(ik(x0+q,y)){hit++;break}
+    for(let q=1;q<=bd;q++)if(ik(x1-q,y)){hit++;break}
+   }
+  }
+  const cut=tt?hit/tt:0;
+  out.push({code:d.code,score:f/n*r*Math.max(0,1-cut*6)})}
+
+ out.sort((a,b)=>b.score-a.score);
+ return out.filter(o=>o.code!=='C503'&&o.score>=.4).slice(0,4);
+
+}
+
+function askDetected(sg,cv){
+ return new Promise(res=>{
+  if(!$('dtCss')){
+   const st=document.createElement('style');st.id='dtCss';
+   st.textContent=`
+.dt-card{max-width:860px}
+.dt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:4px 0 16px;text-align:left}
+.dt-c{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:16px;border:1px solid var(--line2);background:rgba(255,255,255,.03);text-align:left;transition:.15s var(--ease)}
+.dt-c:hover,.dt-c:focus-visible{border-color:var(--a);background:rgba(45,212,191,.1);transform:translateY(-2px);box-shadow:0 10px 26px rgba(45,212,191,.16)}
+.dt-c.first{border-color:rgba(45,212,191,.55)}
+.dt-pv{display:grid;place-items:center;padding:8px;border-radius:10px;background:rgba(0,0,0,.35);border:1px solid var(--line)}
+.dt-pv svg{display:block;width:100%;height:auto;max-height:240px;box-shadow:0 6px 16px rgba(0,0,0,.5)}
+.dt-c b{font-size:15px;font-weight:900}
+.dt-c small{color:var(--m);font-size:11px;font-weight:600}`;
+   document.head.appendChild(st)}
+
+  const tw=480,th=Math.round(tw*cv.height/cv.width);
+  const img=mipDown(cv,tw,th).toDataURL('image/jpeg',.9);
+  const list=[{code:'C503'},...sg];
+
+  const card=o=>{
+   const d=D.find(x=>x.code===o.code);
+   const p=cells(d).map(c=>cellPath(c[0],c[1],d.W,d.H,d.rad,d.ci)).join('');
+   const svg=`<svg viewBox="0 0 ${d.SW} ${d.SH}" preserveAspectRatio="xMidYMid meet"><rect width="${d.SW}" height="${d.SH}" fill="#fff"/><image href="${img}" width="${d.SW}" height="${d.SH}" preserveAspectRatio="none"/><path d="${p}" fill="none" stroke="#ff2d6f" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>`;
+   const sub=o.code==='C503'?'foaie întreagă':d.n+' etichete · '+nf(d.W)+'×'+nf(d.H)+' mm';
+   return `<button type="button" class="dt-c${o.code==='C503'?' first':''}" data-c="${o.code}"><span class="dt-pv">${svg}</span><b>${o.code}</b><small>${sub}</small></button>`};
+
+  const ov=document.createElement('div');
+  ov.className='dlg-overlay';
+  ov.innerHTML='<div class="dlg-card clr-card dt-card"><h3>Formato non nel nome</h3><p>Controlla che il contenuto stia dentro i contorni rossi, poi scegli il formato.</p><div class="dt-grid">'+list.map(card).join('')+'</div><div class="clr-actions"><button class="btn" type="button" data-x="1">Annulla</button></div></div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('open'));
+
+  let done=false;
+  const fin=c=>{
+   if(done)return;done=true;
+   window.removeEventListener('keydown',kd,true);
+   ov.classList.remove('open');setTimeout(()=>ov.remove(),250);
+   res(c)};
+  const kd=e=>{
+   if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fin(null)}};
+  window.addEventListener('keydown',kd,true);
+  ov.addEventListener('mousedown',e=>{if(e.target===ov)fin(null)});
+  ov.addEventListener('click',e=>{
+   const b=e.target.closest('[data-c]');
+   if(b){fin(b.dataset.c);return}
+   if(e.target.closest('[data-x]'))fin(null)});
+
+  setTimeout(()=>{const f=ov.querySelector('.dt-c');if(f)f.focus()},60);
+ })}
+
+
 async function loadPDF(file){
  if(!window.pdfjsLib){toast('La libreria pdf.js non è stata caricata.');return}
  try{
@@ -1504,7 +1661,16 @@ async function loadPDF(file){
   ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
   await pg.render({canvasContext:ctx,viewport:vp}).promise;
   // PDF senza formato riconosciuto -> formato standard C503
-  const code=detect(file.name),pick=code?refine(code,v1.width,v1.height):DEFAULT_FMT;
+  const code=detect(file.name);
+  let pick=code?refine(code,v1.width,v1.height):DEFAULT_FMT;
+  if(!code&&!window.NOASK){
+   try{const sg=autoDetect(cv,v1.width,v1.height);
+    if(sg.length){
+     pick=await askDetected(sg,cv);
+     if(pick===null)return;   // Annulla: nu deschide nimic
+    }}catch(_){}}
+
+
   S={name:file.name,base:file.name.replace(/\.[^.]*$/,''),bytes,pages:doc.numPages,W:v1.width,H:v1.height,cv,ctx,code,det:pick,rot:pg.rotate||0,start:1,rp:0,total:0,sheets:1,totAuto:true,exclusions:{}};
   if(pick){cur=D.find(x=>x.code===pick)||cur;if(tgt===cur)tgt=null;fam='*';txt='';$('q').value='';
    $('chips').querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0))}
@@ -2565,7 +2731,8 @@ function pdfRender(){
  $('pdfList').innerHTML=pRes.length?pRes.map((m,i)=>`<button type="button" class="lf${m.code?'':' nofmt'}" data-i="${i}"><span class="pi2">PDF</span><span class="ln">${esc(m.name)}</span><b class="bd" title="${esc(m.path)}">${m.code?esc(m.code):'senza formato'}</b></button>`).join(''):'<div class="lib-none">Nessun PDF trovato</div>';
  pdfSelect(0,false)}
 function openPdfModal(init){
- if(!LIB.length){if(!init)pickFile();return}
+ if(!LIB.length){if(!init){if(S&&S.design)$('edPdf').click();else pickFile()}return}
+
  const pq=$('pq');
  pq.value=init||'';pdfRender();
  pdfModal.classList.add('open');
@@ -2807,8 +2974,9 @@ document.addEventListener('keydown',e=>{
  if(!isDel&&!isSpace&&!isChar)return;
  const a=document.activeElement,tg=a&&a.tagName;
  if(tg==='TEXTAREA'||tg==='SELECT'||(a&&a.isContentEditable))return;
- if(isSpace&&tg==='INPUT')return;
- if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox')return;
+ if(isSpace&&tg==='INPUT'&&a.type!=='number'&&a.type!=='range'&&a.type!=='checkbox')return;
+ if(tg==='INPUT'&&a.type!=='range'&&a.type!=='checkbox'&&!(isSpace&&a.type==='number'))return;
+
  if(modal.classList.contains('open')||pdfModal.classList.contains('open')||clrDlg.classList.contains('open')||document.querySelector('.dlg-overlay.open'))return;
 
  if(isSpace&&a&&a.closest&&a.closest('#lib'))return;
@@ -3000,7 +3168,9 @@ async function lastRestore(){
   const db=await idb();
   const rec=await reqP(db.transaction('h').objectStore('h').get(KEY));
   if(!rec||!rec.blob||S)return;
-  await loadPDF(new File([rec.blob],rec.name||'etichetta.pdf',{type:'application/pdf'}));
+  window.NOASK=true;
+  try{await loadPDF(new File([rec.blob],rec.name||'etichetta.pdf',{type:'application/pdf'}))}
+  finally{window.NOASK=false}
   if(!S||S.design)return;
   if(!cfg||cfg.name!==S.name){render();return}
 
@@ -3922,11 +4092,18 @@ const w=cw/nw*it.w,h=ch/nh*it.h,col=pickCol(fx,pts[0],nw,nh),pt=fillPatch(fx,sx,
   ni.src=URL.createObjectURL(b)},'image/png')}
 
 function paintDoc(){
- const E=E_(),el=$('edDoc');if(!el)return;
+ const E=E_(),el=$('edDoc'),df=$('bsDef');if(!el)return;
  const n=E&&E.doc;
- el.hidden=!n;el.textContent=n?'📄 '+n:'';el.title=n||''}
+ el.hidden=!n;el.title=n||'';
+ if(df)df.hidden=!!n;
+ if(!n){el.textContent='';return}
+ el.innerHTML='<i class="dpi">PDF</i><span class="dn">'+esc(n.replace(/\.pdf$/i,''))+'</span>'}
+
+
 async function addPdfFile(file){
+ const fmtHint=window.NEXTFMT||null;window.NEXTFMT=null;
  {const E0=E_();if(E0){E0.doc=file.name;paintDoc()}}
+
 
  if(!window.pdfjsLib){toast('La libreria pdf.js non è stata caricata.');return}
  try{
@@ -3940,7 +4117,8 @@ async function addPdfFile(file){
   await pg.render({canvasContext:ctx,viewport:vp}).promise;
   /* daca formatul e recunoscut: se ia prima eticheta cu continut */
   let src=cv,box={x:0,y:0,w:cv.width,h:cv.height};
-  const code=detect(file.name),fc=code?refine(code,v1.width,v1.height):null,d=fc&&D.find(x=>x.code===fc);
+  const code=detect(file.name)||fmtHint,fc=code?refine(code,v1.width,v1.height):null,d=fc&&D.find(x=>x.code===fc);
+
   if(d&&Math.abs(d.SW*MM-v1.width)<6&&Math.abs(d.SH*MM-v1.height)<6){
    const kx=cv.width/d.SW,ky=cv.height/d.SH;
    for(const c of cells(d)){
@@ -4146,8 +4324,10 @@ $('pdfEdit').onclick=e=>{
   await _lpE(f);
   if(!S||S.design||!S.bytes)return;
   const f2=new File([S.bytes.slice()],S.name,{type:'application/pdf'});
+  window.NEXTFMT=S.det||null;
   window.startDesign(cur);
   window.edAddPdf(f2);
+
  };
 }
 $('edClose').onclick=()=>$('clr').click();
@@ -4373,7 +4553,8 @@ window.addEventListener('keydown',e=>{
   s.forEach(i=>{if(k==='ArrowLeft')i.x-=st;if(k==='ArrowRight')i.x+=st;if(k==='ArrowUp')i.y-=st;if(k==='ArrowDown')i.y+=st});
   if(s.length)touch(false);
  }else if(lk==='r'){rotView(e.shiftKey?-1:1)}
- else if(k===' '||k.length===1){/* înghite: nu deschide căutarea PDF */}
+ else if(k.length===1&&k!==' '){/* înghite literele; spațiul rămâne liber pentru popup-ul PDF */}
+
 
 
  else used=false;
