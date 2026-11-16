@@ -902,7 +902,7 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
       <label class="tg dep" title="Cifre bold"><input type="checkbox" id="edBb"><b>B</b></label>
      </div>
      <div class="pf bc-txt dep" title="Dimensione cifre (pt)"><span>pt</span><input class="ein" id="edBs" type="number" step="any" min="0.1"></div>
-     <label class="tgl bc-bg" title="Sfondo bianco sub cod"><input type="checkbox" id="edBg"><span>Sfondo</span></label>
+     <label class="tgl bc-bg" title="Sfondo bianco sotto il codice"><input type="checkbox" id="edBg"><span>Sfondo</span></label>
     </div>
    </div>
   </details>
@@ -919,7 +919,7 @@ textarea.ein{height:auto;min-height:40px;padding:6px 9px;resize:vertical;font-we
      <label class="tgl" id="edShFL" style="justify-content:center"><input type="checkbox" id="edShF"><span>Riempita</span></label>
      <label class="tgl" id="edShDL" style="justify-content:center"><input type="checkbox" id="edShD"><span>Tratteggiata</span></label>
     </div>
-    <div class="pf" id="edShNL" title="Lungimea liniuței (× grosime)"><span>Tratto</span><input class="ein" id="edShN" type="number" step="0.5" min="0.5"></div>
+    <div class="pf" id="edShNL" title="Lunghezza del tratto (× spessore)"><span>Tratto</span><input class="ein" id="edShN" type="number" step="0.5" min="0.5"></div>
    </div>
   </details>
 
@@ -1612,14 +1612,14 @@ function askDetected(sg,cv){
 
   const tw=480,th=Math.round(tw*cv.height/cv.width);
   const img=mipDown(cv,tw,th).toDataURL('image/jpeg',.9);
-  const list=[{code:'C503'},...sg];
+  const list=[...sg.slice(0,1),{code:'C503'}];
 
-  const card=o=>{
+  const card=(o,ix)=>{
    const d=D.find(x=>x.code===o.code);
    const p=cells(d).map(c=>cellPath(c[0],c[1],d.W,d.H,d.rad,d.ci)).join('');
    const svg=`<svg viewBox="0 0 ${d.SW} ${d.SH}" preserveAspectRatio="xMidYMid meet"><rect width="${d.SW}" height="${d.SH}" fill="#fff"/><image href="${img}" width="${d.SW}" height="${d.SH}" preserveAspectRatio="none"/><path d="${p}" fill="none" stroke="#ff2d6f" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>`;
-   const sub=o.code==='C503'?'foaie întreagă':d.n+' etichete · '+nf(d.W)+'×'+nf(d.H)+' mm';
-   return `<button type="button" class="dt-c${o.code==='C503'?' first':''}" data-c="${o.code}"><span class="dt-pv">${svg}</span><b>${o.code}</b><small>${sub}</small></button>`};
+   const sub=o.code==='C503'?'foglio intero':d.n+' etichete · '+nf(d.W)+'×'+nf(d.H)+' mm';
+   return `<button type="button" class="dt-c${ix===0?' first':''}" data-c="${o.code}"><span class="dt-pv">${svg}</span><b>${o.code}</b><small>${sub}</small></button>`};
 
   const ov=document.createElement('div');
   ov.className='dlg-overlay';
@@ -3232,7 +3232,7 @@ let CUTM=false;
 let DRAWK=null; // 'rect' | 'ellipse' | 'line' cât timp ești în modul desen
 function setDraw(k){
  DRAWK=k;
- if(k)toast(k==='line'?'Apasă și trage. Linia se îndreaptă singură (Alt = liber)':'Apasă și trage pentru a desena (Shift = proporțional)',true);
+ if(k)toast(k==='line'?'Premi e trascina. La linea si raddrizza da sola (Alt = libera)':'Premi e trascina per disegnare (Shift = proporzionale)',true);
  paintEd()}
 
 function setCUT(v){CUTM=!!v;$('edCut').classList.toggle('on',CUTM);paintEd()}
@@ -3438,7 +3438,7 @@ function undo(d){
 /* ---------- Pornire / schimbare format ---------- */
 window.startDesign=function(t){
  P=P_MAX;
- const E={w:t.W,h:t.H,ci:t.ci,rad:t.rad,items:[],sel:new Set(),hist:[],hi:-1,dom:null,guides:[],mq:null};
+ const E={oc:t.code,w:t.W,h:t.H,ci:t.ci,rad:t.rad,items:[],sel:new Set(),hist:[],hi:-1,dom:null,guides:[],mq:null};
  const v={code:t.code,W:t.W,H:t.H,fmt:'',SW:t.W,SH:t.H,c:1,r:1,ml:0,mt:0,gh:0,gv:0,rad:t.rad,ci:t.ci,n:1,mr:0,mb:0};
  const cv=document.createElement('canvas'),ctx=cv.getContext('2d',{willReadFrequently:true});
  S={name:'Etichetta '+t.code+'.pdf',base:'Etichetta',bytes:null,pages:1,W:t.W*MM,H:t.H*MM,cv,ctx,code:null,det:null,rot:0,start:1,rp:0,total:0,sheets:1,totAuto:true,exclusions:{},design:E,cells:[[0,0]],ink:{},emp:[false],cp:[1]};
@@ -3569,6 +3569,8 @@ render=function(){
 
  $('l1').parentNode.firstChild.nodeValue=on?'Banco di lavoro · ':'Prima · ';
  document.querySelector('#topConvBar .fmt-badge .lb').textContent=on?'Etichetta':'Dal PDF';
+ if(on&&S.design.oc)$('fcode').textContent=S.design.oc;
+
  if(on){$('fmeta').textContent=nf(S.design.w)+'×'+nf(S.design.h)+' mm · design';updUndo()}
  paintDoc()};
 const _clr=$('clr').onclick;
@@ -4409,9 +4411,10 @@ function updLyr(){
  if(E.hov!=null&&!E.items.some(i=>i.id===E.hov)){E.hov=null;paintEd()}
  const key=E.items.map(i=>i.id+(i.hid?'h':'')+(E.sel.has(i.id)?'s':'')).join(',');
  if(key===lyrKey)return;lyrKey=key;
- el.innerHTML=E.items.map(it=>{
+ el.innerHTML=E.items.slice().reverse().map(it=>{
+
   const nm=DN[it.type==='img'||it.type==='text'?it.type:it.kind];
-  return `<button type="button" class="dot${E.sel.has(it.id)?' on':''}${it.hid?' hid':''}" data-id="${it.id}" title="${nm}${it.hid?' (ascuns)':''} · click: selectează · click dreapta: ascunde/arată"><svg class="i" viewBox="0 0 24 24">${DI[dotK(it)]||''}</svg></button>`}).join('')}
+  return `<button type="button" class="dot${E.sel.has(it.id)?' on':''}${it.hid?' hid':''}" data-id="${it.id}" title="${nm}${it.hid?' (nascosto)':''} · clic: seleziona · clic destro: nascondi/mostra"><svg class="i" viewBox="0 0 24 24">${DI[dotK(it)]||''}</svg></button>`}).join('')}
 {
  const L=$('lyr');
  const dotOf=e=>{const b=e.target.closest&&e.target.closest('.dot');return b?+b.dataset.id:null};
@@ -4425,7 +4428,7 @@ function updLyr(){
  L.addEventListener('click',e=>{
   const id=dotOf(e),E=E_();if(id==null||!E)return;
   const it=E.items.find(i=>i.id===id);if(!it)return;
-  if(it.hid){toast('Element ascuns · click dreapta pe bulină ca să-l arăți',true);return}
+  if(it.hid){toast('Elemento nascosto · clic destro sulla pallina per mostrarlo',true);return}
   E.sel=(e.ctrlKey||e.metaKey)?(E.sel.has(id)?new Set([...E.sel].filter(x=>x!==id)):new Set([...E.sel,id])):new Set([id]);
 
   paintSel();syncInsp()});
@@ -4472,7 +4475,8 @@ function updLyr(){
   const E=E_();if(!E)return;
   const it=E.items.find(i=>i.id===d.id);if(!it)return;
   const rest=E.items.filter(i=>i.id!==d.id);
-  rest.splice(clamp(d.to,0,rest.length),0,it);
+  rest.splice(clamp(rest.length-d.to,0,rest.length),0,it);
+
   if(rest.every((v,i)=>v===E.items[i]))return;
   E.items=rest;touch(true)};
  window.addEventListener('pointerup',endDrag);
@@ -4616,7 +4620,7 @@ async function dsvSave(){
    }
   }
 const pdfs={};items.forEach(it=>{if(it.pdf&&PDFS[it.pdf.id])pdfs[it.pdf.id]=PDFS[it.pdf.id]});
-  const rec={doc:E.doc||null,tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs,pdfs};
+  const rec={oc:E.oc||null,doc:E.doc||null,tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs,pdfs};
 
   const db=await idb();
   const tx=db.transaction('h','readwrite');
@@ -4654,7 +4658,7 @@ async function dsvRestore(r){
   const E=E_();
   E.items=r.items;
   if(r.fr){E.fr=r.fr;E.ow=r.ow;E.oh=r.oh;E.oci=r.oci}
-  E.vr=r.vr||0;E.doc=r.doc||null;paintDoc();
+  E.vr=r.vr||0;E.doc=r.doc||null;E.oc=r.oc||E.oc;paintDoc();
   E.hist=[];E.hi=-1;
   touch(true);
   fitSheets();
@@ -4730,10 +4734,10 @@ if((()=>{try{return localStorage.getItem('sls_mode')==='design'}catch(_){return 
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
         .then((reg) => {
-          console.log('Service Worker înregistrat cu succes:', reg.scope);
+          console.log('Service Worker registrato con successo:', reg.scope);
         })
         .catch((err) => {
-          console.log('Eroare la înregistrarea Service Worker-ului:', err);
+          console.log('Errore nella registrazione del Service Worker:', err);
         });
     });
   }
