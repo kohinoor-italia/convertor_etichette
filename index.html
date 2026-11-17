@@ -2277,10 +2277,15 @@ const nat=(a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'});
 const fmtSize=b=>b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
 const normPath=p=>String(p).replace(/\\/g,'/').replace(/^\/+/,'').replace(/\/{2,}/g,'/');
 
+async function delLib(list){
+ const tx=(await idb()).transaction(['meta','data'],'readwrite');
+ list.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
+ await txDone(tx)}
 async function refreshLib(){
  const db=await idb();
  LIB=(await reqP(db.transaction('meta').objectStore('meta').getAll())).filter(m=>!isExc(m.path));
  renderLib()}
+
 
 function buildTree(list){
  const root={d:{},f:[]};
@@ -2373,10 +2378,8 @@ async function importItems(items,quiet){
   if($('syncDel').checked){
    const roots=new Set(ok.filter(o=>o.path.includes('/')).map(o=>o.path.split('/')[0]));
    const old=LIB.filter(m=>m.path.includes('/')&&roots.has(m.path.split('/')[0])&&!seen.has(m.path));
-   if(old.length){
-    const tx=db.transaction(['meta','data'],'readwrite');
-    old.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
-    await txDone(tx);removed=old.length}
+   if(old.length){await delLib(old);removed=old.length}
+
   }
 
   // 3) scrittura solo di ciò che serve
@@ -2433,8 +2436,11 @@ async function walkHandle(dir,prefix,out){
   await Promise.all(files.slice(i,i+64).map(async([n,h])=>{
    out.push({file:await h.getFile(),path:prefix+n})}));
 }
-async function getH(){const db=await idb();return reqP(db.transaction('h').objectStore('h').get('root'))}
-async function setH(h){const db=await idb();const tx=db.transaction('h','readwrite');tx.objectStore('h').put(h,'root');await txDone(tx)}
+const hGet=async k=>reqP((await idb()).transaction('h').objectStore('h').get(k));
+const hPut=async(k,v)=>{const tx=(await idb()).transaction('h','readwrite');tx.objectStore('h').put(v,k);await txDone(tx)};
+const hDel=async k=>{const tx=(await idb()).transaction('h','readwrite');tx.objectStore('h').delete(k);await txDone(tx)};
+const getH=()=>hGet('root'),setH=h=>hPut('root',h);
+
 async function scanH(h){
  $('libBar').hidden=false;
  $('libStatus').textContent='Scansione cartella…';
@@ -2613,17 +2619,9 @@ function excFilter(){
 async function excApply(){
  const ch=[...$('excList').querySelectorAll('input[data-p]:checked')].map(x=>x.dataset.p);
  if(!ch.length)return;
- const top=ch.filter(p=>!ch.some(q=>q!==p&&p.startsWith(q+'/')));
- const del=LIB.filter(m=>top.some(t=>m.path===t||m.path.startsWith(t+'/')));
- setExc([...EXC.filter(x=>!top.some(t=>x===t||x.startsWith(t+'/'))),...top]);
  $('excDlg').classList.remove('open');
- try{
-  const db=await idb(),tx=db.transaction(['meta','data'],'readwrite');
-  del.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
-  await txDone(tx);
-  await refreshLib();
-  toast(top.length+(top.length===1?' cartella esclusa':' cartelle escluse')+' · '+del.length+' PDF rimossi dalla libreria',true);
- }catch(e){toast('Errore: '+(e.message||e))}}
+ await excPaths(ch.filter(p=>!ch.some(q=>q!==p&&p.startsWith(q+'/'))))}
+
 function openExcDlg(){
  if(!LIB.length&&!EXC.length)return;
  let ov=$('excDlg');
@@ -2661,48 +2659,58 @@ function openExcDlg(){
  if(window.innerWidth>1000)setTimeout(()=>$('excQ').focus(),50)}
 
 $('btnClearLib').onclick=openExcDlg;
-/* ---------- Click dreapta în libreria de PDF: exclude cartela ---------- */
-async function excOne(p){
- const del=LIB.filter(m=>m.path===p||m.path.startsWith(p+'/'));
- setExc([...EXC.filter(x=>!(x===p||x.startsWith(p+'/'))),p]);
+/* ---------- Excludere cartele (comun pentru dialog și click dreapta) ---------- */
+async function excPaths(top){
+ const del=LIB.filter(m=>top.some(t=>m.path===t||m.path.startsWith(t+'/')));
+ setExc([...EXC.filter(x=>!top.some(t=>x===t||x.startsWith(t+'/'))),...top]);
  try{
-  const db=await idb(),tx=db.transaction(['meta','data'],'readwrite');
-  del.forEach(m=>{tx.objectStore('meta').delete(m.path);tx.objectStore('data').delete(m.path)});
-  await txDone(tx);
+  await delLib(del);
   await refreshLib();
-  toast('Cartella esclusa · '+del.length+' PDF rimossi dalla libreria (ripristinabile da «Escludi cartelle»)',true);
+  toast(top.length+(top.length===1?' cartella esclusa':' cartelle escluse')+' · '+del.length+' PDF rimossi dalla libreria',true);
  }catch(e){toast('Errore: '+(e.message||e))}}
-{
+
+const excOne=p=>excPaths([p]);
+
+/* meniu flotant reutilizabil: items = [[eticheta,hint,fn,dezactivat] | '-'] */
+function popMenu(minW){
  const m=document.createElement('div');
- m.style.cssText='position:fixed;z-index:150;display:none;flex-direction:column;gap:1px;padding:5px;min-width:230px;max-width:340px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
+ m.style.cssText='position:fixed;z-index:150;display:none;flex-direction:column;gap:1px;padding:5px;max-width:340px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6);min-width:'+minW+'px';
  document.body.appendChild(m);
  const hide=()=>{m.style.display='none'};
- const add=(label,fn)=>{
-  const b=document.createElement('button');
-  b.type='button';b.className='btn sm';
-  b.style.cssText='justify-content:flex-start;border-color:transparent;background:transparent;box-shadow:none;white-space:normal;text-align:left';
-  b.textContent=label;
-  b.onclick=()=>{hide();fn()};
-  m.appendChild(b)};
+ document.addEventListener('pointerdown',e=>{if(m.contains(e.target)){e.stopImmediatePropagation();return}hide()},true);
+ window.addEventListener('keydown',e=>{if(e.key==='Escape')hide()},true);
+ ['resize','blur'].forEach(ev=>window.addEventListener(ev,hide));
+ return{hide,show(x,y,items){
+  m.innerHTML='';
+  items.forEach(it=>{
+   if(it==='-'){const s=document.createElement('div');s.style.cssText='height:1px;margin:4px 6px;background:rgba(255,255,255,.12)';m.appendChild(s);return}
+   const[n,k,fn,off]=it,b=document.createElement('button');
+   b.type='button';b.className='btn sm';
+   b.style.cssText='justify-content:space-between;gap:18px;border-color:transparent;background:transparent;box-shadow:none;white-space:normal;text-align:left';
+   b.innerHTML='<span></span><small style="color:var(--m2);font-weight:600"></small>';
+   b.firstChild.textContent=n;b.lastChild.textContent=k||'';
+   b.disabled=!!off;
+   b.onclick=()=>{hide();fn()};
+   m.appendChild(b)});
+  m.style.display='flex';
+  const w=m.offsetWidth,h=m.offsetHeight;
+  m.style.left=Math.max(4,Math.min(x,innerWidth-w-8))+'px';
+  m.style.top=Math.max(4,Math.min(y,innerHeight-h-8))+'px'}}}
+
+{
+ const M=popMenu(230);
  $('libTree').addEventListener('contextmenu',e=>{
   e.preventDefault();
   let p=null;
   const s=e.target.closest('.fd > summary'),f=e.target.closest('.lf');
   if(s)p=s.parentNode.dataset.p;
   else if(f){const a=f.dataset.p.split('/');a.pop();p=a.join('/')||null}
-  m.innerHTML='';
-  if(p)add('Escludi cartella «'+p.split('/').pop()+'»',()=>excOne(p));
-  add('Escludi cartelle…',openExcDlg);
-  m.style.display='flex';
-  const w=m.offsetWidth,h=m.offsetHeight;
-  m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-w-8))+'px';
-  m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-h-8))+'px'});
- document.addEventListener('pointerdown',e=>{if(!m.contains(e.target))hide()},true);
- window.addEventListener('keydown',e=>{if(e.key==='Escape')hide()},true);
- window.addEventListener('resize',hide);
- window.addEventListener('blur',hide);
- $('libTree').addEventListener('scroll',hide,{passive:true});
+  M.show(e.clientX,e.clientY,[
+   ...(p?[['Escludi cartella «'+p.split('/').pop()+'»','',()=>excOne(p)]]:[]),
+   ['Escludi cartelle…','',openExcDlg]])});
+ $('libTree').addEventListener('scroll',M.hide,{passive:true});
 }
+
 
 
 $('btnExc2').onclick=e=>{e.stopPropagation();openExcDlg()};
@@ -2732,13 +2740,12 @@ function pdfRender(){
  pdfSelect(0,false)}
 function openPdfModal(init){
  if(!LIB.length){if(!init){if(S&&S.design)$('edPdf').click();else pickFile()}return}
-
- const pq=$('pq');
+ const pq=$('pq'),fc=()=>{pq.focus();try{const n=pq.value.length;pq.setSelectionRange(n,n)}catch(_){}};
  pq.value=init||'';pdfRender();
  pdfModal.classList.add('open');
- pq.focus();
- try{const n=pq.value.length;pq.setSelectionRange(n,n)}catch(_){}
- setTimeout(()=>{if(pdfModal.classList.contains('open')&&document.activeElement!==pq){pq.focus();try{const n=pq.value.length;pq.setSelectionRange(n,n)}catch(_){}}},30)}
+ fc();
+ setTimeout(()=>{if(pdfModal.classList.contains('open')&&document.activeElement!==pq)fc()},30)}
+
 function closePdfModal(){pdfModal.classList.remove('open');$('pq').blur()}
 function pickFromModal(i){
  const m=pRes[i];if(!m)return;
@@ -3107,23 +3114,12 @@ $('libq').oninput=(()=>{let tm;return e=>{
 (()=>{
 const KEY='lastpdf',CFG='sls_last_cfg';
 
-async function lastSave(f){
- try{
-  const db=await idb();
-  const tx=db.transaction('h','readwrite');
-  tx.objectStore('h').put({blob:f,name:f.name},KEY);
-  await txDone(tx);
- }catch(_){}
-}
+const lastSave=f=>hPut(KEY,{blob:f,name:f.name}).catch(()=>{});
 async function lastDrop(){
  try{localStorage.removeItem(CFG)}catch(_){}
- try{
-  const db=await idb();
-  const tx=db.transaction('h','readwrite');
-  tx.objectStore('h').delete(KEY);
-  await txDone(tx);
- }catch(_){}
+ hDel(KEY).catch(()=>{});
 }
+
 function cfgSave(){
  if(!S||S.design)return;
  try{
@@ -3165,8 +3161,8 @@ async function lastRestore(){
  let cfg=null;
  try{cfg=JSON.parse(localStorage.getItem(CFG))}catch(_){}
  try{
-  const db=await idb();
-  const rec=await reqP(db.transaction('h').objectStore('h').get(KEY));
+  const rec=await hGet(KEY);
+
   if(!rec||!rec.blob||S)return;
   window.NOASK=true;
   try{await loadPDF(new File([rec.blob],rec.name||'etichetta.pdf',{type:'application/pdf'}))}
@@ -3454,6 +3450,26 @@ function undo(d){
 
 
 /* ---------- Pornire / schimbare format ---------- */
+/* mută/scalează `items` din cadrul vechi `fr` în formatul t; întoarce cadrul nou */
+function reframe(items,fr,ow,oh,oci,t){
+ let k=Math.min(t.W/ow,t.H/oh);
+ if(t.ci&&!oci)k=Math.min(k,Math.min(t.W,t.H)/Math.hypot(ow,oh));
+ const nw=ow*k,nh=oh*k,nx=(t.W-nw)/2,ny=(t.H-nh)/2,s=nw/fr.w;
+ const sc=(it,f)=>{
+  if(it.type==='text')it.size=+(it.size*f).toFixed(3);
+  if(it.type==='bar')it.tsize=+(it.tsize*f).toFixed(3);
+  if(it.type==='shape')it.sw=+((it.sw||.5)*f).toFixed(3)};
+ items.forEach(it=>{
+  it.x=nx+(it.x-fr.x)*s;it.y=ny+(it.y-fr.y)*s;it.w*=s;it.h*=s;sc(it,s);
+  let b=bbox([it]);
+  const bw=b[2]-b[0],bh=b[3]-b[1];
+  if(bw>t.W||bh>t.H){
+   const f=Math.min(t.W/bw,t.H/bh),cx=it.x+it.w/2,cy=it.y+it.h/2;
+   it.w*=f;it.h*=f;it.x=cx-it.w/2;it.y=cy-it.h/2;sc(it,f);b=bbox([it])}
+  if(b[0]<0)it.x-=b[0];else if(b[2]>t.W)it.x+=t.W-b[2];
+  if(b[1]<0)it.y-=b[1];else if(b[3]>t.H)it.y+=t.H-b[3]});
+ return{x:nx,y:ny,w:nw,h:nh}}
+
 window.startDesign=function(t){
  P=P_MAX;
  const E={oc:t.code,w:t.W,h:t.H,ci:t.ci,rad:t.rad,items:[],sel:new Set(),hist:[],hi:-1,dom:null,guides:[],mq:null};
@@ -3462,40 +3478,18 @@ window.startDesign=function(t){
  S={name:'Etichetta '+t.code+'.pdf',base:'Etichetta',bytes:null,pages:1,W:t.W*MM,H:t.H*MM,cv,ctx,code:null,det:null,rot:0,start:1,rp:0,total:0,sheets:1,totAuto:true,exclusions:{},design:E,cells:[[0,0]],ink:{},emp:[false],cp:[1]};
  sizeCv();cur=v;tgt=t;rot=0;resetMg();$('ox').value=0;$('oy').value=0;
  resetStart();resetZ();snapNow();render();commit()};
+
 window.setDesignFmt=function(t){
  const E=S.design;
  /* cadrul original al designului (fix): primul format în care s-a lucrat */
  if(!E.fr){E.fr={x:0,y:0,w:E.w,h:E.h};E.ow=E.w;E.oh=E.h;E.oci=E.ci}
- /* cel mai mare cadru cu aspectul original care încape în noul format */
- let k=Math.min(t.W/E.ow,t.H/E.oh);
- if(t.ci&&!E.oci)k=Math.min(k,Math.min(t.W,t.H)/Math.hypot(E.ow,E.oh));
- const nw=E.ow*k,nh=E.oh*k,nx=(t.W-nw)/2,ny=(t.H-nh)/2,fr=E.fr,s=nw/fr.w;
- /* mută elementele din cadrul vechi în cadrul nou */
- E.items.forEach(it=>{
-  it.x=nx+(it.x-fr.x)*s;it.y=ny+(it.y-fr.y)*s;it.w*=s;it.h*=s;
-  if(it.type==='text')it.size=+(it.size*s).toFixed(3);
-  if(it.type==='bar')it.tsize=+(it.tsize*s).toFixed(3);
-  if(it.type==='shape')it.sw=+((it.sw||.5)*s).toFixed(3)});
- /* siguranță: niciun element nu rămâne în afara etichetei noi */
-
- E.items.forEach(it=>{
-  let b=bbox([it]),bw=b[2]-b[0],bh=b[3]-b[1];
-  if(bw>t.W||bh>t.H){
-   const f=Math.min(t.W/bw,t.H/bh),cx=it.x+it.w/2,cy=it.y+it.h/2;
-   it.w*=f;it.h*=f;it.x=cx-it.w/2;it.y=cy-it.h/2;
-   if(it.type==='text')it.size=+(it.size*f).toFixed(3);
-   if(it.type==='bar')it.tsize=+(it.tsize*f).toFixed(3);
-   b=bbox([it])}
-  let mx=0,my=0;
-  if(b[0]<0)mx=-b[0];else if(b[2]>t.W)mx=t.W-b[2];
-  if(b[1]<0)my=-b[1];else if(b[3]>t.H)my=t.H-b[3];
-  it.x+=mx;it.y+=my});
- E.fr={x:nx,y:ny,w:nw,h:nh};
-
+ E.fr=reframe(E.items,E.fr,E.ow,E.oh,E.oci,t);
  E.w=t.W;E.h=t.H;E.ci=t.ci;E.rad=t.rad;
  E.hist=[];E.hi=-1;
  Object.assign(cur,{code:t.code,W:t.W,H:t.H,SW:t.W,SH:t.H,rad:t.rad,ci:t.ci});
  tgt=t;S.W=t.W*MM;S.H=t.H*MM;S.cells=[[0,0]];sizeCv();resetStart();resetZ();snapNow();render();commit()};
+
+
 
 
 
@@ -3708,14 +3702,7 @@ function pick(E,mx,my){
   if(Math.abs(p[0]-cx)<=it.w/2&&Math.abs(p[1]-cy)<=it.h/2)return it}
  return null}
 
-/* dacă dai click pe un element deja selectat, rămâne el (chiar dacă sunt altele deasupra) */
-function pickSel(E,mx,my){
- for(let n=E.items.length-1;n>=0;n--){
-  const it=E.items[n];
-  if(it.hid||!E.sel.has(it.id))continue;
-  const[cx,cy]=ctr(it),p=rp(mx,my,cx,cy,-it.rot);
-  if(Math.abs(p[0]-cx)<=it.w/2&&Math.abs(p[1]-cy)<=it.h/2)return it}
- return null}
+
 
 
 function snapMove(E,mv,th){
@@ -3875,30 +3862,15 @@ window.addEventListener('pointerup',up);window.addEventListener('pointercancel',
 
 /* ---------- Meniu click dreapta pe masa de lucru ---------- */
 {
- const m=document.createElement('div');
- m.id='edCtx';
- m.style.cssText='position:fixed;z-index:150;display:none;flex-direction:column;gap:1px;padding:5px;min-width:220px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
- document.body.appendChild(m);
- const hide=()=>{m.style.display='none'};
+ const M=popMenu(220);
  const copySel=cut=>{
   const E=E_();if(!E||!E.sel.size)return;
   CLIP=JSON.stringify(sel(E));PN=0;
   try{navigator.clipboard&&navigator.clipboard.writeText(MARK).catch(()=>{})}catch(_){}
   if(cut)delSel()};
- function build(items){
-  m.innerHTML='';
-  items.forEach(it=>{
-   if(it==='-'){const s=document.createElement('div');s.style.cssText='height:1px;margin:4px 6px;background:rgba(255,255,255,.12)';m.appendChild(s);return}
-   const[n,k,fn,off]=it,b=document.createElement('button');
-   b.type='button';b.className='btn sm';
-   b.style.cssText='justify-content:space-between;gap:18px;border-color:transparent;background:transparent;box-shadow:none';
-   b.innerHTML='<span>'+n+'</span><small style="color:var(--m2);font-weight:600">'+k+'</small>';
-   b.disabled=!!off;
-   b.onclick=()=>{hide();fn()};
-   m.appendChild(b)})}
  document.addEventListener('contextmenu',e=>{
   const E=E_();
-  if(!E||!E.dom||!E.dom.ed.contains(e.target)){hide();return}
+  if(!E||!E.dom||!E.dom.ed.contains(e.target)){M.hide();return}
   e.preventDefault();
   const[mx,my]=mmOf(E,e),it=pick(E,mx,my);
   if(it&&!E.sel.has(it.id)){E.sel=new Set([it.id]);paintSel();syncInsp()}
@@ -3920,19 +3892,9 @@ window.addEventListener('pointerup',up);window.addEventListener('pointercancel',
    ['Ruota 90° a destra','',()=>rot90(1),!has],
    ['Ruota 90° a sinistra','',()=>rot90(-1),!has]];
   if(img)L.push('-',['Specchia orizzontale','',()=>flip('fx')],['Specchia verticale','',()=>flip('fy')]);
-  build(L);
-  m.style.display='flex';
-  const w=m.offsetWidth,h=m.offsetHeight;
-  m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-w-8))+'px';
-  m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-h-8))+'px'});
- /* click în meniu: nu lăsa handlerul de deselectare să ruleze; în afara lui: închide */
- document.addEventListener('pointerdown',e=>{
-  if(m.contains(e.target)){e.stopImmediatePropagation();return}
-  hide()},true);
- window.addEventListener('keydown',e=>{if(e.key==='Escape')hide()},true);
- window.addEventListener('resize',hide);
- window.addEventListener('blur',hide);
+  M.show(e.clientX,e.clientY,L)});
 }
+
 
 /* click in afara etichetei = deselectare (exceptie: panoul Editor, ferestre, pipeta) */
 document.addEventListener('pointerdown',e=>{
@@ -4291,12 +4253,9 @@ window.edAddPdf=addPdfFile;
 
 
 function mkMenu(btnId,items){
- const m=document.createElement('div');
- m.style.cssText='position:fixed;z-index:140;display:none;flex-direction:column;gap:2px;padding:5px;border-radius:12px;background:#1b1f38;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.6)';
- items.forEach(([n,fn])=>{const b=document.createElement('button');b.type='button';b.className='btn sm';b.style.cssText='justify-content:flex-start;min-width:170px';b.textContent=n;b.onclick=()=>{m.style.display='none';fn()};m.appendChild(b)});
- document.body.appendChild(m);
- $(btnId).onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();m.style.left=Math.min(r.left,innerWidth-190)+'px';m.style.top=(r.bottom+6)+'px';m.style.display=m.style.display==='flex'?'none':'flex'};
- document.addEventListener('pointerdown',e=>{if(!m.contains(e.target)&&!(e.target.closest&&e.target.closest('#'+btnId)))m.style.display='none'},true)}
+ const M=popMenu(170),L=items.map(([n,fn])=>[n,'',fn]);
+ $(btnId).onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();M.show(r.left,r.bottom+6,L)}}
+
 mkMenu('edAddI',[
  ['Immagine dal computer',()=>$('edFile').click()],
  ['PDF dal computer',()=>$('edPdf').click()],
@@ -4512,29 +4471,9 @@ function designPrev(t){
  if(FMC[key])return FMC[key];
  if(Object.keys(FMC).length>40)FMC={};
  try{
-  const items=JSON.parse(JSON.stringify(E.items));
   /* aceeași logică ca în setDesignFmt, dar pe o copie (nu modifică designul) */
-  const fr=E.fr||{x:0,y:0,w:E.w,h:E.h},ow=E.fr?E.ow:E.w,oh=E.fr?E.oh:E.h,oci=E.fr?E.oci:E.ci;
-  let k=Math.min(t.W/ow,t.H/oh);
-  if(t.ci&&!oci)k=Math.min(k,Math.min(t.W,t.H)/Math.hypot(ow,oh));
-  const nw=ow*k,nh=oh*k,nx=(t.W-nw)/2,ny=(t.H-nh)/2,s=nw/fr.w;
-  items.forEach(it=>{
-   it.x=nx+(it.x-fr.x)*s;it.y=ny+(it.y-fr.y)*s;it.w*=s;it.h*=s;
-   if(it.type==='text')it.size=+(it.size*s).toFixed(3);
-   if(it.type==='bar')it.tsize=+(it.tsize*s).toFixed(3);
-   if(it.type==='shape')it.sw=+((it.sw||.5)*s).toFixed(3)});
-  items.forEach(it=>{
-   let b=bbox([it]),bw=b[2]-b[0],bh=b[3]-b[1];
-   if(bw>t.W||bh>t.H){
-    const f=Math.min(t.W/bw,t.H/bh),cx=it.x+it.w/2,cy=it.y+it.h/2;
-    it.w*=f;it.h*=f;it.x=cx-it.w/2;it.y=cy-it.h/2;
-    if(it.type==='text')it.size=+(it.size*f).toFixed(3);
-    if(it.type==='bar')it.tsize=+(it.tsize*f).toFixed(3);
-    b=bbox([it])}
-   let mx=0,my=0;
-   if(b[0]<0)mx=-b[0];else if(b[2]>t.W)mx=t.W-b[2];
-   if(b[1]<0)my=-b[1];else if(b[3]>t.H)my=t.H-b[3];
-   it.x+=mx;it.y+=my});
+  const items=JSON.parse(JSON.stringify(E.items)),f=E.fr;
+  reframe(items,f||{x:0,y:0,w:E.w,h:E.h},f?E.ow:E.w,f?E.oh:E.h,f?E.oci:E.ci,t);
   /* foaia formatului, cu designul pus în fiecare etichetă (supersampling) */
   const k2=Math.min(MM*3,2800/Math.max(t.SW,t.SH)),c=document.createElement('canvas');
   c.width=Math.round(t.SW*k2);c.height=Math.round(t.SH*k2);
@@ -4641,11 +4580,9 @@ async function dsvSave(){
 const pdfs={};items.forEach(it=>{if(it.pdf&&PDFS[it.pdf.id])pdfs[it.pdf.id]=PDFS[it.pdf.id]});
   const rec={oc:E.oc||null,doc:E.doc||null,tc:snap.tc,fr:snap.fr,ow:snap.ow,oh:snap.oh,oci:snap.oci,vr:snap.vr,items,imgs,pdfs};
 
-  const db=await idb();
-  const tx=db.transaction('h','readwrite');
-  tx.objectStore('h').put(rec,'lastdesign');
-  await txDone(tx);
+  await hPut('lastdesign',rec);
   lastKey=key;
+
  }catch(_){}
  saving=false;
 }
@@ -4672,7 +4609,7 @@ async function dsvRestore(r){
   });
   UID=Math.max(UID,mx+1);
   const t=D.find(x=>x.code===r.tc);
-  if(!t){openModal('new');return}
+  if(!t)throw new Error('Formato '+r.tc+' non trovato');
   startDesign(t);
   const E=E_();
   E.items=r.items;
@@ -4682,8 +4619,13 @@ async function dsvRestore(r){
   touch(true);
   fitSheets();
 
- }catch(_){openModal('new')}
+ }catch(e){
+  console.error('Ripristino etichetta fallito:',e);
+  try{localStorage.removeItem('sls_mode')}catch(_){}
+  if(E_())$('clr').onclick&&window.confirm&&0;
+ }
 }
+
 
 setInterval(dsvSave,1500);
 window.addEventListener('pagehide',dsvSave);
@@ -4699,14 +4641,11 @@ function askLast(r){
 
 
 $('btnNew').onclick=async()=>{
- let r=null;
- try{
-  const db=await idb();
-  r=await reqP(db.transaction('h').objectStore('h').get('lastdesign'));
- }catch(_){}
+ const r=await hGet('lastdesign').catch(()=>null);
  if(r&&r.items&&r.items.length){askLast(r);return}
  openModal('new');
 };
+
 
 /* la ieșirea din editor (X, Acasă, Nuova) se șterge flagul de refresh */
 $('clr').addEventListener('click',()=>{
@@ -4717,9 +4656,9 @@ $('clr').addEventListener('click',()=>{
 if((()=>{try{return localStorage.getItem('sls_mode')==='design'}catch(_){return false}})()){
  (async()=>{
   try{
-   const db=await idb();
-   const r=await reqP(db.transaction('h').objectStore('h').get('lastdesign'));
+   const r=await hGet('lastdesign');
    if(S)return;
+
    if(r&&r.items&&r.items.length)dsvRestore(r);
    else localStorage.removeItem('sls_mode');
   }catch(_){}
