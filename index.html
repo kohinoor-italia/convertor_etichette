@@ -3331,13 +3331,30 @@ function drawBar(x,it){
   }else x.fillText(inf.txt,0,0,(it.w*.96)/f);
   x.restore()}}
 
+/* ---------- Anti-aliasing imagini: mipmap ---------- */
+function mipFor(im,tw){
+ let src=im,w=im.naturalWidth||im.width,h=im.naturalHeight||im.height,l=0;
+ if(!im._mp)im._mp=[];
+ while(w/2>=tw&&w>2&&h>2){
+  if(!im._mp[l]){
+   const c=document.createElement('canvas');
+   c.width=Math.max(1,Math.ceil(w/2));c.height=Math.max(1,Math.ceil(h/2));
+   const cx=c.getContext('2d');cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';
+   cx.drawImage(src,0,0,c.width,c.height);
+   im._mp[l]=c}
+  src=im._mp[l];w=src.width;h=src.height;l++}
+ return src}
+
 /* ---------- Randare ---------- */
 function drawItem(x,it){
  if(it.type==='img'){
   const im=IMGS[it.imgId];if(!im)return;
   x.save();x.globalAlpha*=(it.op==null?1:it.op);x.scale(it.fx?-1:1,it.fy?-1:1);
   x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
-  x.drawImage(im,-it.w/2,-it.h/2,it.w,it.h);
+  {const tm0=x.getTransform(),pk=Math.hypot(tm0.a,tm0.b)||1;
+   x.drawImage(NOMIP?im:mipFor(im,Math.round(it.w*pk)),-it.w/2,-it.h/2,it.w,it.h)}
+
+
   if(it.er&&it.er.length){
    x.save();x.globalAlpha=DIM;x.beginPath();x.rect(-it.w/2,-it.h/2,it.w,it.h);x.clip();
    it.er.forEach(r=>{
@@ -3381,7 +3398,8 @@ function drawItem(x,it){
   layoutText(it).forEach((l,i)=>x.fillText(l,px/f,(-it.h/2+lh*(i+.5))/f));
   x.restore();
  }else drawBar(x,it)}
-let DIM=1,SCR=null;
+let DIM=1,SCR=null,NOMIP=false;
+
 function paintItems(x,k,E,dim){
  E.items.forEach(it=>{
   if(it.hid)return;
@@ -3493,7 +3511,8 @@ async function designPdf(){
  const flush=async list=>{
   if(!list.length)return;
   const c=document.createElement('canvas');c.width=Math.round(E.w*k);c.height=Math.round(E.h*k);
-  paintItems(c.getContext('2d'),c.width/E.w,{items:list});
+  NOMIP=true;try{paintItems(c.getContext('2d'),c.width/E.w,{items:list})}finally{NOMIP=false}
+
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));
   const im=await doc.embedPng(new Uint8Array(await blob.arrayBuffer()));
   pg.drawImage(im,{x:0,y:0,width:Wp,height:Hp})};
