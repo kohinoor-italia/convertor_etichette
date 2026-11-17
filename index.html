@@ -2339,8 +2339,10 @@ async function openLib(path){
   const m=LIB.find(x=>x.path===path);
   if(!blob||!m){toast('File non trovato nella libreria');return}
   const fl=new File([blob],m.name,{type:'application/pdf'});
-  if(S&&S.design&&window.edAddPdf)window.edAddPdf(fl);else loadPDF(fl);
+  const add=!!window.PDFADD;window.PDFADD=false;
+  if(add&&S&&S.design&&window.edAddPdf)window.edAddPdf(fl);else loadPDF(fl);
  }catch(e){toast('Errore apertura: '+(e.message||e))}}
+
 
 
 /* Import veloce: confronta path + dimensione + data di modifica con quanto già
@@ -2738,13 +2740,15 @@ function pdfRender(){
  }).sort((a,b)=>nat(a.name,b.name)).slice(0,100);
  $('pdfList').innerHTML=pRes.length?pRes.map((m,i)=>`<button type="button" class="lf${m.code?'':' nofmt'}" data-i="${i}"><span class="pi2">PDF</span><span class="ln">${esc(m.name)}</span><b class="bd" title="${esc(m.path)}">${m.code?esc(m.code):'senza formato'}</b></button>`).join(''):'<div class="lib-none">Nessun PDF trovato</div>';
  pdfSelect(0,false)}
-function openPdfModal(init){
- if(!LIB.length){if(!init){if(S&&S.design)$('edPdf').click();else pickFile()}return}
+function openPdfModal(init,add){
+ window.PDFADD=!!add;
+ if(!LIB.length){if(!init){if(add&&S&&S.design)$('edPdf').click();else pickFile()}return}
  const pq=$('pq'),fc=()=>{pq.focus();try{const n=pq.value.length;pq.setSelectionRange(n,n)}catch(_){}};
  pq.value=init||'';pdfRender();
  pdfModal.classList.add('open');
  fc();
  setTimeout(()=>{if(pdfModal.classList.contains('open')&&document.activeElement!==pq)fc()},30)}
+
 
 function closePdfModal(){pdfModal.classList.remove('open');$('pq').blur()}
 function pickFromModal(i){
@@ -2760,7 +2764,8 @@ $('pq').addEventListener('keydown',e=>{
 $('pdfList').addEventListener('click',e=>{const b=e.target.closest('.lf');if(b)pickFromModal(+b.dataset.i)});
 $('pdfList').addEventListener('mousemove',e=>{const b=e.target.closest('.lf');if(b&&+b.dataset.i!==pSel)pdfSelect(+b.dataset.i,false)});
 pdfModal.addEventListener('mousedown',e=>{if(e.target===pdfModal)closePdfModal()});
-$('pdfPc').onclick=()=>{closePdfModal();if(S&&S.design)$('edPdf').click();else pickFile()};
+$('pdfPc').onclick=()=>{closePdfModal();if(window.PDFADD&&S&&S.design)$('edPdf').click();else pickFile()};
+
 
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&clrDlg.classList.contains('open')){e.preventDefault();clrClose()}
@@ -4259,7 +4264,8 @@ function mkMenu(btnId,items){
 mkMenu('edAddI',[
  ['Immagine dal computer',()=>$('edFile').click()],
  ['PDF dal computer',()=>$('edPdf').click()],
- ['PDF dalla libreria',()=>{if(LIB.length)openPdfModal('');else $('edPdf').click()}]]);
+ ['PDF dalla libreria',()=>{if(LIB.length)openPdfModal('',true);else $('edPdf').click()}]]);
+
 mkMenu('edAddP',[
  ['Quadrato',()=>setDraw('rect')],
  ['Cerchio',()=>setDraw('ellipse')],
